@@ -110,7 +110,7 @@ md-toolbar{
 }
 
 #main{
-	background: url('/img/StockSnap_13UNSPJHCZ.jpg');
+	/*background: url('/img/StockSnap_13UNSPJHCZ.jpg');*/
 	background-size: cover;
 	transition: all 1s;
 }
@@ -147,6 +147,14 @@ md-content.dirty-white{
 
 .form{
 	width: 300px;
+}
+
+.form-medium{
+	width: 450px;
+}
+
+.form-large{
+	width: 600px;
 }
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
@@ -341,4 +349,66 @@ md-content.dirty-white{
 	height: 36px;
 	border-radius:50%;
 	margin: 5px;
+}
+
+md-content.autocomplete {
+  min-height: 250px; 
+}
+
+md-content.autocomplete input {
+    min-width: 400px; 
+}
+
+.md-item-text.compact {
+  	padding-top: 8px;
+  	padding-bottom: 8px;
+}
+
+.contact-item {
+  	box-sizing: border-box;
+}
+
+.contact-item.selected {
+    opacity: 0.5;
+}
+
+.contact-item.selected h3 {
+    opacity: 0.5;
+}
+
+.contact-item .md-list-item-text {
+    padding: 14px 0;
+    max-width: 190px;
+}
+
+.contact-item .md-list-item-text h3 {
+    margin: 0 !important;
+    padding: 0;
+    line-height: 1.2em !important;
+}
+
+.contact-item .md-list-item-text h3, .contact-item .md-list-item-text p {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+@media (min-width: 960px) {
+    .contact-item {
+    	float: left;
+      	width: 33%;
+    }
+}
+
+md-contact-chips {
+  	margin-bottom: 10px;
+}
+
+.md-chips {
+	padding: 5px 0 8px; 
+}
+
+.fixedRows {
+  	height: 250px;
+  	overflow: hidden; 
 }

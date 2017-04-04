@@ -26,13 +26,15 @@ mix
 
    	// Vendor Scripts
    .scripts([
+         'public/js/vendor/jquery.js',
    		'public/js/vendor/angular.js',
          'public/js/vendor/moment.js',
          'public/js/vendor/highcharts.js',
    		'public/js/vendor/highcharts-ng.js',
    		'public/js/vendor/pusher.js',
    		'public/js/vendor/angular-aria.js',
-   		'public/js/vendor/angular-file-upload.js',
+         'public/js/vendor/angular-file-upload.js',
+   		'public/js/vendor/angular-animate.js',
    		'public/js/vendor/angular-material.js',
    		'public/js/vendor/angular-messages.js',
    		'public/js/vendor/angular-moment.js',
@@ -44,15 +46,20 @@ mix
 
 	// Shared Scripts
    .scripts([
-   		'public/app/shared/*.js',
+   		'public/app/shared/**/*.js',
    	], 'public/js/shared.js')
+
+   // Auth Scripts
+   .scripts([
+         'public/app/auth/**/*.js',
+      ], 'public/js/auth.js') 
 
 	// Admin Scripts
    .scripts([
-   		'public/app/admin/*.js',
+   		'public/app/admin/**/*.js',
    	], 'public/js/admin.js')
 
    	// Employee Scripts
    .scripts([
-   		'public/app/employee/*.js',
+   		'public/app/employee/**/*.js',
    	], 'public/js/employee.js')

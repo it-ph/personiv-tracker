@@ -13,8 +13,10 @@ class RolesTableSeeder extends Seeder
     {
         DB::table('roles')->insert([
         	[
-        		'name': 'Accounts',
-        		'description': 'user can manage employee acounts',
+        		'name' => 'Settings',
+        		'description' => 'user can manage application settings',
+                'created_at' => Carbon\Carbon::now(),
+                'updated_at' => Carbon\Carbon::now(),
         	],
         ]);
     }

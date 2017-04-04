@@ -5,6 +5,7 @@
   "/css/vendor.css": "/css/vendor.css",
   "/js/vendor.js": "/js/vendor.js",
   "/js/shared.js": "/js/shared.js",
+  "/js/auth.js": "/js/auth.js",
   "/js/admin.js": "/js/admin.js",
   "/js/employee.js": "/js/employee.js"
 }

@@ -11,10 +11,25 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
+
+Route::get('/', 'HomeController@index');
 
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
+
+// Route::group(['middleware' => 'auth'], function(){
+	Route::resource('account', 'AccountController');
+	Route::resource('department', 'DepartmentController');
+	Route::resource('role', 'RoleController');
+	Route::resource('task', 'TaskController');
+	Route::resource('user', 'UserController');
+	Route::resource('user-role', 'UserRoleController');
+
+	Route::group(['prefix' => 'user'], function(){
+
+	});
+// });
