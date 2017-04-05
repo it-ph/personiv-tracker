@@ -1,5 +1,6 @@
 shared
-	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider){
+	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', '$qProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider, $qProvider){
+		$qProvider.errorOnUnhandledRejections(false);
 		/*
 		 * Set the default theme to Indigo - Amber.
 		 */

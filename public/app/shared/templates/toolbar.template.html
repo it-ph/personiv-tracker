@@ -1,7 +1,7 @@
 <div class="md-toolbar-tools" layout="row" flex>
-	<md-button class="md-icon-button" ng-click="toggleSidenav('left')" hide-gt-md ng-if="!searchBar">
-		<md-icon class="mdi grey mdi-menu" aria-label="Toogle Sidenav"></md-icon>
-	</md-button>
+	<a href="/" class="site-logo">		
+		<img src="/img/2Color-Logo_247px-1024x195.png" alt="">
+	</a>
 	<span class="md-headline main-text" ng-if="!searchBar"> <span hide-md hide-sm hide-xs>{{ toolbar.parentState }}</span>
 		<md-icon class="mdi grey mdi-chevron-right" aria-label="chevron right" ng-if="toolbar.parentState && toolbar.childState" hide-md hide-sm hide-xs></md-icon>
 		<span ng-if="toolbar.childState">{{ toolbar.childState }}</span>
@@ -35,7 +35,7 @@
 		<div flex layout="row" layout-align="end center" ng-if="!searchBar">
 			<span flex></span>
 			<!-- Search -->
-			<md-button class="md-icon-button" ng-click="showSearchBar()" ng-if="!toolbar.hideSearchIcon">
+			<md-button class="md-icon-button" ng-click="showSearchBar()" ng-if="!toolbar.hideSearchIcon" hide-xs hide-sm>
 				<md-icon class="mdi grey mdi-magnify" aria-label="Search"></md-icon>
 			</md-button>
 			<!-- Notifications -->
@@ -46,7 +46,7 @@
 				</md-button>
 				<md-menu-content width="6">
 					<md-subheader ng-if="!user.unread_notifications.length">No unread notifications</md-subheader>
-					<md-subheader class="md-primary" ng-if="user.unread_notifications.length">Notifications</md-subheader>
+					<md-subheader class="md-primary" ng-if="user.unread_notifications.length">Notifications <a ui-sref="main.notifications">See all</a></md-subheader>
 					<md-menu-item ng-if="user.unread_notifications.length">
 		                <md-button aria-label="Mark All as Read" ng-click="markAllAsRead()" flex>
 		                    <div layout="row">
@@ -116,14 +116,14 @@
 		        </md-menu-content>
 			</md-menu>
 			<!-- Account -->
-            <input id="upload" type="file" nv-file-select uploader="photoUploader" style="display: none;" ng-if="user">
+            <!-- <input id="upload" type="file" nv-file-select uploader="photoUploader" style="display: none;" ng-if="vm.user.user"> -->
 			<md-menu md-position-mode="target-right target">
 				<md-button flex aria-label="User" ng-click="$mdOpenMenu($event)">
 					<div layout="row" flex layout-align="center center">
-						<img ng-if="user.avatar_path" ng-src="/user/avatar/{{user.id}}?={{currentTime}}" class="avatar-icon" alt="avatar">
-			            <img ng-if="user && !user.avatar_path" src="/img/2Color-Favicon_512x512-1.png" class="avatar-icon" alt="">
+						<img ng-if="mainVm.user.user.avatar_path" ng-src="/user/avatar/{{mainVm.user.user.id}}?={{currentTime}}" class="avatar-icon" alt="avatar">
+			            <img ng-if="mainVm.user.user && !mainVm.user.user.avatar_path" src="/img/2Color-Favicon_512x512-1.png" class="avatar-icon" alt="">
 			            <span flex="5"></span>
-			            <span class="secondary-text">{{user.first_name}}</span>
+			            <span class="secondary-text">{{mainVm.user.user.first_name}}</span>
 			            <span flex></span>
 					</div>
 				</md-button>
@@ -140,7 +140,7 @@
 			            </md-button>
 					</md-menu-item>
 					<md-menu-item>
-						<md-button flex ng-click="changePassword()">
+						<md-button flex ng-click="mainVm.user.changePassword()">
 			                <div layout="row" flex>
 			                    <md-icon class="mdi mdi-key-change grey"></md-icon>
 			                    <span flex="5"></span>
@@ -150,7 +150,7 @@
 			            </md-button>
 					</md-menu-item>
 					<md-menu-item>
-						<md-button flex ng-click="logout()">
+						<md-button flex ng-click="mainVm.logout()">
 			                <div layout="row" flex>
 			                    <md-icon class="mdi mdi-logout grey"></md-icon>
 			                    <span flex="5"></span>

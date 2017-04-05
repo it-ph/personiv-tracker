@@ -1,4 +1,3 @@
-var admin = angular.module('app', ['shared']);
 admin
 	.config(['$stateProvider', function($stateProvider){
 		$stateProvider

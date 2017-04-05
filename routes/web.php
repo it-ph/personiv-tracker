@@ -20,8 +20,11 @@ Route::get('/', 'HomeController@index');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
+Route::get('/register', 'HomeController@index');
 
-// Route::group(['middleware' => 'auth'], function(){
+Route::group(['middleware' => 'auth'], function(){
+	Route::post('/pusher/auth', 'PusherController@auth');
+
 	Route::resource('account', 'AccountController');
 	Route::resource('department', 'DepartmentController');
 	Route::resource('role', 'RoleController');
@@ -30,6 +33,9 @@ Route::get('/home', 'HomeController@index');
 	Route::resource('user-role', 'UserRoleController');
 
 	Route::group(['prefix' => 'user'], function(){
-
+		Route::post('check', 'UserController@check');
+		Route::post('change-password', 'UserController@changePassword');
+		Route::post('verify-password', 'UserController@verifyPassword');
+		Route::post('logout', 'UserController@logout');
 	});
-// });
+});

@@ -22,6 +22,7 @@ class CreateUsersTable extends Migration
             $table->string('suffix')->nullable();
             $table->string('email')->unique();
             $table->string('password');
+            $table->string('avatar_path')->nullable();
             $table->boolean('super_user')->default(false);
             $table->integer('department_id')->unsigned();
             $table->integer('account_id')->unsigned()->nullable();
