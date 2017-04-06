@@ -47,9 +47,9 @@ mix
 	// Shared Scripts
    .scripts([
          'public/app/shared/*.js',
-         'public/app/shared/factories/*.js',
+         // 'public/app/shared/factories/*.js',
    		'public/app/shared/factories/**/*.js',
-         'public/app/shared/controllers/*.js',
+         // 'public/app/shared/controllers/*.js',
          'public/app/shared/controllers/**/*.js',
    	], 'public/js/shared.js')
 
@@ -62,17 +62,17 @@ mix
 	// Admin Scripts
    .scripts([
          'public/app/admin/*.js',
-         'public/app/admin/factories/*.js',
+         // 'public/app/admin/factories/*.js',
    		'public/app/admin/factories/**/*.js',
-         'public/app/admin/controllers/*.js',
+         // 'public/app/admin/controllers/*.js',
          'public/app/admin/controllers/**/*.js',
    	], 'public/js/admin.js')
 
    	// Employee Scripts
    .scripts([
          'public/app/employee/*.js',
-         'public/app/employee/factories/*.js',
+         // 'public/app/employee/factories/*.js',
    		'public/app/employee/factories/**/*.js',
-         'public/app/employee/controllers/*.js',
+         // 'public/app/employee/controllers/*.js',
          'public/app/employee/controllers/**/*.js',
    	], 'public/js/employee.js')

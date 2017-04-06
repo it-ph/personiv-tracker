@@ -10,14 +10,14 @@ admin
 					},
 					'content-container@main': {
 						templateUrl: '/app/shared/views/content-container.view.html',
-						// controller: 'reviewsContentContainerController',
+						controller: 'dashboardContentContainerController as vm',
 					},
 					'toolbar@main': {
 						templateUrl: '/app/shared/templates/toolbar.template.html',
-						// controller: 'reviewsToolbarController',
+						controller: 'dashboardToolbarController as vm',
 					},
 					'content@main':{
-						// templateUrl: '/app/components/reviews/templates/content/reviews-content.template.html',
+						templateUrl: '/app/admin/templates/content/dashboard-content.template.html',
 					}
 				}
 			})

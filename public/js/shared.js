@@ -31,224 +31,6 @@ shared
 			})
 	}]);
 shared
-	.factory('MaterialDesign', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
-		var factory = {}
-		/*
-		 * Opens an alert dialog.
-		 *
-		 * @params: title, message
-		 */
-		factory.alert = function(data){
-			$mdDialog.show(
-				$mdDialog.alert()
-			        .parent(angular.element($('body')))
-			        .clickOutsideToClose(true)
-			        .title(data.title)
-			        .textContent(data.message)
-			        .ariaLabel(data.title)
-			        .ok('Got it!')
-			    );
-		}
-
-		/*
-		 * Opens a custom dialog.
-		 * 
-		 * @params: controller, templateUrl, fullscreen
-		 */
-		factory.customDialog = function(data){
-			$mdDialog.show({
-		      	controller: data.controller,
-		      	templateUrl: data.templateUrl,
-		      	parent: angular.element(document.body),
-		      	fullscreen: data.fullscreen,
-		    });
-		}
-
-		/*
-		 * Opens a confirmation dialog.
-		 *
-		 * @params: title, message, ok, cancel
-		 */
-		factory.confirm = function(data)
-		{
-			var confirm = $mdDialog.confirm()
-		        .title(data.title)
-		        .textContent(data.message)
-		        .ariaLabel(data.title)
-		        .ok(data.ok)
-		        .cancel(data.cancel);
-
-		    return $mdDialog.show(confirm);
-		}
-
-		/*
-		 * Opens a prompt dialog.
-		 *
-		 * @params: title, message, placeholder, ok, cancel
-		 */
-		factory.prompt = function(data)
-		{
-			var prompt = $mdDialog.prompt()
-		    	.title(data.title)
-		      	.textContent(data.message)
-		      	.placeholder(data.placeholder)
-		      	.ariaLabel(data.title)
-		      	.ok(data.ok)
-		      	.cancel(data.cancel);
-
-		    return $mdDialog.show(prompt);
-		}
-
-		/*
-		 * Opens a simple toast.
-		 *
-		 * @params: message
-		 */
-		factory.notify = function(message) {
-			var toast = $mdToast.simple()
-		      	.textContent(message)
-		      	.position('bottom right')
-		      	.hideDelay(3000);
-		      	
-		    return $mdToast.show(toast);
-		}
-
-		/*
-		 * Opens an indeterminate progress circular.
-		 */
-		factory.preloader = function(){
-			$mdDialog.show({
-				templateUrl: '/app/shared/templates/loading.template.html',
-			    parent: angular.element(document.body),
-			});
-		}
-
-		/*
-		 * Cancels a dialog.
-		 */
-		factory.cancel = function(){
-			$mdDialog.cancel();
-		}
-
-		/*
-		 * Hides a dialog and can return a value.
-		 */
-		factory.hide = function(data){
-			$mdDialog.hide(data);
-		}
-
-		/*
-		 * Returns a basic error message.
-		 */
-		factory.error = function(){
-			var dialog = {
-				'title': 'Oops! Something went wrong!',
-				'content': 'An error occured. Please try again later.',
-			}
-
-			factory.alert(dialog);
-		}
-
-		/*
-		 * Returns a basic error message.
-		 */
-		factory.failed = function(){
-			var dialog = {
-				'title': 'Aw Snap!',
-				'message': 'An error occured loading the resource.',
-				'ok': 'Try Again'
-			}
-
-			factory.confirm(dialog);
-		}
-
-		return factory;
-	}]);
-shared
-	.factory('User', ['$http', '$state', 'MaterialDesign', function($http, $state, MaterialDesign){
-		var factory = {};
-
-		factory.user = {};
-
-		/*
-		 * Get the record of the authenticated user. 
-		 */
-		factory.get = function(){
-			return $http.post('/user/check');
-		}
-
-		/*
-		 * Sets the user
-		*/
-		factory.set = function(data){
-			factory.user = data;
-		}
-
-		/*
-		 * Set user's pusher subscription
-		*/
-		factory.pusher = function(){
-			var pusher = new Pusher('f4ec05090428ca64a977', {
-		      	encrypted: true,
-		      	auth: {
-				    headers: {
-				      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-				    }
-			  	}
-		    });
-
-			var channel = {}
-
-			channel.user = pusher.subscribe('private-App.User.' + factory.user.id);
-
-			channel.user.bindings = [
-				channel.user.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
-			 		// formating the notification
-			 		data.created_at = data.attachment.created_at;
-
-			 		data.data = {};
-			 		data.data.attachment = data.attachment;
-			 		data.data.url = data.url;
-			 		data.data.withParams = data.withParams;
-			 		data.data.sender = data.sender;
-			 		data.data.message = data.message;
-
-			 		// pushes the new notification in the unread_notifications array
-		 			factory.user.unread_notifications.unshift(data);
-			 		
-			 		// notify the user with a toast message
-			 		MaterialDesign.notify(data.sender.name + ' ' + data.message);
-
-			 		if($state.current.name == data.data.url)
-					{
-						$state.go($state.current, {}, {reload:true});
-					}
-			    }),
-			]
-		}
-
-		/*
-		 * Ends the session of the authenticated user. 
-		 */
-		factory.logout = function(){
-			return $http.post('/user/logout');
-		}
-
-		/*
-		 * Opens a form to change password.
-		 */
-		factory.changePassword = function(){
-			var dialog = {
-				'controller': 'changePasswordDialogController as vm',
-				'templateUrl': '/app/shared/templates/dialogs/change-password-dialog.template.html'
-			}
-
-			return MaterialDesign.customDialog(dialog);
-		}
-
-		return factory;
-	}]);
-shared
 	.factory('changePasswordService', ['$http', 'MaterialDesign', function($http, MaterialDesign){
 		var factory = {}
 
@@ -418,10 +200,67 @@ shared
 		return factory;
 	}]);
 shared
-	.factory('User', ['$http', '$state', 'MaterialDesign', function($http, $state, MaterialDesign){
+	.factory('toolbarService', ['$http', '$filter', 'MaterialDesign', function($http, $filter, MaterialDesign){
+		var factory = {}
+
+		factory.items = [];
+
+		/**
+		 * Displays search bar
+		*/
+		factory.showSearchBar = function(){			
+			factory.searchBar = true;
+		}
+
+		/**
+		 * Hides search bar
+		*/
+		factory.hideSearchBar = function(){
+			factory.searchBar = false;
+			factory.searchText = '';
+			factory.searchItem = '';
+		}
+
+		/**
+		 * Autocomplete search from data
+		*/
+		factory.getItems = function(query){
+			var results = query ? $filter('filter')(factory.items, query) : factory.items;
+			return results;
+		}
+
+		/**
+		 * Sorts content list
+		*/
+		factory.sortBy = function(filter){
+			filter.sortReverse = !filter.sortReverse;			
+			factory.content.sortType = filter.type;
+			factory.content.sortReverse = filter.sortReverse;
+		}
+
+		/**
+		 * Toggles deleted records list
+		*/
+		factory.toggleActive = function(){
+			factory.content.showInactive = !factory.content.showInactive.showInactive;
+		}
+
+		/**
+		 * Toggles deleted records list
+		*/
+		factory.searchUserInput = function(data){
+			factory.toolbar.content.search(data);
+		}
+
+		return factory;
+	}]);
+shared
+	.factory('User', ['$http', '$state', 'MaterialDesign', 'FileUploader', function($http, $state, MaterialDesign, FileUploader){
 		var factory = {};
 
 		factory.user = {};
+
+		factory.currentTime = Date.now();
 
 		/*
 		 * Get the record of the authenticated user. 
@@ -433,8 +272,8 @@ shared
 		/*
 		 * Sets the user
 		*/
-		factory.set = function(data){
-			factory.user = data;
+		factory.set = function(user){
+			factory.user = user;
 		}
 
 		/*
@@ -455,29 +294,74 @@ shared
 			channel.user = pusher.subscribe('private-App.User.' + factory.user.id);
 
 			channel.user.bindings = [
-				channel.user.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
+				channel.user.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(notification) {
 			 		// formating the notification
-			 		data.created_at = data.attachment.created_at;
+			 		notification.created_at = notification.attachment.created_at;
 
-			 		data.data = {};
-			 		data.data.attachment = data.attachment;
-			 		data.data.url = data.url;
-			 		data.data.withParams = data.withParams;
-			 		data.data.sender = data.sender;
-			 		data.data.message = data.message;
+			 		notification.data = {};
+			 		notification.data.attachment = notification.attachment;
+			 		notification.data.url = notification.url;
+			 		notification.data.withParams = notification.withParams;
+			 		notification.data.sender = notification.sender;
+			 		notification.data.message = notification.message;
 
 			 		// pushes the new notification in the unread_notifications array
-		 			factory.user.unread_notifications.unshift(data);
+		 			factory.user.unread_notifications.unshift(notification);
 			 		
 			 		// notify the user with a toast message
-			 		MaterialDesign.notify(data.sender.name + ' ' + data.message);
+			 		MaterialDesign.notify(notification.sender.name + ' ' + notification.message);
 
-			 		if($state.current.name == data.data.url)
+			 		if($state.current.name == notification.data.url)
 					{
 						$state.go($state.current, {}, {reload:true});
 					}
 			    }),
 			]
+		}
+
+		/*
+		 * Mark notification as read
+		 *
+		*/
+		factory.markAsRead = function(notification){
+			return $http.post('/user/mark-as-read', notification);
+		}
+
+		/*
+		 * Remove the notification from the user notification array.
+		 *
+		*/
+		factory.removeNotifications = function(notification){
+			var index = factory.user.unread_notifications.indexOf(notification);
+
+			factory.user.unread_notifications.splice(index, 1);
+		}
+
+		/*
+		 * Mark all unread notifications as read
+		 *
+		*/
+		factory.markAllAsRead = function(){
+			return $http.post('/user/mark-all-as-read');
+		}
+
+		/*
+		 * Read notification and go to the url.
+		 *
+		*/
+		factory.read = function(notification)
+		{
+			$state.go(notification.data.url);
+
+			factory.markAsRead(notification);
+		}
+
+		/*
+		 * Clears the unread notifications property of the user.
+		 *
+		*/
+		factory.clearNotifications = function(){
+			factory.user.unread_notifications = [];
 		}
 
 		/*
@@ -499,206 +383,65 @@ shared
 			return MaterialDesign.customDialog(dialog);
 		}
 
+		/*
+		 * Opens a form to change password.
+		 */
+		factory.uploader = {};
+
+		factory.uploader.filter = {
+            name: 'photoFilter',
+            fn: function(item /*{File|FileLikeObject}*/, options) {
+                var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
+                return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
+            }
+        };
+
+        factory.uploader.sizeFilter = {
+		    'name': 'enforceMaxFileSize',
+		    'fn': function (item) {
+		        return item.size <= 2000000;
+		    }
+        }
+
+        factory.uploader.error = function(item /*{File|FileLikeObject}*/, filter, options) {
+            MaterialDesign.error();
+            factory.photoUploader.queue = [];
+        };
+
+        factory.headers = { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')};
+
+        factory.photoUploaderInit = function(){
+	        factory.photoUploader = new FileUploader({
+				url: '/user/upload-avatar/' + factory.user.id,
+				headers: factory.headers,
+				queueLimit : 1
+			})
+
+			factory.photoUploader.filters.push(factory.uploader.filter);
+	        factory.photoUploader.filters.push(factory.uploader.sizeFilter);
+	        factory.photoUploader.onWhenAddingFileFailed = factory.uploader.error;
+			factory.photoUploader.onAfterAddingFile  = function(){
+				if(factory.photoUploader.queue.length)
+				{	
+					factory.photoUploader.uploadAll()
+				}
+			};
+
+			factory.photoUploader.onCompleteItem  = function(data, response){
+				if(factory.user.avatar_path)
+				{
+					factory.currentTime = Date.now();
+					factory.photoUploader.queue = [];
+				}
+				else{
+					$state.go($state.current, {}, {reload:true});
+				}
+			}
+
+        	factory.showUploader = true;
+        }
+
 		return factory;
-	}]);
-shared
-	.controller('mainViewController', ['User', 'MaterialDesign', function(User, MaterialDesign){
-		var vm = this;
-
-		vm.user = User;
-
-		/*
-		 * Get the record of the authenticated user.
-		 */
-		vm.getUser = function(){
-			vm.user.get()
-				.then(function(data){
-					vm.user.set(data.data);
-
-					vm.user.pusher();
-				}, function(){
-					MaterialDesign.failed()
-						.then(function(){
-							vm.getUser();
-						})
-				});
-		}
-
-		/*
-		 * Ends the session of the authenticated user.
-		 */
-		vm.logout = function(){
-			vm.user.logout()
-				.then(function(){
-					window.location.href = '/';
-				});
-		}
-
-		vm.init = function(){
-			vm.getUser();
-		}();
-
-		// $scope.changePassword = function()
-		// {
-		// 	$mdDialog.show({
-		//       controller: 'changePasswordDialogController',
-		//       templateUrl: '/app/shared/templates/dialogs/change-password-dialog.template.html',
-		//       parent: angular.element(document.body),
-		//       fullscreen: true,
-		//     })
-		//     .then(function(){
-		//     	Helper.notify('Password changed.')
-		//     });
-		// }
-
-		// var uploader = {};
-
-		// uploader.filter = {
-  //           name: 'photoFilter',
-  //           fn: function(item /*{File|FileLikeObject}*/, options) {
-  //               var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-  //               return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-  //           }
-  //       };
-
-  //       uploader.sizeFilter = {
-		//     'name': 'enforceMaxFileSize',
-		//     'fn': function (item) {
-		//         return item.size <= 2000000;
-		//     }
-  //       }
-
-  //       uploader.error = function(item /*{File|FileLikeObject}*/, filter, options) {
-  //           $scope.fileError = true;
-  //           $scope.photoUploader.queue = [];
-  //       };
-
-  //       uploader.headers = { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')};
-
-		// $scope.clickUpload = function(){
-		//     angular.element('#upload').trigger('click');
-		// };
-
-		// $scope.markAllAsRead = function(){
-		// 	Helper.post('/user/mark-all-as-read')
-		// 		.success(function(){
-		// 			$scope.user.unread_notifications = [];
-		// 		})
-		// }
-
-		// var fetchUnreadNotifications = function(){
-		// 	Helper.post('/user/check')
-	 //    		.success(function(data){
-	 //    			$scope.user = data;
-	 //    		});
-		// }
-
-		// Helper.post('/user/check')
-		// 	.success(function(data){
-		// 		var notifications = {
-		// 			'state': 'main.notifications',
-		// 			'icon': 'mdi-bell',
-		// 			'label': 'Notifications',
-		// 			'show': true,
-		// 		}
-
-		// 		$scope.menu.static.push(notifications);
-
-		// 		$scope.user = data;
-
-		// 		$scope.currentTime = Date.now();
-
-		// 		Helper.setAuthUser(data);
-
-		// 		/* Photo Uploader */
-		// 		$scope.photoUploader = new FileUploader({
-		// 			url: '/user/upload-avatar/' + $scope.user.id,
-		// 			headers: uploader.headers,
-		// 			queueLimit : 1
-		// 		})
-
-		// 		// FILTERS
-		//         $scope.photoUploader.filters.push(uploader.filter);
-		//         $scope.photoUploader.filters.push(uploader.sizeFilter);
-		        
-		// 		$scope.photoUploader.onWhenAddingFileFailed = uploader.error;
-		// 		$scope.photoUploader.onAfterAddingFile  = function(){
-		// 			$scope.fileError = false;
-		// 			if($scope.photoUploader.queue.length)
-		// 			{	
-		// 				$scope.photoUploader.uploadAll()
-		// 			}
-		// 		};
-
-		// 		$scope.photoUploader.onCompleteItem  = function(data, response){
-		// 			if($scope.user.avatar_path)
-		// 			{
-		// 				$scope.currentTime = Date.now();
-		// 				$scope.photoUploader.queue = [];
-		// 			}
-		// 			else{
-		// 				$state.go($state.current, {}, {reload:true});
-		// 			}
-		// 		}
-
-		// 		var pusher = new Pusher('ade8d83d4ed5455e3e18', {
-		// 	      	encrypted: true,
-		// 	      	auth: {
-		// 			    headers: {
-		// 			      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-		// 			    }
-		// 		  	}
-		// 	    });
-
-		// 		var channel = {};
-
-		// 		channel.user = pusher.subscribe('private-App.User.' + $scope.user.id);
-
-		// 		channel.user.bindings = [
-		// 		 	channel.user.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
-		// 		 		// formating the notification
-		// 		 		data.created_at = data.attachment.created_at;
-
-		// 		 		data.data = {};
-		// 		 		data.data.attachment = data.attachment;
-		// 		 		data.data.url = data.url;
-		// 		 		data.data.withParams = data.withParams;
-		// 		 		data.data.sender = data.sender;
-		// 		 		data.data.message = data.message;
-
-		// 		 		// pushes the new notification in the unread_notifications array
-		// 		 		$scope.$apply(function(){
-		// 			    	$scope.user.unread_notifications.unshift(data);
-		// 		 		});
-
-		// 		 		// notify the user with a toast message
-		// 		 		Helper.notify(data.sender.name + ' ' + data.message);
-
-		// 		 		if($state.current.name == data.data.url)
-		// 				{
-		// 					$state.go($state.current, {}, {reload:true});
-		// 				}
-		// 		    }),
-		// 		];
-		// 	})
-
-		// $scope.markAsRead = function(notification){
-		// 	Helper.post('/user/mark-as-read', notification)
-		// 		.success(function(){
-		// 			var index = $scope.user.unread_notifications.indexOf(notification);
-
-		// 			$scope.user.unread_notifications.splice(index, 1);
-		// 		})
-		// 		.error(function(){
-		// 			Helper.error();
-		// 		});
-		// }
-
-		// $scope.read = function(notification){			
-		// 	$state.go(notification.data.url);
-
-		// 	$scope.markAsRead(notification);
-		// }
 	}]);
 shared
 	.controller('changePasswordDialogController', ['User', 'MaterialDesign', 'changePasswordService', function(User, MaterialDesign, changePasswordService){
@@ -775,24 +518,22 @@ shared
 		}
 	}]);
 shared
-	.controller('listItemActionsDialogController', ['$scope', 'Helper', function($scope, Helper){
-		$scope.data = Helper.fetch();
-	}]);
-shared
 	.controller('mainViewController', ['User', 'MaterialDesign', function(User, MaterialDesign){
 		var vm = this;
 
 		vm.user = User;
 
-		/*
+		/**
 		 * Get the record of the authenticated user.
 		 */
 		vm.getUser = function(){
 			vm.user.get()
 				.then(function(data){
 					vm.user.set(data.data);
-
+					// Initialize the websocket connection
 					vm.user.pusher();
+					// Initialize the file uploader for avatar
+					vm.user.photoUploaderInit();
 				}, function(){
 					MaterialDesign.failed()
 						.then(function(){
@@ -811,169 +552,40 @@ shared
 				});
 		}
 
-		vm.init = function(){
+  		/**
+		 * Opens the upload form of avatar
+  		*/
+		vm.clickUpload = function(){
+		    angular.element('#upload').trigger('click');
+		};
+
+		/**
+		 * Mark notification as read
+		*/
+		vm.markAsRead = function(data){
+			vm.user.markAsRead()
+				.then(function(){
+					vm.user.removeNotification(data);
+				}, function(){
+					MaterialDesign.error();
+				});
+		}
+		/**
+		 * Mark all unread notifications as read
+		*/
+		vm.markAllAsRead = function(){
+			vm.user.markAllAsRead()
+				.then(function(){
+					vm.user.clearNotifications();
+				}, function(){
+					MaterialDesign.error();
+				});
+		}
+
+		/**
+		 * Initialize
+		*/
+		var init = function(){
 			vm.getUser();
 		}();
-
-		// $scope.changePassword = function()
-		// {
-		// 	$mdDialog.show({
-		//       controller: 'changePasswordDialogController',
-		//       templateUrl: '/app/shared/templates/dialogs/change-password-dialog.template.html',
-		//       parent: angular.element(document.body),
-		//       fullscreen: true,
-		//     })
-		//     .then(function(){
-		//     	Helper.notify('Password changed.')
-		//     });
-		// }
-
-		// var uploader = {};
-
-		// uploader.filter = {
-  //           name: 'photoFilter',
-  //           fn: function(item /*{File|FileLikeObject}*/, options) {
-  //               var type = '|' + item.type.slice(item.type.lastIndexOf('/') + 1) + '|';
-  //               return '|jpg|png|jpeg|bmp|gif|'.indexOf(type) !== -1;
-  //           }
-  //       };
-
-  //       uploader.sizeFilter = {
-		//     'name': 'enforceMaxFileSize',
-		//     'fn': function (item) {
-		//         return item.size <= 2000000;
-		//     }
-  //       }
-
-  //       uploader.error = function(item /*{File|FileLikeObject}*/, filter, options) {
-  //           $scope.fileError = true;
-  //           $scope.photoUploader.queue = [];
-  //       };
-
-  //       uploader.headers = { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')};
-
-		// $scope.clickUpload = function(){
-		//     angular.element('#upload').trigger('click');
-		// };
-
-		// $scope.markAllAsRead = function(){
-		// 	Helper.post('/user/mark-all-as-read')
-		// 		.success(function(){
-		// 			$scope.user.unread_notifications = [];
-		// 		})
-		// }
-
-		// var fetchUnreadNotifications = function(){
-		// 	Helper.post('/user/check')
-	 //    		.success(function(data){
-	 //    			$scope.user = data;
-	 //    		});
-		// }
-
-		// Helper.post('/user/check')
-		// 	.success(function(data){
-		// 		var notifications = {
-		// 			'state': 'main.notifications',
-		// 			'icon': 'mdi-bell',
-		// 			'label': 'Notifications',
-		// 			'show': true,
-		// 		}
-
-		// 		$scope.menu.static.push(notifications);
-
-		// 		$scope.user = data;
-
-		// 		$scope.currentTime = Date.now();
-
-		// 		Helper.setAuthUser(data);
-
-		// 		/* Photo Uploader */
-		// 		$scope.photoUploader = new FileUploader({
-		// 			url: '/user/upload-avatar/' + $scope.user.id,
-		// 			headers: uploader.headers,
-		// 			queueLimit : 1
-		// 		})
-
-		// 		// FILTERS
-		//         $scope.photoUploader.filters.push(uploader.filter);
-		//         $scope.photoUploader.filters.push(uploader.sizeFilter);
-		        
-		// 		$scope.photoUploader.onWhenAddingFileFailed = uploader.error;
-		// 		$scope.photoUploader.onAfterAddingFile  = function(){
-		// 			$scope.fileError = false;
-		// 			if($scope.photoUploader.queue.length)
-		// 			{	
-		// 				$scope.photoUploader.uploadAll()
-		// 			}
-		// 		};
-
-		// 		$scope.photoUploader.onCompleteItem  = function(data, response){
-		// 			if($scope.user.avatar_path)
-		// 			{
-		// 				$scope.currentTime = Date.now();
-		// 				$scope.photoUploader.queue = [];
-		// 			}
-		// 			else{
-		// 				$state.go($state.current, {}, {reload:true});
-		// 			}
-		// 		}
-
-		// 		var pusher = new Pusher('ade8d83d4ed5455e3e18', {
-		// 	      	encrypted: true,
-		// 	      	auth: {
-		// 			    headers: {
-		// 			      'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-		// 			    }
-		// 		  	}
-		// 	    });
-
-		// 		var channel = {};
-
-		// 		channel.user = pusher.subscribe('private-App.User.' + $scope.user.id);
-
-		// 		channel.user.bindings = [
-		// 		 	channel.user.bind('Illuminate\\Notifications\\Events\\BroadcastNotificationCreated', function(data) {
-		// 		 		// formating the notification
-		// 		 		data.created_at = data.attachment.created_at;
-
-		// 		 		data.data = {};
-		// 		 		data.data.attachment = data.attachment;
-		// 		 		data.data.url = data.url;
-		// 		 		data.data.withParams = data.withParams;
-		// 		 		data.data.sender = data.sender;
-		// 		 		data.data.message = data.message;
-
-		// 		 		// pushes the new notification in the unread_notifications array
-		// 		 		$scope.$apply(function(){
-		// 			    	$scope.user.unread_notifications.unshift(data);
-		// 		 		});
-
-		// 		 		// notify the user with a toast message
-		// 		 		Helper.notify(data.sender.name + ' ' + data.message);
-
-		// 		 		if($state.current.name == data.data.url)
-		// 				{
-		// 					$state.go($state.current, {}, {reload:true});
-		// 				}
-		// 		    }),
-		// 		];
-		// 	})
-
-		// $scope.markAsRead = function(notification){
-		// 	Helper.post('/user/mark-as-read', notification)
-		// 		.success(function(){
-		// 			var index = $scope.user.unread_notifications.indexOf(notification);
-
-		// 			$scope.user.unread_notifications.splice(index, 1);
-		// 		})
-		// 		.error(function(){
-		// 			Helper.error();
-		// 		});
-		// }
-
-		// $scope.read = function(notification){			
-		// 	$state.go(notification.data.url);
-
-		// 	$scope.markAsRead(notification);
-		// }
 	}]);

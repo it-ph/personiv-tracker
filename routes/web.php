@@ -37,5 +37,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post('change-password', 'UserController@changePassword');
 		Route::post('verify-password', 'UserController@verifyPassword');
 		Route::post('logout', 'UserController@logout');
+		Route::post('upload-avatar/{userID}', 'UserController@uploadAvatar');
+		Route::get('avatar/{userID}', 'UserController@avatar');
+		Route::post('mark-all-as-read', 'UserController@markAllAsRead');
+		Route::post('mark-as-read', 'UserController@markAsRead');
 	});
 });
