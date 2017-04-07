@@ -30,6 +30,7 @@ mix
    		'public/js/vendor/angular.js',
          'public/js/vendor/moment.js',
          'public/js/vendor/highcharts.js',
+         'public/js/vendor/exporting.js',
    		'public/js/vendor/highcharts-ng.js',
    		'public/js/vendor/pusher.js',
    		'public/js/vendor/angular-aria.js',

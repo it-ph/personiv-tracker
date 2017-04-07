@@ -12,9 +12,16 @@ class DepartmentsTableSeeder extends Seeder
     public function run()
     {
         DB::table('departments')->insert([
-        	'name' => 'IT',
-        	'created_at' => Carbon\Carbon::now(),
-        	'updated_at' => Carbon\Carbon::now(),
+            [
+                'name' => 'IT',
+                'created_at' => Carbon\Carbon::now(),
+                'updated_at' => Carbon\Carbon::now(),
+            ],
+            [
+                'name' => 'DexMedia',
+                'created_at' => Carbon\Carbon::now(),
+                'updated_at' => Carbon\Carbon::now(),
+            ]
         ]);
     }
 }

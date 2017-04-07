@@ -1,18 +1,14 @@
 <div layout="row" layout-align="center center" flex>
 	<div layout="column" flex-gt-sm="75" flex-gt-lg="50">
 		<md-card>
-	    	<md-card-title>
-	        	<md-card-title-text>
-	            	<span class="md-headline">Action buttons</span>
-	          	</md-card-title-text>
-	        </md-card-title>
 	        <md-card-content>
 	          <highchart id="chart1" config="vm.config"></highchart>
 	        </md-card-content>
-	        <md-card-actions layout="row" layout-align="end center">
-	          <md-button>Action 1</md-button>
-	          <md-button>Action 2</md-button>
-	        </md-card-actions>
+	    </md-card>
+	    <md-card>
+	        <md-card-content>
+	          <highchart id="chart2" config="vm.config2"></highchart>
+	        </md-card-content>
 	    </md-card>
 	</div>
 </div>

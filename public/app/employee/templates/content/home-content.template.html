@@ -1,0 +1,35 @@
+<div layout="row" layout-align="center center" flex>
+	<div layout="column" flex flex-gt-sm="50" flex-gt-lg="30">
+		<md-card>
+			<md-card-title>
+	          	<md-card-title-text>
+	            	<span class="md-headline">New Task</span>
+	          	</md-card-title-text>
+	        </md-card-title>
+			<md-card-content>
+				<form novalidate>
+					<div layout="row" flex>					
+						<md-input-container class="md-block" flex>
+							<label>Title</label>
+							<input type="text" ng-model="title"/>
+						</md-input-container>
+					</div>
+				</form>
+			</md-card-content>
+			<md-card-actions layout="row" layout-align="end center">
+	        	<md-button>Start</md-button>
+	        </md-card-actions>
+		</md-card>
+		<md-subheader>Completed Tasks</md-subheader>
+		<md-card ng-class="{'md-whiteframe-6dp': hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
+			<md-list layout="row" layout-wrap flex>
+				<md-list-item class="md-2-line">
+					<div class="md-list-item-text">
+						<h3>Task</h3>
+						<h4>Friday April 6, 2017 at 1:00PM to Friday April 6, 2017 at 3:00PM</h4>
+					</div>
+				</md-list-item>
+			</md-list>	
+		</md-card>
+	</div>
+</div>

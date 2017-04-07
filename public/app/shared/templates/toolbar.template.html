@@ -116,6 +116,11 @@
 		            </md-menu-item>
 		        </md-menu-content>
 			</md-menu>
+			<!-- Settings -->
+			<md-button class="md-icon-button" ng-if="mainVm.user.user.roles.length || mainVm.user.user.super_user">
+				<md-icon class="mdi mdi-settings grey"></md-icon>
+				<md-tooltip>Settings</md-tooltip>
+			</md-button>
 			<!-- Account -->
             <input id="upload" type="file" nv-file-select uploader="mainVm.user.photoUploader" style="display: none;" ng-if="mainVm.user.showUploader">
 			<md-menu md-position-mode="target-right target">

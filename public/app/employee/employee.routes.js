@@ -1,4 +1,3 @@
-var employee = angular.module('app', ['shared']);
 employee
 	.config(['$stateProvider', function($stateProvider){
 		$stateProvider

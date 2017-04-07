@@ -11,7 +11,7 @@ admin
 		vm.toolbar.hideSearchIcon = true; //bool - true if deeper search icon should be hidden
 		vm.toolbar.searchAll = false; // bool - true if a deeper search can be executed
 
-		vm.toolbar.options = true; //bool - true if a menu button is needed in the view
+		vm.toolbar.options = false; //bool - true if a menu button is needed in the view
 		vm.toolbar.showInactive = false; //bool - true if user wants to view deleted records
 
 		// Sort options
