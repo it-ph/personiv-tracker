@@ -7,7 +7,7 @@ shared
 		 * @params: title, message
 		 */
 		factory.alert = function(data){
-			$mdDialog.show(
+			return $mdDialog.show(
 				$mdDialog.alert()
 			        .parent(angular.element($('body')))
 			        .clickOutsideToClose(true)
@@ -24,12 +24,14 @@ shared
 		 * @params: controller, templateUrl, fullscreen
 		 */
 		factory.customDialog = function(data){
-			$mdDialog.show({
+			var dialog = {
 		      	controller: data.controller,
 		      	templateUrl: data.templateUrl,
 		      	parent: angular.element(document.body),
 		      	fullscreen: data.fullscreen,
-		    });
+		    }
+
+			return $mdDialog.show(dialog);
 		}
 
 		/*
@@ -95,14 +97,14 @@ shared
 		 * Cancels a dialog.
 		 */
 		factory.cancel = function(){
-			$mdDialog.cancel();
+			return $mdDialog.cancel();
 		}
 
 		/*
 		 * Hides a dialog and can return a value.
 		 */
 		factory.hide = function(data){
-			$mdDialog.hide(data);
+			return $mdDialog.hide(data);
 		}
 
 		/*
@@ -111,10 +113,10 @@ shared
 		factory.error = function(){
 			var dialog = {
 				'title': 'Oops! Something went wrong!',
-				'content': 'An error occured. Please try again later.',
+				'message': 'An error occured. Please try again later.',
 			}
 
-			factory.alert(dialog);
+			return factory.alert(dialog);
 		}
 
 		/*
@@ -127,7 +129,7 @@ shared
 				'ok': 'Try Again'
 			}
 
-			factory.confirm(dialog);
+			return factory.confirm(dialog);
 		}
 
 		return factory;

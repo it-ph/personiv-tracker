@@ -66,6 +66,27 @@ shared
 		return factory;
 	}]);
 shared
+	.factory('formService', function(){
+		var factory = {}
+
+		/**
+		 * Checks the form for invalid fields and set the form as touched.
+		*/
+		factory.validate = function(form){
+			if(form.$invalid){
+				angular.forEach(form.$error, function(field){
+					angular.forEach(field, function(errorField){
+						errorField.$setTouched();
+					});
+				});
+
+				return true;
+			}
+		}
+
+		return factory;
+	});
+shared
 	.factory('MaterialDesign', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
 		var factory = {}
 		/*
@@ -74,7 +95,7 @@ shared
 		 * @params: title, message
 		 */
 		factory.alert = function(data){
-			$mdDialog.show(
+			return $mdDialog.show(
 				$mdDialog.alert()
 			        .parent(angular.element($('body')))
 			        .clickOutsideToClose(true)
@@ -91,12 +112,14 @@ shared
 		 * @params: controller, templateUrl, fullscreen
 		 */
 		factory.customDialog = function(data){
-			$mdDialog.show({
+			var dialog = {
 		      	controller: data.controller,
 		      	templateUrl: data.templateUrl,
 		      	parent: angular.element(document.body),
 		      	fullscreen: data.fullscreen,
-		    });
+		    }
+
+			return $mdDialog.show(dialog);
 		}
 
 		/*
@@ -162,14 +185,14 @@ shared
 		 * Cancels a dialog.
 		 */
 		factory.cancel = function(){
-			$mdDialog.cancel();
+			return $mdDialog.cancel();
 		}
 
 		/*
 		 * Hides a dialog and can return a value.
 		 */
 		factory.hide = function(data){
-			$mdDialog.hide(data);
+			return $mdDialog.hide(data);
 		}
 
 		/*
@@ -178,10 +201,10 @@ shared
 		factory.error = function(){
 			var dialog = {
 				'title': 'Oops! Something went wrong!',
-				'content': 'An error occured. Please try again later.',
+				'message': 'An error occured. Please try again later.',
 			}
 
-			factory.alert(dialog);
+			return factory.alert(dialog);
 		}
 
 		/*
@@ -194,7 +217,29 @@ shared
 				'ok': 'Try Again'
 			}
 
-			factory.confirm(dialog);
+			return factory.confirm(dialog);
+		}
+
+		return factory;
+	}]);
+shared
+	.factory('Task', ['$http', 'MaterialDesign', function($http, MaterialDesign){
+		var factory = {}
+
+		factory.current = {}
+
+		factory.search = function(data){
+			factory.query.search = data;
+
+			factory.init();
+		}
+
+		factory.enlist = function(query){
+			return $http.post('/task/enlist', query);
+		}
+
+		factory.init = function(){
+
 		}
 
 		return factory;
@@ -478,6 +523,8 @@ shared
 						errorField.$setTouched();
 					});
 				});
+
+				return;
 			}
 
 			/**

@@ -3,10 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Task;
+use App\Traits\Enlist;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
+    use Enlist;
+
+    /**
+     * Display a listing of the resource with parameters.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function enlist(Request $request)
+    {
+        $this->model = Task::query();
+
+        $this->populateRequest($request);
+
+        if($request->first)
+        {
+            return $this->model->first();        
+        }
+
+        if($request->paginate)
+        {
+            return $this->model->paginate($request->paginate);
+        }
+
+        return $this->model->get();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -35,7 +62,18 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->validate($request, [
+            'title' => 'required'
+        ]);
+
+        $task = new Task;
+
+        $task->title = $request->title;
+        $task->user_id = $request->user()->id;
+
+        $task->save();
+
+        return $task;
     }
 
     /**

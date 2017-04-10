@@ -42,4 +42,8 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post('mark-all-as-read', 'UserController@markAllAsRead');
 		Route::post('mark-as-read', 'UserController@markAsRead');
 	});
+
+	Route::group(['prefix' => 'task'], function(){
+		Route::post('enlist', 'TaskController@enlist');
+	});
 });

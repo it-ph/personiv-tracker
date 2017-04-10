@@ -1,0 +1,24 @@
+<md-card>
+	<md-card-title>
+      	<md-card-title-text>
+        	<span class="md-headline">New Task</span>
+      	</md-card-title-text>
+    </md-card-title>
+	<md-card-content>
+		<form name="vm.form" novalidate>
+			<div layout="row" flex>					
+				<md-input-container class="md-block" flex>
+					<label>Title</label>
+					<input type="text" ng-model="vm.task.new.title" name="Title" required ng-disabled="vm.busy"/>
+					<div ng-messages="vm.form.Title.$error">
+						<div ng-message="required">Title is required.</div>
+					</div>
+				</md-input-container>
+			</div>
+		</form>
+	</md-card-content>
+	<md-card-actions layout="row" layout-align="end center">
+    	<md-button ng-click="vm.submit()" ng-if="!vm.busy">Start</md-button>
+    	<md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="45"></md-progress-circular>
+    </md-card-actions>
+</md-card>

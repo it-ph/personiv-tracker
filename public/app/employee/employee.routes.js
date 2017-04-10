@@ -10,11 +10,15 @@ employee
 					},
 					'content-container@main': {
 						templateUrl: '/app/shared/views/content-container.view.html',
-						// controller: 'dashboardContentContainerController as vm',
+						controller: 'homeContentContainerController as vm',
 					},
 					'toolbar@main': {
 						templateUrl: '/app/shared/templates/toolbar.template.html',
-						// controller: 'dashboardToolbarController as vm',
+						controller: 'homeToolbarController as vm',
+					},
+					'form@main': {
+						templateUrl: '/app/employee/templates/content/task-form.template.html',
+						controller: 'taskFormController as vm',
 					},
 					'content@main':{
 						templateUrl: '/app/employee/templates/content/home-content.template.html',

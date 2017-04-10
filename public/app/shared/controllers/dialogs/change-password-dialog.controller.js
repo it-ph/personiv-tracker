@@ -33,6 +33,8 @@ shared
 						errorField.$setTouched();
 					});
 				});
+
+				return;
 			}
 
 			/**
