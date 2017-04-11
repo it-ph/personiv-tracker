@@ -412,3 +412,7 @@ md-contact-chips {
   	height: 250px;
   	overflow: hidden; 
 }
+
+.primary-border-left {
+	border-left: 3px solid $primary500;
+}

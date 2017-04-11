@@ -1,16 +1,39 @@
-<div layout="row" layout-align="center center" flex>
+<div layout="row" layout-align="center center" flex infinite-scroll='vm.loadNextPage()' infinite-scroll-distance="1" infinite-scroll-disabled="vm.busy" infinite-scroll-parent>
 	<div layout="column" flex flex-gt-sm="50" flex-gt-lg="30">
-		<div ui-view="form"></div>
-		<md-subheader>Completed Tasks</md-subheader>
-		<md-card ng-class="{'md-whiteframe-6dp': hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false">
-			<md-list layout="row" layout-wrap flex>
-				<md-list-item class="md-2-line">
-					<div class="md-list-item-text">
-						<h3>Task</h3>
-						<h4>Friday April 6, 2017 at 1:00PM to Friday April 6, 2017 at 3:00PM</h4>
-					</div>
-				</md-list-item>
-			</md-list>	
+		<div ui-view="form" ng-if="!vm.task.current"></div>
+		<md-card md-theme="dark-purple" ng-class="{'md-whiteframe-6dp': hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-if="vm.task.current">
+			<md-card-title>
+	          	<md-card-title-text>
+	            	<span class="md-headline">{{vm.task.current.title}}</span>
+	            	<span class="md-subhead">Started at: {{vm.task.current.created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ vm.task.current.created_at | date: 'hh:mma'}}</span>
+	          	</md-card-title-text>
+	        </md-card-title>
+			<md-card-actions layout="row" layout-align="end center">
+	          	<md-button ng-click="vm.finish()">Finish</md-button>
+	        </md-card-actions>
 		</md-card>
+		<md-subheader class="md-primary">Completed Tasks</md-subheader>
+		<md-card ng-class="{'md-whiteframe-6dp': hover, 'primary-border-left': hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-if="vm.task.data.length && vm.show" ng-repeat="task in vm.task.data | filter: vm.toolbar.searchText | orderBy:vm.toolbar.sortType:vm.toolbar.sortReverse" layout-fill>
+			<md-card-title>
+	          	<md-card-title-text>
+	            	<span class="md-headline">{{task.title}}</span>
+	            	<span class="md-subhead">From: {{task.created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ task.created_at | date: 'hh:mma'}}</span>
+	            	<span class="md-subhead">To: {{task.ended_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ task.ended_at | date: 'hh:mma'}}</span>
+	          	</md-card-title-text>
+	        </md-card-title>
+	        <md-card-actions ng-show="hover" layout="row" layout-align="end center">
+	          	<md-button>Action</md-button>
+	        </md-card-actions>
+		</md-card>
+	</div>
+</div>
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="vm.isLoading">
+	<div layout="column" flex flex-gt-sm="50" flex-gt-lg="30">
+		<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
+	</div>
+</div>
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="!vm.task.data.length && vm.show">
+	<div layout="column" flex flex-gt-sm="50" flex-gt-lg="30">
+		Nothing to display.
 	</div>
 </div>

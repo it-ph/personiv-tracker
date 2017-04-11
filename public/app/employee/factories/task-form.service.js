@@ -4,8 +4,6 @@ employee
 
 		factory.new = {}
 
-		factory.data = []
-
 		factory.store = function(){
 			return $http.post('/task', factory.new);
 		}
@@ -15,6 +13,7 @@ employee
 		}
 
 		factory.setCurrent = function(data){
+			Task.formatData(data);
 			Task.current = data;
 		}
 

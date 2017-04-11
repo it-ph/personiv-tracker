@@ -21,6 +21,8 @@ employee
 						MaterialDesign.notify('Task created.');
 						
 						vm.task.setCurrent(response.data);
+
+						vm.task.new = {};
 					}, function(){
 						vm.busy = false;
 						MaterialDesign.error();

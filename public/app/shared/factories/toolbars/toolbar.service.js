@@ -33,22 +33,30 @@ shared
 		*/
 		factory.sortBy = function(filter){
 			filter.sortReverse = !filter.sortReverse;			
-			factory.content.sortType = filter.type;
-			factory.content.sortReverse = filter.sortReverse;
+			factory.sortType = filter.type;
+			factory.sortReverse = filter.sortReverse;
 		}
 
 		/**
 		 * Toggles deleted records list
 		*/
 		factory.toggleActive = function(){
-			factory.content.showInactive = !factory.content.showInactive.showInactive;
+			factory.showInactive = !factory.showInactive.showInactive;
 		}
 
 		/**
-		 * Toggles deleted records list
+		 * Deeper search
 		*/
 		factory.searchUserInput = function(data){
-			factory.toolbar.content.search(data);
+			factory.content.search(data);
+		}
+
+		/**
+		 * Clears auto complete items
+		*/
+		factory.clearItems = function()
+		{
+			factory.items = [];
 		}
 
 		return factory;

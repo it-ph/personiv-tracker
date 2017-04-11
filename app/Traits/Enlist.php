@@ -13,19 +13,24 @@ trait Enlist
             $this->relationships($request);
         }
 
-        if($request->has('whereClauses'))
+        if($request->has('where'))
         {
-            $this->whereClauses($request);
+            $this->where($request);
         }
 
-        if($request->has('whereNullClauses'))
+        if($request->has('whereNull'))
         {
-            $this->whereNullClauses($request);
+            $this->whereNull($request);
         }
 
-        if($request->has('whereNotNullClauses'))
+        if($request->has('whereNotNull'))
         {
-            $this->whereNotNullClauses($request);
+            $this->whereNotNull($request);
+        }
+
+        if($request->has('orderBy'))
+        {
+            $this->orderBy($request);
         }
 	}
 
@@ -36,24 +41,31 @@ trait Enlist
 		}
 	}
 
-	public function whereClauses(Request $request)
+	public function where(Request $request)
 	{
-		foreach ($request->whereClauses as $where) {
+		foreach ($request->where as $where) {
 			$this->model->where($where['column'], $where['condition'], $where['value']);
 		}	
 	}
 
-	public function whereNullClauses(Request $request)
+	public function whereNull(Request $request)
 	{
-		foreach ($request->whereNullClauses as $column) {
+		foreach ($request->whereNull as $column) {
 			$this->model->whereNull($column);
 		}	
 	}
 
-	public function whereNotNullClauses(Request $request)
+	public function whereNotNull(Request $request)
 	{
-		foreach ($request->whereNotNullClauses as $column) {
+		foreach ($request->whereNotNull as $column) {
 			$this->model->whereNotNull($column);
+		}	
+	}
+
+	public function orderBy(Request $request)
+	{
+		foreach ($request->orderBy as $orderBy) {
+			$this->model->orderBy($orderBy['column'], $orderBy['order']);
 		}	
 	}
 }

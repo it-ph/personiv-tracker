@@ -18,6 +18,11 @@ shared
 			.accentPalette('amber')
 		
 		/*
+		 * Dark Purple theme.
+		 */
+		$mdThemingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+
+		/*
 		 * Fallback route when a state is not found.
 		 */
 		$urlRouterProvider
@@ -223,10 +228,10 @@ shared
 		return factory;
 	}]);
 shared
-	.factory('Task', ['$http', 'MaterialDesign', function($http, MaterialDesign){
+	.factory('Task', ['$http', 'MaterialDesign', 'toolbarService', function($http, MaterialDesign, toolbarService){
 		var factory = {}
 
-		factory.current = {}
+		factory.data = []
 
 		factory.search = function(data){
 			factory.query.search = data;
@@ -238,8 +243,30 @@ shared
 			return $http.post('/task/enlist', query);
 		}
 
+		factory.paginate = function(query, page){
+			return $http.post('/task/enlist?page=' + page, query);
+		}
+
 		factory.init = function(){
 
+		}
+
+		factory.formatData = function(data){
+			data.created_at = new Date(data.created_at);
+			data.ended_at = data.ended_at ? new Date(data.ended_at) : null; 
+		}
+
+		factory.setToolbarItems = function(data){
+			var entry = {}
+
+			entry.display = data.title;
+			entry.date = new Date(data.created_at).toDateString() + new Date(data.ended_at).toDateString();
+
+			toolbarService.items.push(entry);
+		}
+
+		factory.finish = function(){
+			return $http.post('/task/finish/' + factory.current.id);
 		}
 
 		return factory;
@@ -279,22 +306,30 @@ shared
 		*/
 		factory.sortBy = function(filter){
 			filter.sortReverse = !filter.sortReverse;			
-			factory.content.sortType = filter.type;
-			factory.content.sortReverse = filter.sortReverse;
+			factory.sortType = filter.type;
+			factory.sortReverse = filter.sortReverse;
 		}
 
 		/**
 		 * Toggles deleted records list
 		*/
 		factory.toggleActive = function(){
-			factory.content.showInactive = !factory.content.showInactive.showInactive;
+			factory.showInactive = !factory.showInactive.showInactive;
 		}
 
 		/**
-		 * Toggles deleted records list
+		 * Deeper search
 		*/
 		factory.searchUserInput = function(data){
-			factory.toolbar.content.search(data);
+			factory.content.search(data);
+		}
+
+		/**
+		 * Clears auto complete items
+		*/
+		factory.clearItems = function()
+		{
+			factory.items = [];
 		}
 
 		return factory;

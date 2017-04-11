@@ -45,5 +45,6 @@ Route::group(['middleware' => 'auth'], function(){
 
 	Route::group(['prefix' => 'task'], function(){
 		Route::post('enlist', 'TaskController@enlist');
+		Route::post('finish/{task}', 'TaskController@finish');
 	});
 });

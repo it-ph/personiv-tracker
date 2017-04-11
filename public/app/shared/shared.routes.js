@@ -9,6 +9,11 @@ shared
 			.accentPalette('amber')
 		
 		/*
+		 * Dark Purple theme.
+		 */
+		$mdThemingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+
+		/*
 		 * Fallback route when a state is not found.
 		 */
 		$urlRouterProvider

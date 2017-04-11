@@ -4,11 +4,26 @@ namespace App\Http\Controllers;
 
 use App\Task;
 use App\Traits\Enlist;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     use Enlist;
+
+    /**
+     * Mark task as finished.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function finish(Request $request, Task $task)
+    {
+        $this->authorize('update', $task);
+
+        $task->ended_at = Carbon::now();
+
+        $task->save();
+    }
 
     /**
      * Display a listing of the resource with parameters.
