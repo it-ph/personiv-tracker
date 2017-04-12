@@ -31,6 +31,7 @@ employee
 	.factory('taskFormService', ['$http', 'MaterialDesign', 'Task', function($http, MaterialDesign, Task){
 		var factory = {}
 
+		// object for new task
 		factory.new = {}
 
 		factory.store = function(){
@@ -41,11 +42,13 @@ employee
 			return $http.put('/task/' + factory.data.id, factory.data);
 		}
 
+		// set new stored task as current task pinned at top
 		factory.setCurrent = function(data){
 			Task.formatData(data);
 			Task.current = data;
 		}
 
+		// object for update
 		factory.set = function(data){
 			factory.data = data;
 		}
@@ -63,14 +66,15 @@ employee
 		}
 
 		vm.submit = function(){
-			console.log('ok');
+			// check form fields for errors, returns true if there are errors
 			var formHasError = formService.validate(vm.taskForm);
 
 			if(formHasError)
 			{
 				return;
 			}
-			else{
+			else
+			{
 				vm.busy = true;
 
 				vm.task.update()
@@ -85,7 +89,6 @@ employee
 						MaterialDesign.error();
 					})
 			}
-
 		}
 	}]);
 employee
@@ -95,6 +98,7 @@ employee
 		vm.toolbar = toolbarService;
 		vm.task = Task;
 
+		// submit current task as finished
 		vm.finish = function(){
 			MaterialDesign.preloader();
 
@@ -103,7 +107,7 @@ employee
 					MaterialDesign.hide();
 
 					MaterialDesign.notify('Task completed.');
-
+					// remove the task pinned at top
 					vm.task.current = null;
 
 					vm.task.init();
@@ -112,6 +116,7 @@ employee
 				});
 		}
 
+		// edit a completed task record
 		vm.edit = function(data){
 			var dialog = {
 				templateUrl: '/app/employee/templates/dialogs/edit-task-dialog.template.html',
@@ -126,6 +131,7 @@ employee
 				});
 		}
 
+		// delete a completed task record
 		vm.delete = function(id){
 			var dialog = {
 				'title': 'Delete Task',
@@ -149,6 +155,7 @@ employee
 				})
 		}
 
+		// fetch the current task to be pinned at top
 		vm.currentTask = function(){
 			var query = {
 				relationships: ['user'],
@@ -183,6 +190,7 @@ employee
 			paginate: 20,
 		}
 
+		// fetch completed tasks
 		vm.completedTasks = function(){
 			vm.task.enlist(vm.task.query)
 				.then(function(response){
@@ -192,9 +200,11 @@ employee
 
 					vm.task.data = response.data.data;
 
+					// show the data and stops preloader
 					vm.show = true;
 					vm.isLoading = false;
 
+					// iterate every item to format and push to autocomplete
 					if(vm.task.data.length){
 						angular.forEach(vm.task.data, function(item){
 							vm.task.formatData(item);
@@ -202,13 +212,14 @@ employee
 						});
 					}
 
+					// pagination call
 					vm.loadNextPage = function(){
 						// kills the function if request is busy or pagination reaches last page
 						if(vm.busy || (vm.nextPage > vm.pagination.last_page)){
 							vm.isLoading = false;
 							return;
 						}
-						// sets to true to disable pagination call if still busy.
+						// disable pagination call if previous request is still busy.
 						vm.busy = true;
 						vm.isLoading = true;
 
@@ -218,6 +229,7 @@ employee
 								// sets the next page
 								vm.nextPage++;
 
+								// iterate every item to format and push to autocomplete
 								angular.forEach(response.data.data, function(item){
 									vm.task.formatData(item);
 									vm.task.pushItem(item);
@@ -240,6 +252,7 @@ employee
 		}
 
 		vm.task.init = function(){
+			// shows preloader
 			vm.show = false;
 			vm.isLoading = true;
 
@@ -257,6 +270,7 @@ employee
 		vm.task = taskFormService;
 
 		vm.submit = function(){
+			// check every fields in the form for errors
 			var formHasError = formService.validate(vm.form);
 
 			if(formHasError)
@@ -271,9 +285,9 @@ employee
 						vm.busy = false;
 
 						MaterialDesign.notify('Task created.');
-						
+						// set the new task as current task pinned at top
 						vm.task.setCurrent(response.data);
-
+						// reset the new object
 						vm.task.new = {};
 					}, function(){
 						vm.busy = false;

@@ -17,6 +17,9 @@ shared
 			}
 		}
 
+		/**
+		 * Hides dialog.
+		*/
 		factory.cancel = function(){
 			MaterialDesign.cancel();
 		}

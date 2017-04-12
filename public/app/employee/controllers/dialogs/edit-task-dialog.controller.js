@@ -9,14 +9,15 @@ employee
 		}
 
 		vm.submit = function(){
-			console.log('ok');
+			// check form fields for errors, returns true if there are errors
 			var formHasError = formService.validate(vm.taskForm);
 
 			if(formHasError)
 			{
 				return;
 			}
-			else{
+			else
+			{
 				vm.busy = true;
 
 				vm.task.update()
@@ -31,6 +32,5 @@ employee
 						MaterialDesign.error();
 					})
 			}
-
 		}
 	}]);

@@ -89,6 +89,9 @@ shared
 			}
 		}
 
+		/**
+		 * Hides dialog.
+		*/
 		factory.cancel = function(){
 			MaterialDesign.cancel();
 		}
@@ -235,14 +238,17 @@ shared
 	.factory('Task', ['$http', 'MaterialDesign', 'toolbarService', function($http, MaterialDesign, toolbarService){
 		var factory = {}
 
+		// task paginated data
 		factory.data = []
 
+		// add search property to enlist query
 		factory.search = function(data){
 			factory.query.search = data;
 
 			factory.init();
 		}
 
+		// refresh the enlist and removes search property
 		factory.refresh = function(){
 			factory.query.search = null;
 
@@ -265,15 +271,18 @@ shared
 			return $http.delete('/task/' + id);
 		}
 
+		// format task item
 		factory.formatData = function(data){
 			data.created_at = new Date(data.created_at);
 			data.ended_at = data.ended_at ? new Date(data.ended_at) : null; 
 		}
 
+		// push paginated task to paginated data
 		factory.pushItem = function(data){
 			factory.data.push(data);
 		}
 
+		// add items to toolbar autocomplete search
 		factory.setToolbarItems = function(data){
 			var entry = {}
 
