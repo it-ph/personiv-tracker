@@ -1,5 +1,5 @@
 shared
-	.factory('formService', function(){
+	.factory('formService', ['MaterialDesign', function(MaterialDesign){
 		var factory = {}
 
 		/**
@@ -17,5 +17,9 @@ shared
 			}
 		}
 
+		factory.cancel = function(){
+			MaterialDesign.cancel();
+		}
+
 		return factory;
-	});
+	}]);

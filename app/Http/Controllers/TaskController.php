@@ -18,6 +18,7 @@ class TaskController extends Controller
      */
     public function finish(Request $request, Task $task)
     {
+        // Check if the user owns the task
         $this->authorize('update', $task);
 
         $task->ended_at = Carbon::now();
@@ -35,6 +36,11 @@ class TaskController extends Controller
         $this->model = Task::query();
 
         $this->populateRequest($request);
+
+        if($request->has('search'))
+        {
+            $this->model->where('title', 'like', '%'. $request->search .'%');
+        }
 
         if($request->first)
         {
@@ -122,7 +128,16 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        // Check if the user owns the task
+        $this->authorize('update', $task);
+
+        $this->validate($request, [
+            'title' => 'required',
+        ]);
+
+        $task->title = $request->title;
+
+        $task->save();
     }
 
     /**
@@ -133,6 +148,9 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        // Check if the user owns the task
+        $this->authorize('delete', $task);
+
+        $task->delete();
     }
 }

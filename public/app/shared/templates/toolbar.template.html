@@ -109,8 +109,8 @@
 		              		<div layout="row">
 			                	<span>{{item.label}}</span>
 			                	<span flex></span>
-			                	<md-icon ng-show="!item.sortReverse && sortType == item.type" class="mdi mdi-chevron-down grey"></md-icon>
-								<md-icon ng-show="item.sortReverse && sortType == item.type" class="mdi mdi-chevron-up grey"></md-icon>
+			                	<md-icon ng-show="!item.sortReverse && vm.toolbar.sortType == item.type" class="mdi mdi-chevron-down grey"></md-icon>
+								<md-icon ng-show="item.sortReverse && vm.toolbar.sortType == item.type" class="mdi mdi-chevron-up grey"></md-icon>
 		              		</div>
 		              	</md-button>
 		            </md-menu-item>

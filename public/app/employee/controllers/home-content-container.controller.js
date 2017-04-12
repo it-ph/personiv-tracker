@@ -1,9 +1,63 @@
 employee
-	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', function(MaterialDesign, toolbarService, Task){
+	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', function(MaterialDesign, toolbarService, Task, taskFormService){
 		var vm = this;
 
 		vm.toolbar = toolbarService;
 		vm.task = Task;
+
+		vm.finish = function(){
+			MaterialDesign.preloader();
+
+			vm.task.finish()
+				.then(function(){
+					MaterialDesign.hide();
+
+					MaterialDesign.notify('Task completed.');
+
+					vm.task.current = null;
+
+					vm.task.init();
+				}, function(){
+					MaterialDesign.error();
+				});
+		}
+
+		vm.edit = function(data){
+			var dialog = {
+				templateUrl: '/app/employee/templates/dialogs/edit-task-dialog.template.html',
+				controller: 'editTaskDialogController as vm', 
+			}
+
+			taskFormService.set(data);
+
+			MaterialDesign.customDialog(dialog)
+				.then(function(){
+					vm.task.init();
+				});
+		}
+
+		vm.delete = function(id){
+			var dialog = {
+				'title': 'Delete Task',
+				'message': 'This task will be deleted permanently.',
+				'ok': 'Delete',
+				'cancel': 'Cancel',
+			}
+
+			MaterialDesign.confirm(dialog)
+				.then(function(){
+					MaterialDesign.preloader();
+
+					vm.task.delete(id)
+						.then(function(){
+							MaterialDesign.hide();
+
+							MaterialDesign.notify('Task deleted.');
+
+							vm.task.init();
+						})
+				})
+		}
 
 		vm.currentTask = function(){
 			var query = {
@@ -18,8 +72,6 @@ employee
 					{
 						vm.task.formatData(response.data);
 						vm.task.current = response.data;
-
-						console.log(vm.task.current);
 					}
 				}, function(){
 					MaterialDesign.failed()
@@ -29,20 +81,20 @@ employee
 				})
 		}
 
-		vm.completedTasks = function(){
-			var query = {
-				relationships: ['user'],
-				whereNotNull: ['ended_at'],
-				orderBy: [
-					{
-						'column': 'created_at',
-						'order': 'desc',
-					},
-				],
-				paginate: 20,
-			}
+		vm.task.query = {
+			relationships: ['user'],
+			whereNotNull: ['ended_at'],
+			orderBy: [
+				{
+					'column': 'created_at',
+					'order': 'desc',
+				},
+			],
+			paginate: 20,
+		}
 
-			vm.task.enlist(query)
+		vm.completedTasks = function(){
+			vm.task.enlist(vm.task.query)
 				.then(function(response){
 					vm.nextPage = 2;
 					
@@ -51,6 +103,7 @@ employee
 					vm.task.data = response.data.data;
 
 					vm.show = true;
+					vm.isLoading = false;
 
 					if(vm.task.data.length){
 						angular.forEach(vm.task.data, function(item){
@@ -70,13 +123,16 @@ employee
 						vm.isLoading = true;
 
 						// Calls the next page of pagination.
-						vm.task.paginate(vm.query, vm.nextPage)
+						vm.task.paginate(vm.task.query, vm.nextPage)
 							.then(function(response){
 								// sets the next page
 								vm.nextPage++;
 
-								vm.task.formatData();
-								vm.task.setToolbarItems(vm.task.data);
+								angular.forEach(response.data.data, function(item){
+									vm.task.formatData(item);
+									vm.task.pushItem(item);
+									vm.task.setToolbarItems(item);
+								});
 								
 								// Enables again the pagination call for next call.
 								vm.busy = false;
@@ -93,27 +149,14 @@ employee
 				});
 		}
 
-		vm.finish = function(){
-			MaterialDesign.preloader();
+		vm.task.init = function(){
+			vm.show = false;
+			vm.isLoading = true;
 
-			vm.task.finish()
-				.then(function(){
-					MaterialDesign.hide();
-					MaterialDesign.notify('Task completed.');
-
-					vm.task.current = null;
-
-					vm.init();
-				}, function(){
-					MaterialDesign.error();
-				});
-		}
-
-		vm.init = function(){
 			vm.toolbar.clearItems();
 			vm.currentTask();
 			vm.completedTasks();
 		}
 
-		vm.init();
+		vm.task.init();
 	}]);

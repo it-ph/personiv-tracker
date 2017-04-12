@@ -22,13 +22,20 @@
 	          	</md-card-title-text>
 	        </md-card-title>
 	        <md-card-actions ng-show="hover" layout="row" layout-align="end center">
-	          	<md-button>Action</md-button>
+	          	<md-button class="md-icon-button" ng-click="vm.edit(task)">
+	          		<md-icon class="mdi mdi-pencil grey"></md-icon>
+	          		<md-tooltip>Edit</md-tooltip>
+	          	</md-button>
+	          	<md-button class="md-icon-button">
+	          		<md-icon class="mdi mdi-delete grey" ng-click="vm.delete(task.id)"></md-icon>
+	          		<md-tooltip>Delete</md-tooltip>
+	          	</md-button>
 	        </md-card-actions>
 		</md-card>
 	</div>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="vm.isLoading">
-	<div layout="column" flex flex-gt-sm="50" flex-gt-lg="30">
+	<div layout="column" layout-align="center center" flex flex-gt-sm="50" flex-gt-lg="30">
 		<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
 	</div>
 </div>

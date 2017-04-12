@@ -18,6 +18,7 @@ shared
 			factory.searchBar = false;
 			factory.searchText = '';
 			factory.searchItem = '';
+			factory.refresh();
 		}
 
 		/**
@@ -49,6 +50,13 @@ shared
 		*/
 		factory.searchUserInput = function(data){
 			factory.content.search(data);
+		}
+
+		/**
+		 * Refresh content list and removes search filter
+		*/
+		factory.refresh = function(){
+			factory.content.refresh();
 		}
 
 		/**

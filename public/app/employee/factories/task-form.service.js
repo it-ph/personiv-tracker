@@ -8,13 +8,17 @@ employee
 			return $http.post('/task', factory.new);
 		}
 
-		factory.update = function(data, id){
-			return $http.put('/task/' + id, data);
+		factory.update = function(){
+			return $http.put('/task/' + factory.data.id, factory.data);
 		}
 
 		factory.setCurrent = function(data){
 			Task.formatData(data);
 			Task.current = data;
+		}
+
+		factory.set = function(data){
+			factory.data = data;
 		}
 
 		return factory;
