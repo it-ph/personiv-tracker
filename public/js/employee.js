@@ -131,29 +131,29 @@ employee
 				});
 		}
 
-		// delete a completed task record
-		vm.delete = function(id){
-			var dialog = {
-				'title': 'Delete Task',
-				'message': 'This task will be deleted permanently.',
-				'ok': 'Delete',
-				'cancel': 'Cancel',
-			}
+		// delete a completed task record;
+		// vm.delete = function(id){
+		// 	var dialog = {
+		// 		'title': 'Delete Task',
+		// 		'message': 'This task will be deleted permanently.',
+		// 		'ok': 'Delete',
+		// 		'cancel': 'Cancel',
+		// 	}
 
-			MaterialDesign.confirm(dialog)
-				.then(function(){
-					MaterialDesign.preloader();
+		// 	MaterialDesign.confirm(dialog)
+		// 		.then(function(){
+		// 			MaterialDesign.preloader();
 
-					vm.task.delete(id)
-						.then(function(){
-							MaterialDesign.hide();
+		// 			vm.task.delete(id)
+		// 				.then(function(){
+		// 					MaterialDesign.hide();
 
-							MaterialDesign.notify('Task deleted.');
+		// 					MaterialDesign.notify('Task deleted.');
 
-							vm.task.init();
-						})
-				})
-		}
+		// 					vm.task.init();
+		// 				})
+		// 		})
+		// }
 
 		// fetch the current task to be pinned at top
 		vm.currentTask = function(){
