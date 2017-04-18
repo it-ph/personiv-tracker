@@ -23,6 +23,16 @@ employee
 					'content@main':{
 						templateUrl: '/app/employee/templates/content/home-content.template.html',
 					}
-				}
+				},
+				resolve: {
+					authentication: ['MaterialDesign', 'User', '$state', function(MaterialDesign, User, $state){
+						return User.get()
+							.then(function(data){
+								User.set(data.data);
+							}, function(){
+								$state.go('page-not-found');
+							});
+					}],
+				},
 			})
 	}]);

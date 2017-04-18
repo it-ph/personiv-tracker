@@ -19,6 +19,16 @@ admin
 					'content@main':{
 						templateUrl: '/app/admin/templates/content/dashboard-content.template.html',
 					}
-				}
+				},
+				resolve: {
+					authentication: ['MaterialDesign', 'User', '$state', function(MaterialDesign, User, $state){
+						return User.get()
+							.then(function(data){
+								User.set(data.data);
+							}, function(){
+								$state.go('page-not-found');
+							});
+					}],
+				},
 			})
 	}]);
