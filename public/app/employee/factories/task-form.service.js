@@ -24,5 +24,27 @@ employee
 			factory.data = data;
 		}
 
+		factory.setNumberofPhotos = function(data){
+			factory.numberOfPhotos = data;
+		}
+
+		factory.changeNumberOfPhotos = function(data){
+			if(data.number_of_photos)
+			{
+				factory.setNumberofPhotos(data.number_of_photos);
+
+				data.number_of_photos = null;
+			}
+			else{
+				data.number_of_photos = factory.numberOfPhotos;
+			}
+		}
+
+		factory.init = function(){
+			factory.data = {};
+			factory.new = {};
+			factory.numberOfPhotos = null;
+		}
+
 		return factory;
 	}]);
