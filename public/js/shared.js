@@ -18,9 +18,10 @@ shared
 			.accentPalette('amber')
 		
 		/*
-		 * Dark Purple theme.
+		 * Dark themes.
 		 */
 		$mdThemingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+		$mdThemingProvider.theme('dark-orange').backgroundPalette('orange').dark();
 
 		/*
 		 * Fallback route when a state is not found.
@@ -273,6 +274,10 @@ shared
 
 		factory.paginate = function(query, page){
 			return $http.post('/task/enlist?page=' + page, query);
+		}
+
+		factory.pause = function(){
+			return $http.post('/task/pause/' + factory.current.id);
 		}
 
 		factory.finish = function(){

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Task;
+use App\Pause;
 use App\Traits\Enlist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -10,6 +11,27 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     use Enlist;
+
+    /**
+     * Create a pause record for task.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function pause(Request $request, Task $task)
+    {
+        // Check if the user owns the task
+        $this->authorize('update', $task);
+
+        $pause = new Pause;
+
+        $task->pauses()->save($pause);
+
+        $task->load(['pauses' => function($query){
+            $query->whereNull('minutes_spent')->orderBy('created_at', 'desc');
+        }]);
+
+        return $task;
+    }
 
     /**
      * Mark task as finished.

@@ -44,4 +44,12 @@ class Task extends Model
     {
         return $this->belongsTo('App\Account');
     }
+
+    /**
+     * Get the pause records associated with the task.
+     */
+    public function pauses()
+    {
+        return $this->hasMany('App\Pause');
+    }
 }

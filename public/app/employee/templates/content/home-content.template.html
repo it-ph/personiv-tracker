@@ -1,16 +1,28 @@
 <div layout="row" layout-align="center center" flex infinite-scroll='vm.loadNextPage()' infinite-scroll-distance="1" infinite-scroll-disabled="vm.busy" infinite-scroll-parent>
 	<div layout="column" flex flex-gt-sm="50" flex-gt-lg="30">
 		<div ui-view="form" ng-if="!vm.task.current"></div>
-		<md-card md-theme="dark-purple" ng-class="{'md-whiteframe-6dp': hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-if="vm.task.current">
+		<md-card md-theme="{{vm.paused ? 'dark-orange' : dark-purple}}" ng-class="{'md-whiteframe-6dp': hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-if="vm.task.current">
 			<md-card-title>
 	          	<md-card-title-text>
 	            	<span class="md-headline">{{vm.task.current.title}} <span ng-if="vm.task.current.revision">(Revision)</span></span>
 	            	<span class="md-subhead"><span ng-if="vm.task.current.account">{{vm.task.current.account.name}}</span> <span ng-if="vm.task.current.number_of_photos">| Number of photos: {{vm.task.current.number_of_photos}}</span></span>
 	            	<span class="md-subhead">Started at: {{vm.task.current.created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ vm.task.current.created_at | date: 'hh:mma'}}</span>
+	            	<span class="md-subhead">Paused at: {{vm.task.current.pauses[0].created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ vm.task.current.pauses[0].created_at | date: 'hh:mma'}}</span>
 	          	</md-card-title-text>
 	        </md-card-title>
 			<md-card-actions layout="row" layout-align="end center">
-	          	<md-button ng-click="vm.finish()">Finish</md-button>
+	          	<md-button ng-click="vm.pause()" ng-if="!vm.paused">
+	          		<md-icon class="mdi mdi-pause"></md-icon> 
+	          		<span>Pause</span>
+	          	</md-button>
+	          	<md-button ng-click="vm.resume()" ng-if="vm.paused">
+					<md-icon class="mdi mdi-play"></md-icon>
+					<span>Resume</span>
+	          	</md-button>
+	          	<md-button ng-click="vm.finish()" ng-if="!vm.paused">
+	          		<md-icon class="mdi mdi-flag"></md-icon>
+	          		<span>Finish</span>
+	          	</md-button>
 	        </md-card-actions>
 		</md-card>
 		<md-subheader class="md-primary">Completed Tasks</md-subheader>

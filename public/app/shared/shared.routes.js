@@ -9,9 +9,10 @@ shared
 			.accentPalette('amber')
 		
 		/*
-		 * Dark Purple theme.
+		 * Dark themes.
 		 */
 		$mdThemingProvider.theme('dark-purple').backgroundPalette('deep-purple').dark();
+		$mdThemingProvider.theme('dark-orange').backgroundPalette('orange').dark();
 
 		/*
 		 * Fallback route when a state is not found.

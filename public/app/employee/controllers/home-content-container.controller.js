@@ -5,6 +5,35 @@ employee
 		vm.toolbar = toolbarService;
 		vm.task = Task;
 
+		vm.setCurrent = function(data){
+			if(data)
+			{
+				vm.task.formatData(data);
+
+				if(data.pauses.length)
+				{
+					vm.paused = true;
+
+					angular.forEach(data.pauses, function(item){
+						vm.task.formatData(item);
+					});
+				}
+
+				vm.task.current = data;
+			}
+		}
+
+		vm.pause = function(){
+			vm.task.pause()
+				.then(function(response){
+					vm.paused = true;
+
+					vm.setCurrent(response.data);
+				}, function(){
+					MaterialDesign.error();
+				})
+		}		
+
 		// submit current task as finished
 		vm.finish = function(){
 			MaterialDesign.preloader();
@@ -65,18 +94,26 @@ employee
 		// fetch the current task to be pinned at top
 		vm.currentTask = function(){
 			var query = {
-				relationships: ['account',],
+				relationships: ['account'],
+				relationshipsWithConstraints: [
+					{
+						relationship: 'pauses',
+						whereNull: ['ended_at'],
+						orderBy: [
+							{
+								column: 'created_at',
+								order: 'desc',
+							},
+						],
+					}
+				],
 				whereNull: ['ended_at'],
 				first: true,
 			}
 
 			vm.task.enlist(query)
 				.then(function(response){
-					if(response.data)
-					{
-						vm.task.formatData(response.data);
-						vm.task.current = response.data;
-					}
+					vm.setCurrent(response.data);
 				}, function(){
 					MaterialDesign.failed()
 						.then(function(){

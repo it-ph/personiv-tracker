@@ -27,6 +27,10 @@ shared
 			return $http.post('/task/enlist?page=' + page, query);
 		}
 
+		factory.pause = function(){
+			return $http.post('/task/pause/' + factory.current.id);
+		}
+
 		factory.finish = function(){
 			return $http.post('/task/finish/' + factory.current.id);
 		}

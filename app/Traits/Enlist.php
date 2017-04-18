@@ -6,11 +6,18 @@ use Illuminate\Http\Request;
 
 trait Enlist
 {
+	use RelationshipsWithConstraints;
+
 	public function populate(Request $request)
 	{
 		if($request->has('relationships'))
         {
             $this->relationships($request);
+        }
+
+        if($request->has('relationshipsWithConstraints'))
+        {
+        	$this->populateRelationship($request);
         }
 
         if($request->has('where'))
