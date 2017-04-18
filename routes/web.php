@@ -32,6 +32,7 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::resource('user', 'UserController');
 	Route::resource('user-role', 'UserRoleController');
 
+	// User resource
 	Route::group(['prefix' => 'user'], function(){
 		Route::post('check', 'UserController@check');
 		Route::post('change-password', 'UserController@changePassword');
@@ -43,8 +44,14 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post('mark-as-read', 'UserController@markAsRead');
 	});
 
+	// Task resource
 	Route::group(['prefix' => 'task'], function(){
 		Route::post('enlist', 'TaskController@enlist');
 		Route::post('finish/{task}', 'TaskController@finish');
+	});
+
+	// Account resource
+	Route::group(['prefix' => 'account'], function(){
+		Route::post('enlist', 'AccountController@enlist');
 	});
 });

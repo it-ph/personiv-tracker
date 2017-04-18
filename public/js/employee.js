@@ -24,7 +24,17 @@ employee
 					'content@main':{
 						templateUrl: '/app/employee/templates/content/home-content.template.html',
 					}
-				}
+				},
+				resolve: {
+					authentication: ['MaterialDesign', 'User', '$state', function(MaterialDesign, User, $state){
+						return User.get()
+							.then(function(data){
+								User.set(data.data);
+							}, function(){
+								$state.go('page-not-found');
+							});
+					}],
+				},
 			})
 	}]);
 employee
@@ -53,15 +63,74 @@ employee
 			factory.data = data;
 		}
 
+		factory.setNumberofPhotos = function(data){
+			factory.numberOfPhotos = data;
+		}
+
+		factory.changeNumberOfPhotos = function(data){
+			if(data.number_of_photos)
+			{
+				factory.setNumberofPhotos(data.number_of_photos);
+
+				data.number_of_photos = null;
+			}
+			else{
+				data.number_of_photos = factory.numberOfPhotos;
+			}
+		}
+
+		factory.init = function(){
+			factory.data = {};
+			factory.new = {};
+			factory.numberOfPhotos = null;
+		}
+
 		return factory;
 	}]);
 employee
-	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', function(MaterialDesign, taskFormService, formService){
+	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', 'Account', 'User', function(MaterialDesign, taskFormService, formService, Account, User){
 		var vm = this;
 
 		vm.task = taskFormService;
+		vm.account = Account;
+		vm.user = User;
+
+		vm.department = vm.user.user.department.name;
+
+		// determines the user if he can use batch tasks
+		if(vm.department == 'Revolve')
+		{
+			vm.batchable = true;
+		}
+
+		// determines the user if he can use batch tasks
+		if(vm.task.data.number_of_photos)
+		{
+			vm.batch = true;
+		}
+		
+		// fetch the accounts associated with the user
+		vm.accounts = function(){
+			var query = {
+				where: [
+					{
+						column: 'department_id',
+						condition: '=',
+						value: vm.user.user.department_id,
+					}
+				],
+			}
+
+			vm.account.enlist(query)
+				.then(function(data){
+					vm.account.data = data.data;
+				}, function(){
+					Helper.error();
+				});
+		}
 
 		vm.cancel = function(){
+			vm.task.init();
 			formService.cancel();
 		}
 
@@ -84,12 +153,18 @@ employee
 						MaterialDesign.notify('Changes saved.');
 						
 						MaterialDesign.hide();
+
+						vm.task.init();
 					}, function(){
 						vm.busy = false;
 						MaterialDesign.error();
 					})
 			}
 		}
+
+		vm.init = function(){
+			vm.accounts();
+		}();
 	}]);
 employee
 	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', function(MaterialDesign, toolbarService, Task, taskFormService){
@@ -158,7 +233,7 @@ employee
 		// fetch the current task to be pinned at top
 		vm.currentTask = function(){
 			var query = {
-				relationships: ['user'],
+				relationships: ['account',],
 				whereNull: ['ended_at'],
 				first: true,
 			}
@@ -179,7 +254,7 @@ employee
 		}
 
 		vm.task.query = {
-			relationships: ['user'],
+			relationships: ['account'],
 			whereNotNull: ['ended_at'],
 			orderBy: [
 				{
@@ -264,11 +339,47 @@ employee
 		vm.task.init();
 	}]);
 employee
-	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', function(MaterialDesign, taskFormService, formService){
+	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', 'User', 'Account',  function(MaterialDesign, taskFormService, formService, User, Account){
 		var vm = this;
 
 		vm.task = taskFormService;
+		vm.account = Account;
+		vm.user = User;
 
+		vm.department = vm.user.user.department.name;
+
+		vm.task.new.revision = false;
+
+		// determines the user if he can use batch tasks
+		if(vm.department == 'Revolve')
+		{
+			vm.batchable = true;
+		}
+		
+		// fetch the accounts associated with the user
+		vm.accounts = function(){
+			var query = {
+				where: [
+					{
+						column: 'department_id',
+						condition: '=',
+						value: vm.user.user.department_id,
+					}
+				],
+			}
+
+			vm.account.enlist(query)
+				.then(function(data){
+					vm.account.data = data.data;
+				}, function(){
+					Helper.failed()
+						.then(function(){
+							vm.accounts();
+						});
+				});
+		}
+
+		// submit the form
 		vm.submit = function(){
 			// check every fields in the form for errors
 			var formHasError = formService.validate(vm.form);
@@ -287,14 +398,21 @@ employee
 						MaterialDesign.notify('Task created.');
 						// set the new task as current task pinned at top
 						vm.task.setCurrent(response.data);
-						// reset the new object
-						vm.task.new = {};
+						// reset the task object
+						vm.task.init();
 					}, function(){
 						vm.busy = false;
 						MaterialDesign.error();
 					})
 			}
 		}
+
+		/**
+		 * 
+		*/
+		vm.init = function(){
+			vm.accounts();
+		}();
 	}]);
 employee
 	.controller('homeToolbarController', ['MaterialDesign', 'toolbarService', 'Task', function(MaterialDesign, toolbarService, Task){

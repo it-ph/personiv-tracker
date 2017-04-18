@@ -6,7 +6,7 @@ use Illuminate\Http\Request;
 
 trait Enlist
 {
-	public function populateRequest(Request $request)
+	public function populate(Request $request)
 	{
 		if($request->has('relationships'))
         {

@@ -21,10 +21,27 @@ class Task extends Model
     protected $guarded = ['ended_at'];  
 
     /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'revision' => 'boolean',
+    ];
+
+    /**
      * Get the user record associated with the task.
      */
     public function user()
     {
     	return $this->belongsTo('App\Task');
+    }
+
+    /**
+     * Get the account record associated with the task.
+     */
+    public function account()
+    {
+        return $this->belongsTo('App\Account');
     }
 }

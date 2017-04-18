@@ -21,4 +21,12 @@ class Account extends Model
     {
         return $this->hasMany('App\User');
     }
+
+    /**
+     * Get the task records associated with the account.
+     */
+    public function tasks()
+    {
+        return $this->hasMany('App\Task');
+    }
 }

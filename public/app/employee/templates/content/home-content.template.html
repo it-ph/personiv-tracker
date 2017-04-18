@@ -4,7 +4,8 @@
 		<md-card md-theme="dark-purple" ng-class="{'md-whiteframe-6dp': hover}" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-if="vm.task.current">
 			<md-card-title>
 	          	<md-card-title-text>
-	            	<span class="md-headline">{{vm.task.current.title}}</span>
+	            	<span class="md-headline">{{vm.task.current.title}} <span ng-if="vm.task.current.revision">(Revision)</span></span>
+	            	<span class="md-subhead"><span ng-if="vm.task.current.account">{{vm.task.current.account.name}}</span> <span ng-if="vm.task.current.number_of_photos">| Number of photos: {{vm.task.current.number_of_photos}}</span></span>
 	            	<span class="md-subhead">Started at: {{vm.task.current.created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ vm.task.current.created_at | date: 'hh:mma'}}</span>
 	          	</md-card-title-text>
 	        </md-card-title>
@@ -17,6 +18,7 @@
 			<md-card-title>
 	          	<md-card-title-text>
 	            	<span class="md-headline">{{task.title}}</span>
+	            	<span class="md-subhead"><span ng-if="task.account">{{task.account.name}}</span> <span ng-if="task.revision">(Revision)</span> <span ng-if="task.number_of_photos">| Number of photos: {{task.number_of_photos}}</span></span>
 	            	<span class="md-subhead">From: {{task.created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ task.created_at | date: 'hh:mma'}}</span>
 	            	<span class="md-subhead">To: {{task.ended_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ task.ended_at | date: 'hh:mma'}}</span>
 	          	</md-card-title-text>

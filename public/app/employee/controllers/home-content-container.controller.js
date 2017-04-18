@@ -65,7 +65,7 @@ employee
 		// fetch the current task to be pinned at top
 		vm.currentTask = function(){
 			var query = {
-				relationships: ['user'],
+				relationships: ['account',],
 				whereNull: ['ended_at'],
 				first: true,
 			}
@@ -86,7 +86,7 @@ employee
 		}
 
 		vm.task.query = {
-			relationships: ['user'],
+			relationships: ['account'],
 			whereNotNull: ['ended_at'],
 			orderBy: [
 				{

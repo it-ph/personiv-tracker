@@ -35,7 +35,7 @@ class TaskController extends Controller
     {
         $this->model = Task::query();
 
-        $this->populateRequest($request);
+        $this->populate($request);
 
         if($request->has('search'))
         {
@@ -84,15 +84,23 @@ class TaskController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'title' => 'required'
+            'title' => 'required',
         ]);
 
         $task = new Task;
 
         $task->title = $request->title;
+        $task->account_id = $request->account_id;
+        $task->revision = $request->revision;
+        $task->number_of_photos = $request->number_of_photos;
         $task->user_id = $request->user()->id;
 
         $task->save();
+
+        if($task->account_id)
+        {
+            $task->load('account');
+        }
 
         return $task;
     }
@@ -136,6 +144,9 @@ class TaskController extends Controller
         ]);
 
         $task->title = $request->title;
+        $task->account_id = $request->account_id;
+        $task->revision = $request->revision;
+        $task->number_of_photos = $request->number_of_photos;
 
         $task->save();
     }

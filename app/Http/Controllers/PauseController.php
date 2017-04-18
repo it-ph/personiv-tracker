@@ -2,44 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Account;
+use App\Pause;
 use Illuminate\Http\Request;
 
-use App\Traits\Enlist;
-
-use Auth;;
-use Carbon\Carbon;
-use DB;
-use Gate;
-
-class AccountController extends Controller
+class PauseController extends Controller
 {
-    use Enlist;
-
-    /**
-     * Display a listing of the resource with paramters.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function enlist(Request $request)
-    {
-        $this->model = Account::query();
-
-        $this->populate($request);
-
-        if($request->has('first'))
-        {
-            return $this->model->first();
-        }
-
-        if($request->has('paginate'))
-        {
-            return $this->model->paginate($request->paginate);
-        }
-
-        return $this->model->get();
-    }
-
     /**
      * Display a listing of the resource.
      *
@@ -47,7 +14,7 @@ class AccountController extends Controller
      */
     public function index()
     {
-        
+        //
     }
 
     /**
@@ -74,10 +41,10 @@ class AccountController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Account  $account
+     * @param  \App\Pause  $pause
      * @return \Illuminate\Http\Response
      */
-    public function show(Account $account)
+    public function show(Pause $pause)
     {
         //
     }
@@ -85,10 +52,10 @@ class AccountController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Account  $account
+     * @param  \App\Pause  $pause
      * @return \Illuminate\Http\Response
      */
-    public function edit(Account $account)
+    public function edit(Pause $pause)
     {
         //
     }
@@ -97,10 +64,10 @@ class AccountController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Account  $account
+     * @param  \App\Pause  $pause
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Account $account)
+    public function update(Request $request, Pause $pause)
     {
         //
     }
@@ -108,10 +75,10 @@ class AccountController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Account  $account
+     * @param  \App\Pause  $pause
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Account $account)
+    public function destroy(Pause $pause)
     {
         //
     }

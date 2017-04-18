@@ -21,6 +21,35 @@
                     </div>
                 </md-input-container>
             </div>
+            <div layout="row" flex ng-if="vm.account.data.length">                  
+                <!-- Project/Account -->
+                <md-input-container class="md-block" flex>
+                    <label>Project</label>
+                    <md-select name="Account" ng-model="vm.task.data.account_id" ng-disabled="vm.busy" ng-required="vm.account.data.length">
+                        <md-option ng-repeat="account in vm.account.data" value="{{account.id}}">{{ account.name }}</md-option>                 
+                    </md-select>
+                    <div ng-messages="vm.taskForm.Account.$error">
+                        <div ng-message="required">Project is required.</div>
+                    </div>
+                </md-input-container>
+            </div>
+            <div layout="row" flex>
+                <!-- Revision -->
+                <md-switch class="md-primary" ng-model="vm.task.data.revision" flex>Revision</md-switch>
+                <!-- Batch -->
+                <md-switch class="md-primary" ng-model="vm.batch" flex ng-change="vm.task.changeNumberOfPhotos(vm.task.data)" ng-if="vm.batchable">Batch</md-switch>
+            </div>
+            <div layout="row" flex ng-if="vm.batch">
+                <!-- Number of photos -->
+                <md-input-container class="md-block" flex>
+                    <label>Number of photos</label>
+                    <input type="number" name="Number" ng-model="vm.task.data.number_of_photos" required min="2">
+                    <div ng-messages="vm.taskForm.Number.$error">
+                        <div ng-message="required">Number of photos is required.</div>
+                        <div ng-message="min">Number of photos cannot be less than 2.</div>
+                    </div>
+                </md-input-container>
+            </div>
         </md-dialog-content>
     </form>
     <div layout="row" layout-align="end center">        
