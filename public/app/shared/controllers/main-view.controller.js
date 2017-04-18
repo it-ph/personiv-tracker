@@ -4,25 +4,6 @@ shared
 
 		vm.user = User;
 
-		/**
-		 * Get the record of the authenticated user.
-		 */
-		vm.getUser = function(){
-			vm.user.get()
-				.then(function(data){
-					vm.user.set(data.data);
-					// Initialize the websocket connection
-					vm.user.pusher();
-					// Initialize the file uploader for avatar
-					vm.user.photoUploaderInit();
-				}, function(){
-					MaterialDesign.failed()
-						.then(function(){
-							vm.getUser();
-						})
-				});
-		}
-
 		/*
 		 * Ends the session of the authenticated user.
 		 */
@@ -67,6 +48,7 @@ shared
 		 * Initialize
 		*/
 		var init = function(){
-			vm.getUser();
+			vm.user.pusher();
+			vm.user.photoUploaderInit();
 		}();
 	}]);
