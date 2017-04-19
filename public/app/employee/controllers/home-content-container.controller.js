@@ -29,6 +29,21 @@ employee
 					vm.paused = true;
 
 					vm.setCurrent(response.data);
+
+					MaterialDesign.notify('Paused');
+				}, function(){
+					MaterialDesign.error();
+				})
+		}
+
+		vm.resume = function(){
+			vm.task.resume()
+				.then(function(response){
+					vm.paused = false;
+
+					vm.setCurrent(response.data);
+					
+					MaterialDesign.notify('Resumed');
 				}, function(){
 					MaterialDesign.error();
 				})
@@ -47,6 +62,8 @@ employee
 					vm.task.current = null;
 
 					vm.task.init();
+
+					vm.paused = false;
 				}, function(){
 					MaterialDesign.error();
 				});

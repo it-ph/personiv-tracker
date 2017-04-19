@@ -16,7 +16,7 @@ class CreatePausesTable extends Migration
         Schema::create('pauses', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('task_id')->unsigned();
-            $table->integer('minutes_spent')->unsigned()->nullable();
+            $table->float('minutes_spent')->unsigned()->nullable();
             $table->timestamp('ended_at')->nullable();
             $table->timestamps();
         });

@@ -31,8 +31,12 @@ shared
 			return $http.post('/task/pause/' + factory.current.id);
 		}
 
+		factory.resume = function(){
+			return $http.post('/task/resume/' + factory.current.id, factory.current.pauses[0]);
+		}
+
 		factory.finish = function(){
-			return $http.post('/task/finish/' + factory.current.id);
+			return $http.post('/task/finish/' + factory.current.id, factory.current.pauses.length ? factory.current.pauses[0] : null);
 		}
 
 		factory.delete = function(id){

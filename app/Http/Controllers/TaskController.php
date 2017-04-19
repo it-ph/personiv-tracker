@@ -8,27 +8,48 @@ use App\Traits\Enlist;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 
+use DB;
+
 class TaskController extends Controller
 {
     use Enlist;
+
+    /**
+     * Resume a pause record of task.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function resume(Request $request, Task $task)
+    {
+        // Check if the user owns the task
+        $this->authorize('update', $task);
+
+        DB::transaction(function() use($request, $task){
+            $pause = Pause::findOrFail($request->id);
+
+            $pause->resume();
+
+            $task->loadUnfinishedPauses();
+        });
+
+        return $task;
+    }
 
     /**
      * Create a pause record for task.
      *
      * @return \Illuminate\Http\Response
      */
-    public function pause(Request $request, Task $task)
+    public function pause(Task $task)
     {
         // Check if the user owns the task
         $this->authorize('update', $task);
 
-        $pause = new Pause;
+        DB::transaction(function() use($task){
+            $task->pauses()->save(new Pause);
 
-        $task->pauses()->save($pause);
-
-        $task->load(['pauses' => function($query){
-            $query->whereNull('minutes_spent')->orderBy('created_at', 'desc');
-        }]);
+            $task->loadUnfinishedPauses();
+        });
 
         return $task;
     }
@@ -43,9 +64,20 @@ class TaskController extends Controller
         // Check if the user owns the task
         $this->authorize('update', $task);
 
-        $task->ended_at = Carbon::now();
+        DB::transaction(function() use($request, $task){        
+            if($request->has('id'))
+            {
+                $pause = Pause::findOrFail($request->id);
 
-        $task->save();
+                $pause->resume();
+            }
+
+            $task->ended_at = Carbon::now();
+
+            $task->timeSpent();
+
+            $task->save();
+        });
     }
 
     /**
@@ -111,17 +143,15 @@ class TaskController extends Controller
 
         $task = new Task;
 
-        $task->title = $request->title;
-        $task->account_id = $request->account_id;
-        $task->revision = $request->revision;
-        $task->number_of_photos = $request->number_of_photos;
+        $task->populate($request);
+
         $task->user_id = $request->user()->id;
 
         $task->save();
 
         if($task->account_id)
         {
-            $task->load('account');
+            $task->load('account', 'pauses');
         }
 
         return $task;
@@ -165,10 +195,7 @@ class TaskController extends Controller
             'title' => 'required',
         ]);
 
-        $task->title = $request->title;
-        $task->account_id = $request->account_id;
-        $task->revision = $request->revision;
-        $task->number_of_photos = $request->number_of_photos;
+        $task->populate($request);
 
         $task->save();
     }
@@ -182,8 +209,8 @@ class TaskController extends Controller
     public function destroy(Task $task)
     {
         // Check if the user owns the task
-        $this->authorize('delete', $task);
+        // $this->authorize('delete', $task);
 
-        $task->delete();
+        // $task->delete();
     }
 }

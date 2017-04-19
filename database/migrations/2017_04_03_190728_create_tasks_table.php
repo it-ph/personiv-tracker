@@ -21,7 +21,8 @@ class CreateTasksTable extends Migration
             $table->integer('number_of_photos')->nullable();
             $table->integer('user_id')->unsigned();
             $table->timestamp('ended_at')->nullable();
-            $table->integer('minutes_spent')->nullable();
+            $table->float('minutes_spent')->unsigned()->nullable();
+            $table->float('minutes_idle')->unsigned()->nullable();
             $table->timestamps();
         });
     }

@@ -53,6 +53,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the subordinates record associated with the user.
+     */
+    public function subordinates()
+    {
+        return $this->hasMany('App\User', 'immediate_supervisor_id');
+    }
+
+    /**
      * Get the department record associated with the user.
      */
     public function department()
