@@ -86,6 +86,11 @@ class UserController extends Controller
         Auth::logout();
     }
 
+    public function checkDefaultPassword(Request $request)
+    {
+        return response()->json(Hash::check('!welcome10', $request->user()->password));
+    }
+
     /**
      * Changes the password of the authenticated user.
      *

@@ -117,7 +117,7 @@
 		        </md-menu-content>
 			</md-menu>
 			<!-- Settings -->
-			<md-button class="md-icon-button" ng-if="mainVm.user.user.roles.length || mainVm.user.user.super_user">
+			<md-button class="md-icon-button" ng-if="mainVm.user.user.roles.length || mainVm.user.user.super_user" ng-click="vm.toolbar.settings()">
 				<md-icon class="mdi mdi-settings grey"></md-icon>
 				<md-tooltip>Settings</md-tooltip>
 			</md-button>

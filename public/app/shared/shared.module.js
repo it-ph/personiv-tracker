@@ -5,5 +5,6 @@ var shared = angular.module('shared', [
 	'infinite-scroll',
 	'highcharts-ng',
 	'angularMoment',
-	'angularFileUpload'
+	'angularFileUpload',
+	'ui.bootstrap',
 ]);

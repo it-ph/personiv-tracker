@@ -62,7 +62,8 @@ shared
 						/**
 						 * Closes the dialog.
 						 */
-						vm.service.cancel();
+						vm.service.init();
+						MaterialDesign.hide();
 
 						/**
 						 * Notify the user for success.

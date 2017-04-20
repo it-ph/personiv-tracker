@@ -5,7 +5,8 @@ var shared = angular.module('shared', [
 	'infinite-scroll',
 	'highcharts-ng',
 	'angularMoment',
-	'angularFileUpload'
+	'angularFileUpload',
+	'ui.bootstrap',
 ]);
 shared
 	.config(['$urlRouterProvider', '$stateProvider', '$mdThemingProvider', '$qProvider', function($urlRouterProvider, $stateProvider, $mdThemingProvider, $qProvider){
@@ -248,6 +249,61 @@ shared
 		return factory;
 	}]);
 shared
+	.factory('ShiftSchedule', ['$http', 'MaterialDesign', function($http, MaterialDesign){
+		var factory = {}
+
+		factory.index = function(){
+			return $http.get('/shift-schedule');
+		}
+
+		factory.store = function(){
+			return $http.post('/shift-schedule', factory.data);
+		}
+
+		factory.update = function(){
+			return $http.put('/shift-schedule/' + factory.data.id, factory.data);
+		}
+
+		factory.toLocaleTimeString = function(){
+			factory.data.from = factory.data.from.toLocaleTimeString();
+			factory.data.to = factory.data.to.toLocaleTimeString();
+		}
+
+		factory.toDateObject = function(){
+			var today = new Date();
+
+			factory.data.from = new Date(today.toDateString() + ' ' + factory.data.from);
+			factory.data.to = new Date(today.toDateString() + ' ' + factory.data.to);
+		}
+
+		factory.formatTime = function(time){
+			if(time.getMinutes() < 30)
+			{
+				time.setMinutes(30);
+			}
+			else if(time.getMinutes() > 30)
+			{
+				time.setHours(time.getHours() + 1);
+				time.setMinutes(0);
+			}
+			
+			time.setSeconds(0);
+
+			return time;
+		}
+
+		factory.init = function(){
+			var now = new Date();
+
+			factory.data = {};
+			
+			factory.data.from = factory.formatTime(now);
+			factory.data.to = factory.formatTime(now);
+		}
+
+		return factory;
+	}]);
+shared
 	.factory('Task', ['$http', 'MaterialDesign', 'toolbarService', function($http, MaterialDesign, toolbarService){
 		var factory = {}
 
@@ -384,6 +440,15 @@ shared
 			factory.items = [];
 		}
 
+		factory.settings = function(){
+			var dialog = {
+				templateUrl: '/app/admin/templates/dialogs/settings-dialog.template.html',
+				controller: 'settingsDialogController as vm',
+			}
+
+			MaterialDesign.customDialog(dialog);
+		}
+
 		return factory;
 	}]);
 shared
@@ -501,6 +566,10 @@ shared
 		 */
 		factory.logout = function(){
 			return $http.post('/user/logout');
+		}
+
+		factory.checkDefaultPassword = function(){
+			return $http.post('/user/check-default-password');
 		}
 
 		/*
@@ -639,7 +708,8 @@ shared
 						/**
 						 * Closes the dialog.
 						 */
-						vm.service.cancel();
+						vm.service.init();
+						MaterialDesign.hide();
 
 						/**
 						 * Notify the user for success.
@@ -697,11 +767,45 @@ shared
 				});
 		}
 
+		vm.forceChangePassword = function(){
+			var dialog = {
+				title: 'Change Password',
+				message: 'Please change your default password.',
+				ok: 'Got it!',
+			}
+
+			MaterialDesign.confirm(dialog)
+				.then(function(){
+					vm.user.changePassword()
+						.then(function(){
+							console.log('done')
+							MaterialDesign.hide();
+						}, function(){
+							vm.forceChangePassword();
+						});
+				}, function(){
+					vm.logout();
+				});
+		}
+
 		/**
 		 * Initialize
 		*/
 		var init = function(){
-			vm.user.pusher();
+			vm.user.checkDefaultPassword()
+				.then(function(response){
+					if(response.data)
+					{
+						vm.forceChangePassword();
+						// vm.user.changePassword()
+						// 	.then(function(){
+
+						// 	}, function(){
+
+						// 	})
+					}
+				})
+			// vm.user.pusher();
 			vm.user.photoUploaderInit();
 		}();
 	}]);

@@ -67,5 +67,14 @@ shared
 			factory.items = [];
 		}
 
+		factory.settings = function(){
+			var dialog = {
+				templateUrl: '/app/admin/templates/dialogs/settings-dialog.template.html',
+				controller: 'settingsDialogController as vm',
+			}
+
+			MaterialDesign.customDialog(dialog);
+		}
+
 		return factory;
 	}]);

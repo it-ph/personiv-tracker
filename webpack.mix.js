@@ -21,7 +21,8 @@ mix
          'public/css/vendor/highcharts.css',
    		'public/css/vendor/highcharts-ng.css',
    		'public/css/vendor/angular-material.css',
-   		'public/css/vendor/materialdesignicons.css'
+         'public/css/vendor/materialdesignicons.css',
+   		'public/css/vendor/ui-bootstrap-csp.css',
    	], 'public/css/vendor.css')
 
    	// Vendor Scripts
@@ -40,7 +41,8 @@ mix
    		'public/js/vendor/angular-messages.js',
    		'public/js/vendor/angular-moment.js',
    		'public/js/vendor/angular-ui-router.js',
-   		'public/js/vendor/ng-infinite-scroll.js',
+         'public/js/vendor/ng-infinite-scroll.js',
+   		'public/js/vendor/ui-bootstrap-tpls.js',
    	], 'public/js/vendor.js')
 
    .sass('resources/assets/sass/app/app.scss', 'public/css/application.css')

@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\ShiftSchedule;
 use Illuminate\Http\Request;
 
+use Auth;
+use Gate;
+use Carbon\Carbon;
+
 class ShiftScheduleController extends Controller
 {
     /**
@@ -14,7 +18,7 @@ class ShiftScheduleController extends Controller
      */
     public function index()
     {
-        //
+        return ShiftSchedule::where('user_id', Auth::user()->id)->orderBy('created_at', 'desc')->first();
     }
 
     /**
@@ -35,7 +39,20 @@ class ShiftScheduleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $this->authorize('create', ShiftSchedule::class);
+
+        $this->validate($request, [
+            'from' => 'required',
+            'to' => 'required',
+        ]);
+
+        $shiftSchedule = new ShiftSchedule;
+
+        $shiftSchedule->user_id = $request->user()->id;
+
+        $shiftSchedule->populate($request);
+
+        $shiftSchedule->save();
     }
 
     /**
@@ -69,7 +86,16 @@ class ShiftScheduleController extends Controller
      */
     public function update(Request $request, ShiftSchedule $shiftSchedule)
     {
-        //
+        $this->authorize($shiftSchedule);
+
+        $this->validate($request, [
+            'from' => 'required',
+            'to' => 'required',
+        ]);
+
+        $shiftSchedule->populate($request);
+
+        $shiftSchedule->save();
     }
 
     /**
