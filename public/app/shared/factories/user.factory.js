@@ -115,6 +115,10 @@ shared
 			return $http.post('/user/logout');
 		}
 
+		factory.checkDefaultPassword = function(){
+			return $http.post('/user/check-default-password');
+		}
+
 		/*
 		 * Opens a form to change password.
 		 */

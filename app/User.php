@@ -75,4 +75,9 @@ class User extends Authenticatable
     {
         return $this->belongsTo('App\Account');
     }
+
+    public function isSuperUser()
+    {
+        return $this->super_user ? true : false;
+    }
 }
