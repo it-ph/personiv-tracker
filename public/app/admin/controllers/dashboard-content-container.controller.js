@@ -35,6 +35,10 @@ admin
 		}
 
 		vm.config = {
+			chart: {
+		        type: 'column'
+		    },
+
 			title: {
 		        text: 'DexMedia',
 		    },
@@ -44,39 +48,39 @@ admin
 	        },
 
 		    xAxis: {
-		    	type: 'datetime',
+		    	categories: [
+		            'John Doe',
+		            'Jane Doe',
+		        ],
+		        crosshair: true
 		    },
 
 		    yAxis: {
+		    	min: 0,
 		        title: {
 		            text: 'Number of Compeleted Tasks',
 		        },
 		    },
-
-		    // series: [{
-		    // 	name: 'VAR',
-		    //     data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 29.9, 71.5, 106.4, 129.2, 129.2],
-		    //     pointStart: Date.UTC(2010, 3, 6),
-		    //     pointInterval: 1000 * 60 * 60, // 1hour = 1000 ms * 60 sec * 60 mins
-		    // },
-		    // {
-		    // 	name: 'SSG',
-		    //     data: [129.2, 106.4, 71.5, 29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 29.9, 129.2],
-		    //     pointStart: Date.UTC(2010, 3, 6),
-		    //     pointInterval: 1000 * 60 * 60, // 1hour = 1000 ms * 60 sec * 60 mins
-		    // }],
+		    plotOptions: {
+		        column: {
+		            dataLabels: {
+		                enabled: true
+		            },
+		            enableMouseTracking: true
+		        }
+		    },
 
 		    series: [{
-		    	name: 'John Doe',
-		        data: [29.9, 71.5, 106.4, 129.2, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 144.0, 176.0, 135.6, 148.5, 216.4, 194.1, 95.6, 54.4, 29.9, 71.5, 106.4, 129.2, 129.2],
-		        pointStart: Date.UTC(2010, 3, 6),
-		        pointInterval: 1000 * 60 * 60, // 1hour = 1000 ms * 60 sec * 60 mins
+		    	name: 'New',
+		        data: [176, 144],
 		    },
 		    {
-		    	name: 'Jane Doe',
-		        data: [144.0, 176.0, 216.4, 71.5, 106.4, 129.2, 29.9, 135.6, 148.5, 54.4, 194.1, 95.6, 54.4,  148.5, 176.0, 135.6, 216.4, 194.1, 144.0, 95.6,  29.9, 71.5, 106.4, 129.2, 129.2],
-		        pointStart: Date.UTC(2010, 3, 6),
-		        pointInterval: 1000 * 60 * 60, // 1hour = 1000 ms * 60 sec * 60 mins
+		    	name: 'Revision',
+		        data: [71, 29],
+		    },
+		    {
+		    	name: 'Hours Spent',
+		        data: [7, 7.3],
 		    }],
 
 			navigation: {

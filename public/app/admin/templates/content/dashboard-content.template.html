@@ -2,7 +2,7 @@
 	<md-card layout="column" flex="50">
         <md-card-content>
           	<highchart id="chart1" config="vm.config"></highchart>
-			<md-tabs md-dynamic-height md-border-bottom>
+			<!-- <md-tabs md-dynamic-height md-border-bottom>
 				<md-tab label="John Doe">
 					<md-list layout="row" layout-wrap>
 						<md-list-item class="md-3-line" flex flex-gt-md="30">
@@ -67,7 +67,30 @@
 						</md-list-item>
 					</md-list>
 				</md-tab>
-			</md-tabs>
+			</md-tabs> -->
+			<table class="table">
+				<tr>
+					<th colspan="4">Project Name</th>
+				</tr>
+				<tr>
+					<th>Name</th>
+					<th>New</th>
+					<th>Revisions</th>
+					<th>Hours Spent</th>
+				</tr>
+				<tr>
+					<td>John Doe</td>
+					<td>176</td>
+					<td>71</td>
+					<td>7</td>
+				</tr>
+				<tr>
+					<td>Jane Doe</td>
+					<td>144</td>
+					<td>29</td>
+					<td>7.3</td>
+				</tr>
+			</table>
         </md-card-content>
     </md-card>
 </div>
