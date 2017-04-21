@@ -70,12 +70,8 @@ admin
 		}
 
 		vm.config = {
-			chart: {
-		        type: 'column'
-		    },
-
 			title: {
-		        text: 'DexMedia',
+		        text: 'DexMedia - ProjectName',
 		    },
 
 	        subtitle: {
@@ -86,36 +82,57 @@ admin
 		    	categories: [
 		            'John Doe',
 		            'Jane Doe',
+		            'Mark Doe',
+		            'Marie Doe',
 		        ],
 		        crosshair: true
 		    },
 
-		    yAxis: {
-		    	min: 0,
-		        title: {
-		            text: 'Number of Compeleted Tasks',
-		        },
-		    },
+		    yAxis: [
+		    	{
+			    	min: 0,
+			        title: {
+			            text: 'Compeleted Tasks',
+			        },
+			    },
+			    {
+			    	min: 0,
+			        title: {
+			            text: 'Hours Worked',
+			        },
+			        labels: {
+				        format: '{value} hrs.',
+				    },
+				    opposite: true
+			    },
+			],
 		    plotOptions: {
 		        column: {
 		            dataLabels: {
 		                enabled: true
 		            },
 		            enableMouseTracking: true
-		        }
+		        },
 		    },
 
 		    series: [{
 		    	name: 'New',
-		        data: [176, 144],
+		    	type: 'column',
+		        data: [176, 144, 50, 80],
 		    },
 		    {
 		    	name: 'Revision',
-		        data: [71, 29],
+		    	type: 'column',
+		        data: [71, 29, 20, 33],
 		    },
 		    {
 		    	name: 'Hours Spent',
-		        data: [7, 7.3],
+		    	type: 'spline',
+		    	yAxis: 1,
+		        data: [7, 7.3, 5, 2.3],
+		        tooltip: {
+		            valueSuffix: ' hrs.'
+		        }
 		    }],
 
 			navigation: {
