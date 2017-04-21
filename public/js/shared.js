@@ -252,6 +252,8 @@ shared
 	.factory('ShiftSchedule', ['$http', 'MaterialDesign', function($http, MaterialDesign){
 		var factory = {}
 
+		factory.data = {}
+
 		factory.index = function(){
 			return $http.get('/shift-schedule');
 		}
@@ -338,6 +340,10 @@ shared
 
 		factory.resume = function(){
 			return $http.post('/task/resume/' + factory.current.id, factory.current.pauses[0]);
+		}
+
+		factory.dashboard = function(query){
+			return $http.post('/task/dashboard', query);
 		}
 
 		factory.finish = function(){

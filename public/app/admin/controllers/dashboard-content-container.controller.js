@@ -1,38 +1,52 @@
 admin
-	.controller('dashboardContentContainerController', ['MaterialDesign','toolbarService', 'Task', 'User', function(MaterialDesign, toolbarService, Task, User){
+	.controller('dashboardContentContainerController', ['MaterialDesign','toolbarService', 'ShiftSchedule', 'Task', 'User', function(MaterialDesign, toolbarService, ShiftSchedule, Task, User){
 		var vm = this;
 
 		vm.toolbar = toolbarService;
 		vm.task = Task;
 		vm.user = User;
+		vm.shiftSchedule = ShiftSchedule;
 
-		var start = new Date();
-		var end = new Date();
+		vm.dashboard = function(){
+			console.log('ok');
+			vm.task.dashboard(vm.shiftSchedule.data)
+				.then(function(response){
+					vm.shiftSchedule.toDateObject();
 
-		start.setHours(0, 0, 0);
-		end.setHours(24, 0 ,0);
-
-		var query = {
-			where: [
-				{
-					column: 'immediate_supervisor_id',
-					condition: '=',
-					value: vm.user.user.id,
-				}
-			],
-			relationshipsWithConstraints: [
-				{
-					relationship: 'tasks',
-					whereBetween : [
-						{
-							column: 'ended_at',
-							start: start.toDateString(),
-							end: end.toDateString(),
-						},
-					]
-				}
-			],
+					console.log(Object.values(response.data));	
+					// data per project then set data to charts 
+				})
 		}
+
+		vm.init = function(){
+			vm.shiftSchedule.index()
+				.then(function(response){
+					if(typeof response.data == 'object')
+					{
+						vm.shiftSchedule.data = response.data;
+
+						vm.shiftSchedule.toDateObject();
+						vm.shiftSchedule.toLocaleTimeString();
+					}
+					else{
+						var today = new Date();
+
+						vm.shiftSchedule.data.from = new Date(today.toDateString() + ' 00:00:00');
+						vm.shiftSchedule.data.to = new Date(today.toDateString() + ' 23:59:59');
+
+						vm.shiftSchedule.toLocaleTimeString();
+					}
+
+					vm.dashboard();
+				}, function(){
+					MaterialDesign.failed()
+						.then(function(){
+							vm.init();
+						});
+				});
+		};
+
+		vm.init();
 
 		vm.config = {
 			title: {

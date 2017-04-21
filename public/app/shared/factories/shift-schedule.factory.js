@@ -2,6 +2,8 @@ shared
 	.factory('ShiftSchedule', ['$http', 'MaterialDesign', function($http, MaterialDesign){
 		var factory = {}
 
+		factory.data = {}
+
 		factory.index = function(){
 			return $http.get('/shift-schedule');
 		}

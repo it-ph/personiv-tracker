@@ -5,14 +5,60 @@ namespace App\Http\Controllers;
 use App\Task;
 use App\Pause;
 use App\Traits\Enlist;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 
+use Carbon\Carbon;
 use DB;
 
 class TaskController extends Controller
 {
     use Enlist;
+
+    public function dashboard(Request $request)
+    {
+        $request->user()->load('subordinates');
+
+        $subordinateIds = $request->user()->subordinates->pluck('id');
+
+        $accounts = \App\Account::where('department_id', $request->user()->department_id)->get();
+
+        foreach ($accounts as $key => $account) {
+            $account->employees = \App\User::whereIn('id', $subordinateIds)->with(['tasks' => function($query) use($request){
+                $query->whereBetween('ended_at', [Carbon::parse($request->from), Carbon::parse($request->to)]);
+            }])->get();
+
+            foreach ($account->employees as $key => $employee) {
+                // $employee->new = 
+            }
+
+            // $account->employees
+
+            // Task::whereIn('user_id', $subordinateIds)->whereBetween('ended_at', [Carbon::parse($request->from), Carbon::parse($request->to)])->get()->groupBy('user_id')->toArray();
+        }
+
+        /*
+            {
+                accounts: [
+                    {
+                        employees : [
+                            {
+                                *details,
+                                new: integer,
+                                revisions: integer,
+                                hours_spent: float,
+                            },
+                        ],
+                    },
+                ],
+            }
+        */
+
+        return $accounts;
+
+        // $collection = collect(['accounts' => $accounts]);
+
+        // return $collection;
+    }
 
     /**
      * Resume a pause record of task.

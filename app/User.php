@@ -61,6 +61,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the tasks record associated with the user.
+     */
+    public function tasks()
+    {
+        return $this->hasMany('App\Task');
+    }
+
+    /**
      * Get the department record associated with the user.
      */
     public function department()
