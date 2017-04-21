@@ -125,7 +125,7 @@ class UserController extends Controller
      */
     public function check(Request $request)
     {
-        $user = User::where('id', $request->user()->id)->with('department', 'account', 'immediateSupervisor', 'roles')->first();
+        $user = User::where('id', $request->user()->id)->with('department', 'immediateSupervisor', 'roles')->first();
 
         $user->unread_notifications = $user->unreadNotifications;
 

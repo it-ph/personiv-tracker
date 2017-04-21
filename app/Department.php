@@ -13,4 +13,12 @@ class Department extends Model
     {
         return $this->hasMany('App\User');
     }
+
+    /**
+     * Get the account records associated with the department.
+     */
+    public function accounts()
+    {
+    	return $this->hasMany('App\Account');
+    }
 }

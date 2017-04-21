@@ -68,14 +68,6 @@ class User extends Authenticatable
         return $this->belongsTo('App\Department');
     }
 
-    /**
-     * Get the department record associated with the user.
-     */
-    public function account()
-    {
-        return $this->belongsTo('App\Account');
-    }
-
     public function isSuperUser()
     {
         return $this->super_user ? true : false;
