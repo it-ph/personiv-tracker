@@ -1,9 +1,10 @@
 employee
-	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', function(MaterialDesign, toolbarService, Task, taskFormService){
+	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', 'User', function(MaterialDesign, toolbarService, Task, taskFormService, User){
 		var vm = this;
 
 		vm.toolbar = toolbarService;
 		vm.task = Task;
+		vm.user = User;
 
 		vm.setCurrent = function(data){
 			if(data)
@@ -116,6 +117,13 @@ employee
 					{
 						relationship: 'pauses',
 						whereNull: ['ended_at'],
+						where: [
+							{
+								column: 'user_id',
+								condition: '=',
+								value: vm.user.user.id,
+							}
+						],
 						orderBy: [
 							{
 								column: 'created_at',
@@ -142,6 +150,13 @@ employee
 		vm.task.query = {
 			relationships: ['account'],
 			whereNotNull: ['ended_at'],
+			where: [
+				{
+					column: 'user_id',
+					condition: '=',
+					value: vm.user.user.id,
+				}
+			],
 			orderBy: [
 				{
 					'column': 'created_at',
