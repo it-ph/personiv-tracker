@@ -3,11 +3,15 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Traits\Support\TaskReports;
 
 use Carbon\Carbon;
 
+
 class Task extends Model
 {
+    use TaskReports;
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -85,23 +89,59 @@ class Task extends Model
         $this->minutesSpent();
     }
 
+    /**
+     * Sum of pauses associated with the task.
+     */
     protected function minutesIdle()
     {
-        // load all the pauses record of the task
         $this->load('pauses');
 
-        $this->minutes_idle = 0;
-
-        foreach ($this->pauses as $pause) {
-            $this->minutes_idle += $pause->minutes_spent; 
-        }
+        $this->minutes_idle = $this->pauses()->sum('minutes_spent');
     }
 
+    /**
+     * Difference of overall time and time idle while doing the task.
+     */
     protected function minutesSpent()
     {
         // Difference in minutes of the time task created and end time.
         $overall = round(Carbon::parse($this->created_at)->diffInSeconds(Carbon::parse($this->ended_at)) / 60, 2);
 
         $this->minutes_spent = $overall - $this->minutes_idle;
+    }
+
+    public function dashboard()
+    {
+        $this->scope();
+
+        // Check the time range
+        if(isset($this->request->user()->shift_schedule))
+        {
+            $from = Carbon::parse($this->request->user()->shift_schedule->from);
+            $to = $from->gte(Carbon::parse($this->request->user()->shift_schedule->to)) ? Carbon::parse($this->request->user()->shift_schedule->to)->addDay() : Carbon::parse($this->request->user()->shift_schedule->to);
+        }
+        else{
+            $from = Carbon::parse('today');
+            $to = Carbon::parse('tomorrow');
+        }
+
+        return $this->dashboardData($this->accounts, $from, $to);
+    }
+
+    public function toExcel()
+    {
+        $this->scope();
+
+        $reports = $this->reportData($this->accounts);
+
+        return $reports;
+
+        Excel::create(request()->user()->department->name . ' report as of ' . Carbon::parse(request()->date_start)->toDayDateTimeString() . ' to ' . Carbon::parse(request()->date_end)->toDayDateTimeString(), function($excel) use($reports){
+            $reports->each(function($account, $key){
+                $excel->sheet($account->name, function($sheet){
+
+                });
+            });
+        });
     }
 }

@@ -1,42 +1,26 @@
 <div layout="row" flex layout-align="center center">
-	<md-card layout="column" flex="50">
-        <md-card-content>
-          	<highchart id="chart1" config="vm.config"></highchart>
-			<table class="table">
-				<tr>
-					<th colspan="4">DexMedia - ProjectName</th>
-				</tr>
-				<tr>
-					<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
-					<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">New</th>
-					<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Revisions</th>
-					<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Hours Spent</th>
-				</tr>
-				<tr>
-					<td>John Doe</td>
-					<td>176</td>
-					<td>71</td>
-					<td>7</td>
-				</tr>
-				<tr>
-					<td>Jane Doe</td>
-					<td>144</td>
-					<td>29</td>
-					<td>7.3</td>
-				</tr>
-				<tr>
-					<td>Mark Doe</td>
-					<td>50</td>
-					<td>20</td>
-					<td>5</td>
-				</tr>
-				<tr>
-					<td>Marie Doe</td>
-					<td>80</td>
-					<td>33</td>
-					<td>2.3</td>
-				</tr>
-			</table>
-        </md-card-content>
-    </md-card>
+	<div layout="column" flex-md="70" flex-gt-md="50" flex>	
+		<md-card ng-repeat="account in vm.task.data">
+	        <md-card-content>
+	          	<highchart id="chart1" config="vm.chart.config(account)"></highchart>
+				<table class="table">
+					<tr>
+						<th colspan="4">{{account.name}}</th>
+					</tr>
+					<tr>
+						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
+						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">New</th>
+						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Revisions</th>
+						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Hours Spent</th>
+					</tr>
+					<tr ng-repeat="employee in account.employees">
+						<td>{{employee.first_name}} {{employee.last_name}}</td>
+						<td>{{employee.new}}</td>
+						<td>{{employee.revisions}}</td>
+						<td>{{employee.hours_spent}}</td>
+					</tr>
+				</table>
+	        </md-card-content>
+	    </md-card>
+	</div>
 </div>

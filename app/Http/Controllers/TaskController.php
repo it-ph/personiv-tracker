@@ -14,50 +14,23 @@ class TaskController extends Controller
 {
     use Enlist;
 
+    public function download(Request $request)
+    {
+        $task = new Task;
+
+        return $task->toExcel();
+    }
+
+    /**
+     * Returns data for dashboard.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function dashboard(Request $request)
     {
-        $request->user()->load('subordinates');
+        $task = new Task;
 
-        $subordinateIds = $request->user()->subordinates->pluck('id');
-
-        $accounts = \App\Account::where('department_id', $request->user()->department_id)->get();
-
-        foreach ($accounts as $key => $account) {
-            $account->employees = \App\User::whereIn('id', $subordinateIds)->with(['tasks' => function($query) use($request){
-                $query->whereBetween('ended_at', [Carbon::parse($request->from), Carbon::parse($request->to)]);
-            }])->get();
-
-            foreach ($account->employees as $key => $employee) {
-                // $employee->new = 
-            }
-
-            // $account->employees
-
-            // Task::whereIn('user_id', $subordinateIds)->whereBetween('ended_at', [Carbon::parse($request->from), Carbon::parse($request->to)])->get()->groupBy('user_id')->toArray();
-        }
-
-        /*
-            {
-                accounts: [
-                    {
-                        employees : [
-                            {
-                                *details,
-                                new: integer,
-                                revisions: integer,
-                                hours_spent: float,
-                            },
-                        ],
-                    },
-                ],
-            }
-        */
-
-        return $accounts;
-
-        // $collection = collect(['accounts' => $accounts]);
-
-        // return $collection;
+        return $task->dashboard();
     }
 
     /**

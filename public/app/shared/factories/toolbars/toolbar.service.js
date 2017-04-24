@@ -76,5 +76,14 @@ shared
 			MaterialDesign.customDialog(dialog);
 		}
 
+		factory.download = function(){
+			var dialog = {
+				templateUrl: '/app/admin/templates/dialogs/download-dialog.template.html',
+				controller: 'downloadDialogController as vm',
+			}
+
+			MaterialDesign.customDialog(dialog);
+		}
+
 		return factory;
 	}]);

@@ -35,8 +35,8 @@ shared
 			return $http.post('/task/resume/' + factory.current.id, factory.current.pauses[0]);
 		}
 
-		factory.dashboard = function(query){
-			return $http.post('/task/dashboard', query);
+		factory.dashboard = function(){
+			return $http.post('/task/dashboard');
 		}
 
 		factory.finish = function(){

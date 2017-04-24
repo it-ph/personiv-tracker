@@ -76,8 +76,21 @@ class User extends Authenticatable
         return $this->belongsTo('App\Department');
     }
 
+    /**
+     * Get the department record associated with the user.
+     */
+    public function shift_schedule()
+    {
+        return $this->hasOne('App\ShiftSchedule');
+    }
+
+
+    /**
+     * Determines the authenticated user is a super user.
+     */
     public function isSuperUser()
     {
         return $this->super_user ? true : false;
     }
+
 }

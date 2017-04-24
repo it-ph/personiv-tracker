@@ -50,6 +50,7 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'task'], function(){
 		Route::post('enlist', 'TaskController@enlist');
 		Route::post('dashboard', 'TaskController@dashboard');
+		Route::post('download', 'TaskController@download');
 		Route::post('finish/{task}', 'TaskController@finish');
 		Route::post('pause/{task}', 'TaskController@pause');
 		Route::post('resume/{task}', 'TaskController@resume');
