@@ -21,7 +21,7 @@
 				<md-input-container class="md-block" flex>
 					<label>Project</label>
 					<md-select name="Account" ng-model="vm.task.new.account_id" ng-disabled="vm.busy" ng-required="vm.account.data.length">
-						<md-option ng-repeat="account in vm.account.data" value="{{account.id}}">{{ account.name }}</md-option>					
+						<md-option ng-repeat="account in vm.account.data | orderBy: 'name'" value="{{account.id}}">{{ account.name }}</md-option>					
 					</md-select>
 					<div ng-messages="vm.form.Account.$error">
 						<div ng-message="required">Project is required.</div>

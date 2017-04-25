@@ -2,6 +2,8 @@
 
 use Illuminate\Database\Seeder;
 
+use App\Department;
+
 class UsersTableSeeder extends Seeder
 {
     /**
@@ -14,14 +16,11 @@ class UsersTableSeeder extends Seeder
         DB::table('users')->insert([
         	[
 	        	'employee_number' => '10071128',
-	        	'first_name' => 'Marco',
-	        	'middle_name' => 'Santillan',
-	        	'last_name' => 'Paco',
-	        	'suffix' => null,
+	        	'name' => 'Marco Paco',
 	        	'email' => 'marco.paco@personiv.com',
 	        	'password' => bcrypt('somerandomstring'),
 	        	'super_user' => true,
-	        	'department_id' => \App\Department::where('name', 'DexMedia')->first()->id,
+	        	'department_id' => Department::where('name', 'DexMedia AP')->first()->id,
 	        	'immediate_supervisor_id' => null,
 	        	'remember_token' => null,
         		'created_at' => Carbon\Carbon::now(),
@@ -29,14 +28,11 @@ class UsersTableSeeder extends Seeder
         	],
         	[
 	        	'employee_number' => '123456789',
-	        	'first_name' => 'John',
-	        	'middle_name' => null,
-	        	'last_name' => 'Doe',
-	        	'suffix' => null,
+	        	'name' => 'John Doe',
 	        	'email' => 'john.doe@example.com',
 	        	'password' => bcrypt('!welcome10'),
 	        	'super_user' => false,
-	        	'department_id' => \App\Department::where('name', 'DexMedia')->first()->id,
+	        	'department_id' => Department::where('name', 'DexMedia AP')->first()->id,
 	        	'immediate_supervisor_id' => 1,
 	        	'remember_token' => null,
         		'created_at' => Carbon\Carbon::now(),
@@ -44,14 +40,11 @@ class UsersTableSeeder extends Seeder
         	],
         	[
 	        	'employee_number' => '123',
-	        	'first_name' => 'Jane',
-	        	'middle_name' => null,
-	        	'last_name' => 'Doe',
-	        	'suffix' => null,
+	        	'name' => 'Jane Doe',
 	        	'email' => 'jane.doe@example.com',
-	        	'password' => bcrypt('!welcome11'),
+	        	'password' => bcrypt('!welcome10'),
 	        	'super_user' => false,
-	        	'department_id' => \App\Department::where('name', 'DexMedia')->first()->id,
+	        	'department_id' => Department::where('name', 'DexMedia AP')->first()->id,
 	        	'immediate_supervisor_id' => 1,
 	        	'remember_token' => null,
         		'created_at' => Carbon\Carbon::now(),

@@ -95,4 +95,15 @@ trait TaskReports
 
     	return $data;
     }
+
+    protected function formatSheet($sheet)
+    {
+    	$sheet = str_replace('/', '-', $sheet);
+
+    	$sheet = stripslashes($sheet);
+
+    	$sheet = substr($sheet, 0, 31);
+
+    	return $sheet;
+    }
 }
