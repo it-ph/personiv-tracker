@@ -5,16 +5,13 @@
 	          	<highchart id="chart1" config="vm.chart.config(account)"></highchart>
 				<table class="table">
 					<tr>
-						<th colspan="4">{{account.name}}</th>
-					</tr>
-					<tr>
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">New</th>
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Revisions</th>
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Hours Spent</th>
 					</tr>
 					<tr ng-repeat="employee in account.employees">
-						<td>{{employee.first_name}} {{employee.last_name}}</td>
+						<td>{{employee.name}}</td>
 						<td>{{employee.new}}</td>
 						<td>{{employee.revisions}}</td>
 						<td>{{employee.hours_spent}}</td>
