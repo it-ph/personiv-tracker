@@ -1,0 +1,1 @@
+var employee = angular.module('app', ['shared']);

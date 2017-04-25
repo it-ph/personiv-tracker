@@ -1,0 +1,1 @@
+var auth=angular.module("auth",["ngMaterial","ngMessages"]);auth.config(["$mdThemingProvider",function(e){e.theme("default").primaryPalette("indigo").accentPalette("amber")}]),auth.controller("formController",function(){this.show=function(){angular.element(document.querySelector("#main")).removeClass("no-opacity")}});

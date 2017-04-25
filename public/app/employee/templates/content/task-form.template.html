@@ -1,0 +1,54 @@
+<md-card>
+	<md-card-title>
+      	<md-card-title-text>
+        	<span class="md-headline">New Task</span>
+      	</md-card-title-text>
+    </md-card-title>
+	<md-card-content>
+		<form name="vm.form" novalidate>
+			<div layout="row" flex>					
+				<!-- Title -->
+				<md-input-container class="md-block" flex>
+					<label>Title</label>
+					<input type="text" ng-model="vm.task.new.title" name="Title" required ng-disabled="vm.busy"/>
+					<div ng-messages="vm.form.Title.$error">
+						<div ng-message="required">Title is required.</div>
+					</div>
+				</md-input-container>
+			</div>
+			<div layout="row" flex ng-if="vm.account.data.length">					
+				<!-- Project/Account -->
+				<md-input-container class="md-block" flex>
+					<label>Project</label>
+					<md-select name="Account" ng-model="vm.task.new.account_id" ng-disabled="vm.busy" ng-required="vm.account.data.length">
+						<md-option ng-repeat="account in vm.account.data" value="{{account.id}}">{{ account.name }}</md-option>					
+					</md-select>
+					<div ng-messages="vm.form.Account.$error">
+						<div ng-message="required">Project is required.</div>
+					</div>
+				</md-input-container>
+			</div>
+			<div layout="row" flex>
+				<!-- Revision -->
+				<md-switch class="md-primary" ng-model="vm.task.new.revision" flex>Revision</md-switch>
+				<!-- Batch -->
+				<md-switch class="md-primary" ng-model="vm.batch" ng-change="vm.task.changeNumberOfPhotos(vm.task.new)" ng-if="vm.batchable" flex>Batch</md-switch>
+			</div>
+			<div layout="row" flex ng-if="vm.batch">
+				<!-- Number of photos -->
+				<md-input-container class="md-block" flex>
+					<label>Number of photos</label>
+					<input type="number" name="Number" ng-model="vm.task.new.number_of_photos" required min="2">
+					<div ng-messages="vm.form.Number.$error">
+						<div ng-message="required">Number of photos is required.</div>
+						<div ng-message="min">Number of photos cannot be less than 2.</div>
+					</div>
+				</md-input-container>
+			</div>
+		</form>
+	</md-card-content>
+	<md-card-actions layout="row" layout-align="end center">
+    	<md-button ng-click="vm.submit()" ng-if="!vm.busy">Start</md-button>
+    	<md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="45"></md-progress-circular>
+    </md-card-actions>
+</md-card>
