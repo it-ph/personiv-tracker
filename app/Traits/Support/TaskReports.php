@@ -57,9 +57,9 @@ trait TaskReports
         return $data;
     }
 
-    protected function reportData($data)
+    protected function reportData($data, $date_start, $date_end, $time_start, $time_end)
     {
-    	$data->each(function($account, $key) {
+    	$data->each(function($account, $key) use($date_start, $date_end, $time_start, $time_end) {
 	        $account->employees = User::whereIn('id', $this->subordinateIds)->get();
 
 	        $account->employees->each(function($employee, $key){
@@ -68,16 +68,16 @@ trait TaskReports
 
     		$account->reportDates = collect([]);
 
-    		$timeStart = Carbon::parse(request()->timeStart)->toTimeString();
-	        $timeEnd = Carbon::parse(request()->timeEnd)->toTimeString();
+    		$timeStart = Carbon::parse($time_start)->toTimeString();
+	        $timeEnd = Carbon::parse($time_end)->toTimeString();
 
-	        for ($date = Carbon::parse(request()->date_start); $date->lte(Carbon::parse(request()->date_end)); $date->addDay()) { 
+	        for ($date = Carbon::parse($date_start); $date->lte(Carbon::parse($date_end)); $date->addDay()) { 
 
 	            $from = Carbon::parse($date->toDateString() . ' ' . $timeStart);
 
 	            $to = $from->gte(Carbon::parse($date->toDateString() . ' ' . $timeEnd)) ? Carbon::parse($date->toDateString() . ' ' . $timeEnd)->addDay() : Carbon::parse($date->toDateString() . ' ' . $timeEnd);
 
-	            $account->reportDates->push($from->toDayDateTimeString() . ' to ' . $to->toDayDateTimeString());
+	            $account->reportDates->push($date->toFormattedDateString());
 
 	            $account->employees->load(['tasks' => function($query) use($account, $from, $to){
 	            	$query->where('account_id', $account->id)->whereBetween('ended_at', [$from, $to]);

@@ -24,5 +24,21 @@ shared
 			MaterialDesign.cancel();
 		}
 
+		factory.timeFormat = function(time){
+			if(time.getMinutes() < 30)
+			{
+				time.setMinutes(30);
+			}
+			else if(time.getMinutes() > 30)
+			{
+				time.setHours(time.getHours() + 1);
+				time.setMinutes(0);
+			}
+			
+			time.setSeconds(0);
+
+			return time;
+		}
+
 		return factory;
 	}]);

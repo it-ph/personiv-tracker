@@ -116,18 +116,23 @@
 		            </md-menu-item>
 		        </md-menu-content>
 			</md-menu>
-			<!-- Settings -->
-			<md-button class="md-icon-button" ng-if="mainVm.user.user.roles.length || mainVm.user.user.super_user" ng-click="vm.toolbar.settings()">
-				<md-icon class="mdi mdi-settings grey"></md-icon>
-				<md-tooltip>Settings</md-tooltip>
+			<!-- Go to date -->
+			<md-button class="md-icon-button" ng-if="mainVm.user.user.roles.length || mainVm.user.user.super_user" ng-click="vm.toolbar.calendar()">
+				<md-icon class="mdi mdi-calendar grey"></md-icon>
+				<md-tooltip>Go to date</md-tooltip>
 			</md-button>
 			<!-- Download -->
 			<md-button class="md-icon-button" ng-if="mainVm.user.user.roles.length || mainVm.user.user.super_user" ng-click="vm.toolbar.download()">
 				<md-icon class="mdi mdi-download grey"></md-icon>
 				<md-tooltip>Download</md-tooltip>
 			</md-button>
+			<!-- Settings -->
+			<md-button class="md-icon-button" ng-if="mainVm.user.user.roles.length || mainVm.user.user.super_user" ng-click="vm.toolbar.settings()">
+				<md-icon class="mdi mdi-settings grey"></md-icon>
+				<md-tooltip>Settings</md-tooltip>
+			</md-button>
 			<!-- Account -->
-            <input id="upload" type="file" nv-file-select uploader="mainVm.user.photoUploader" style="display: none;" ng-if="mainVm.user.showUploader">
+            <!-- <input id="upload" type="file" nv-file-select uploader="mainVm.user.photoUploader" style="display: none;" ng-if="mainVm.user.showUploader"> -->
 			<md-menu md-position-mode="target-right target">
 				<md-button flex aria-label="User" ng-click="$mdOpenMenu($event)">
 					<div layout="row" flex layout-align="center center">
@@ -140,7 +145,7 @@
 				</md-button>
 				<md-menu-content width="4">
 					<md-subheader>Account</md-subheader>
-					<md-menu-item>
+					<!-- <md-menu-item>
 						<md-button flex ng-click="mainVm.clickUpload()">
 			                <div layout="row" flex>
 			                    <md-icon class="mdi mdi-camera grey"></md-icon>
@@ -149,7 +154,7 @@
 			                    <span flex></span>
 			                </div>
 			            </md-button>
-					</md-menu-item>
+					</md-menu-item> -->
 					<md-menu-item>
 						<md-button flex ng-click="mainVm.user.changePassword()">
 			                <div layout="row" flex>

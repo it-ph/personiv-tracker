@@ -60,7 +60,67 @@ admin
 		vm.init();
 	}]);
 admin
-	.controller('downloadDialogController', ['MaterialDesign', 'ShiftSchedule', 'formService', '$http', function(MaterialDesign, ShiftSchedule, formService, $http){
+	.controller('calendarDialogController', ['MaterialDesign', 'ShiftSchedule', 'formService', 'Task', function(MaterialDesign, ShiftSchedule, formService, Task){
+		var vm = this;
+
+		vm.label = 'Go to date';
+
+		vm.data = {}
+
+		vm.cancel = function(){
+			formService.cancel();
+		}
+
+		vm.toLocaleTimeString = function(){
+			vm.data.timeStart = vm.data.timeStart.toLocaleTimeString();
+			vm.data.timeEnd = vm.data.timeEnd.toLocaleTimeString();
+		}
+
+		vm.toDateString = function(){
+			vm.data.dateShift = vm.data.dateShift.toDateString();
+		}
+
+		vm.toDateObject = function(){
+			var today = new Date();
+
+			vm.data.timeStart = new Date(today.toDateString() + ' ' + vm.data.timeStart);
+			vm.data.timeEnd = new Date(today.toDateString() + ' ' + vm.data.timeEnd);
+			vm.data.dateShift = new Date(vm.data.dateShift);
+		}
+
+		vm.data.dateShift = new Date();
+
+		vm.data.timeStart = formService.timeFormat(new Date());
+		vm.data.timeEnd = formService.timeFormat(new Date());
+
+		vm.submit = function(){
+			// check form fields for errors, returns true if there are errors
+			var formHasError = formService.validate(vm.form);
+
+			if(formHasError)
+			{
+				return;
+			}
+			else
+			{
+				vm.busy = true;
+
+				vm.toLocaleTimeString();
+				vm.toDateString();
+			
+				Task.dashboard(vm.data)
+					.then(function(response){
+						Task.data = response.data;
+
+						MaterialDesign.hide();
+					}, function(){
+						MaterialDesign.error();
+					});
+			}
+		}
+	}]);
+admin
+	.controller('downloadDialogController', ['MaterialDesign', 'ShiftSchedule', 'formService', '$window', function(MaterialDesign, ShiftSchedule, formService, $window){
 		var vm = this;
 
 		vm.label = 'Download';
@@ -71,25 +131,14 @@ admin
 			formService.cancel();
 		}
 
-		vm.timeFormat = function(time){
-			if(time.getMinutes() < 30)
-			{
-				time.setMinutes(30);
-			}
-			else if(time.getMinutes() > 30)
-			{
-				time.setHours(time.getHours() + 1);
-				time.setMinutes(0);
-			}
-			
-			time.setSeconds(0);
-
-			return time;
-		}
-
 		vm.toLocaleTimeString = function(){
 			vm.data.time_start = vm.data.time_start.toLocaleTimeString();
 			vm.data.time_end = vm.data.time_end.toLocaleTimeString();
+		}
+
+		vm.toDateString = function(){
+			vm.data.date_start = vm.data.date_start.toDateString();
+			vm.data.date_end = vm.data.date_end.toDateString();
 		}
 
 		vm.toDateObject = function(){
@@ -97,13 +146,15 @@ admin
 
 			vm.data.time_start = new Date(today.toDateString() + ' ' + vm.data.time_start);
 			vm.data.time_end = new Date(today.toDateString() + ' ' + vm.data.time_end);
+			vm.data.date_start = new Date(vm.data.date_start);
+			vm.data.date_end = new Date(vm.data.date_end);
 		}
 
 		vm.data.date_start = new Date();
 		vm.data.date_end = new Date();
 
-		vm.data.time_start = vm.timeFormat(new Date());
-		vm.data.time_end = vm.timeFormat(new Date());
+		vm.data.time_start = formService.timeFormat(new Date());
+		vm.data.time_end = formService.timeFormat(new Date());
 
 		
 		vm.submit = function(){
@@ -119,24 +170,11 @@ admin
 				vm.busy = true;
 
 				vm.toLocaleTimeString();
-
-				var error = function(){
-					vm.toDateObject();
-
-					vm.busy = false;
-					vm.error = true;
-				}
+				vm.toDateString();
 			
-				$http.post('/task/download', vm.data)
-					.then(function(response){
-						vm.busy = false;
+				$window.open('/task/download/' + vm.data.date_start + '/to/' + vm.data.date_end + '/at/' + vm.data.time_start + '/until/' + vm.data.time_end, '_blank');
 
-						MaterialDesign.notify('Changes saved.');
-						
-						MaterialDesign.hide();
-					}, function(){
-						error();
-					});
+				MaterialDesign.hide();
 			}
 		}
 	}]);

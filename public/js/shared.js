@@ -186,6 +186,22 @@ shared
 			MaterialDesign.cancel();
 		}
 
+		factory.timeFormat = function(time){
+			if(time.getMinutes() < 30)
+			{
+				time.setMinutes(30);
+			}
+			else if(time.getMinutes() > 30)
+			{
+				time.setHours(time.getHours() + 1);
+				time.setMinutes(0);
+			}
+			
+			time.setSeconds(0);
+
+			return time;
+		}
+
 		return factory;
 	}]);
 shared
@@ -325,7 +341,7 @@ shared
 		return factory;
 	}]);
 shared
-	.factory('ShiftSchedule', ['$http', 'MaterialDesign', function($http, MaterialDesign){
+	.factory('ShiftSchedule', ['$http', 'MaterialDesign', 'formService', function($http, MaterialDesign, formService){
 		var factory = {}
 
 		factory.data = {}
@@ -354,29 +370,13 @@ shared
 			factory.data.to = new Date(today.toDateString() + ' ' + factory.data.to);
 		}
 
-		factory.formatTime = function(time){
-			if(time.getMinutes() < 30)
-			{
-				time.setMinutes(30);
-			}
-			else if(time.getMinutes() > 30)
-			{
-				time.setHours(time.getHours() + 1);
-				time.setMinutes(0);
-			}
-			
-			time.setSeconds(0);
-
-			return time;
-		}
-
 		factory.init = function(){
 			var now = new Date();
 
 			factory.data = {};
 			
-			factory.data.from = factory.formatTime(now);
-			factory.data.to = factory.formatTime(now);
+			factory.data.from = formService.timeFormat(now);
+			factory.data.to = formService.timeFormat(now);
 		}
 
 		return factory;
@@ -418,8 +418,8 @@ shared
 			return $http.post('/task/resume/' + factory.current.id, factory.current.pauses[0]);
 		}
 
-		factory.dashboard = function(){
-			return $http.post('/task/dashboard');
+		factory.dashboard = function(data){
+			return $http.post('/task/dashboard', data);
 		}
 
 		factory.finish = function(){
@@ -520,6 +520,15 @@ shared
 		factory.clearItems = function()
 		{
 			factory.items = [];
+		}
+
+		factory.calendar = function(){
+			var dialog = {
+				templateUrl: '/app/admin/templates/dialogs/calendar-dialog.template.html',
+				controller: 'calendarDialogController as vm',
+			}
+
+			MaterialDesign.customDialog(dialog);
 		}
 
 		factory.settings = function(){

@@ -14,11 +14,11 @@ class TaskController extends Controller
 {
     use Enlist;
 
-    public function download(Request $request)
+    public function download($date_start, $date_end, $time_start, $time_end)
     {
         $task = new Task;
 
-        return $task->toExcel();
+        return $task->toExcel($date_start, $date_end, $time_start, $time_end);
     }
 
     /**

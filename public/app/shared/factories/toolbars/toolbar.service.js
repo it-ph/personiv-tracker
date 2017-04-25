@@ -67,6 +67,15 @@ shared
 			factory.items = [];
 		}
 
+		factory.calendar = function(){
+			var dialog = {
+				templateUrl: '/app/admin/templates/dialogs/calendar-dialog.template.html',
+				controller: 'calendarDialogController as vm',
+			}
+
+			MaterialDesign.customDialog(dialog);
+		}
+
 		factory.settings = function(){
 			var dialog = {
 				templateUrl: '/app/admin/templates/dialogs/settings-dialog.template.html',

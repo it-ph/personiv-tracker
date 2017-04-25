@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Traits\Support\TaskReports;
 
 use Carbon\Carbon;
-
+use Excel;
 
 class Task extends Model
 {
@@ -115,11 +115,18 @@ class Task extends Model
         $this->scope();
 
         // Check the time range
-        if(isset($this->request->user()->shift_schedule))
+        if(count(request()->all()))
+        {
+            $from = Carbon::parse(request()->dateShift . ' ' . request()->timeStart);
+            $to = $from->gte(Carbon::parse(request()->dateShift . ' ' . request()->timeEnd)) ? Carbon::parse(request()->dateShift . ' ' . request()->timeEnd)->addDay() : Carbon::parse(request()->dateShift . ' ' . request()->timeEnd);
+        }
+
+        else if(isset($this->request->user()->shift_schedule))
         {
             $from = Carbon::parse($this->request->user()->shift_schedule->from);
             $to = $from->gte(Carbon::parse($this->request->user()->shift_schedule->to)) ? Carbon::parse($this->request->user()->shift_schedule->to)->addDay() : Carbon::parse($this->request->user()->shift_schedule->to);
         }
+
         else{
             $from = Carbon::parse('today');
             $to = Carbon::parse('tomorrow');
@@ -128,20 +135,20 @@ class Task extends Model
         return $this->dashboardData($this->accounts, $from, $to);
     }
 
-    public function toExcel()
+    public function toExcel($date_start, $date_end, $time_start, $time_end)
     {
         $this->scope();
 
-        $reports = $this->reportData($this->accounts);
+        $reports = $this->reportData($this->accounts, $date_start, $date_end, $time_start, $time_end);
 
-        return $reports;
+        // return $reports;
 
-        Excel::create(request()->user()->department->name . ' report as of ' . Carbon::parse(request()->date_start)->toDayDateTimeString() . ' to ' . Carbon::parse(request()->date_end)->toDayDateTimeString(), function($excel) use($reports){
-            $reports->each(function($account, $key){
-                $excel->sheet($account->name, function($sheet){
-
+        Excel::create(request()->user()->department->name . ' report from ' . Carbon::parse($date_start)->toFormattedDateString() . ' to ' . Carbon::parse($date_end)->toFormattedDateString() .' Shift: ' . Carbon::parse($time_start)->toTimeString() . ' to ' . Carbon::parse($time_end)->toTimeString(), function($excel) use($reports){
+            $reports->each(function($account, $key) use($excel){
+                $excel->sheet($account->name, function($sheet) use($account){
+                    $sheet->loadView('excel.report')->with('account', $account);
                 });
             });
-        });
+        })->download('xls');
     }
 }
