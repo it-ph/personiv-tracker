@@ -38,7 +38,7 @@ trait TaskReports
             });
 
             $account->categories = $account->employees->map(function($employee, $key){
-                return $employee->first_name. ' ' . $employee->last_name;
+                return $employee->name;
             });
 
             $account->new = $account->employees->map(function($employee, $key){
