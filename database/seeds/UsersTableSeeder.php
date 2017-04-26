@@ -16,7 +16,6 @@ class UsersTableSeeder extends Seeder
     {
     	$dexMediaAP = Department::where('name', 'DexMedia AP')->first()->id;
     	$dexMediaWeb = Department::where('name', 'DexMedia Web')->first()->id;
-    	$ooh = Department::where('name', 'OOH')->first()->id;
 
         DB::table('users')->insert([
         	/* Test */
