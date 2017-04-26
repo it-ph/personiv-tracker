@@ -37,9 +37,7 @@ trait TaskReports
                 $employee->hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
             });
 
-            $account->categories = $account->employees->map(function($employee, $key){
-                return $employee->name;
-            });
+            $account->categories = $account->employees->pluck('name');
 
             $account->new = $account->employees->map(function($employee, $key){
                 return $employee->new;
