@@ -117,13 +117,6 @@ employee
 					{
 						relationship: 'pauses',
 						whereNull: ['ended_at'],
-						where: [
-							{
-								column: 'user_id',
-								condition: '=',
-								value: vm.user.user.id,
-							}
-						],
 						orderBy: [
 							{
 								column: 'created_at',
@@ -133,6 +126,13 @@ employee
 					}
 				],
 				whereNull: ['ended_at'],
+				where: [
+					{
+						column: 'user_id',
+						condition: '=',
+						value: vm.user.user.id,
+					}
+				],
 				first: true,
 			}
 
