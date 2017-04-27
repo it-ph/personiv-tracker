@@ -21,3 +21,8 @@
 	    </md-card>
 	</div>
 </div>
+<div layout="row" layout-align="center center" layout-padding layout-margin ng-if="vm.isLoading">
+	<div layout="column" layout-align="center center" flex flex-gt-sm="50" flex-gt-lg="30">
+		<md-progress-circular class="md-primary" md-diameter="60"></md-progress-circular>
+	</div>
+</div>

@@ -16,5 +16,9 @@ class DatabaseSeeder extends Seeder
         $this->call(AccountsTableSeeder::class);
         $this->call(UsersTableSeeder::class);
         $this->call(UserRolesTableSeeder::class);
+        $this->call(OOHUsersSeeder::class);
+        $this->call(DexMediaAPSeeders::class);
+        $this->call(DigitalFulFillmentUsersSeeder::class);
+        $this->call(DexMediaAPUsersBatch3::class);
     }
 }
