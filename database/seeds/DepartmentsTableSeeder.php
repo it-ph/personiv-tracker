@@ -18,7 +18,7 @@ class DepartmentsTableSeeder extends Seeder
                 'updated_at' => Carbon\Carbon::now(),
             ],
             [
-                'name' => 'DexMedia Web',
+                'name' => 'Digital Fulfillment',
                 'created_at' => Carbon\Carbon::now(),
                 'updated_at' => Carbon\Carbon::now(),
             ],
