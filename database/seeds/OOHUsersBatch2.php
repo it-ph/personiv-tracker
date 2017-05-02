@@ -33,18 +33,6 @@ class OOHUsersBatch2 extends Seeder
 	        		'created_at' => Carbon\Carbon::now(),
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
-	        	[
-	        		'employee_number' => '10071441',
-	        		'name' => 'James Paul Pacardo',
-		        	'email' => 'james.pacardo@personive.com',
-		        	'password' => bcrypt('!welcome10'),
-		        	'super_user' => false,
-		        	'department_id' => $digitalFulfillment,
-		        	'immediate_supervisor_id' => $jayraldBuenavente,
-		        	'remember_token' => null,
-	        		'created_at' => Carbon\Carbon::now(),
-	        		'updated_at' => Carbon\Carbon::now(),
-	        	],
         	]);
     	});
     }
