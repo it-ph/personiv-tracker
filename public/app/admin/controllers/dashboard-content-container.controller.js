@@ -5,21 +5,24 @@ admin
 		vm.toolbar = toolbarService;
 		vm.task = Task;
 		vm.user = User;
-		vm.shiftSchedule = ShiftSchedule;
+		// vm.shiftSchedule = ShiftSchedule;
 		vm.chart = Chart;
 
 		vm.dashboard = function(){
 			vm.task.dashboard()
 				.then(function(response){
-					vm.shiftSchedule.toDateObject();
+					// vm.shiftSchedule.toDateObject();
 
 					// data per project then set data to charts
 					vm.task.data = response.data;
+
+					vm.isLoading = false;
 				})
 		}
 
 		vm.init = function(){
 			vm.dashboard();
+			vm.isLoading = true;
 		};
 
 		vm.init();

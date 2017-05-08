@@ -37,9 +37,7 @@ trait TaskReports
                 $employee->hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
             });
 
-            $account->categories = $account->employees->map(function($employee, $key){
-                return $employee->first_name. ' ' . $employee->last_name;
-            });
+            $account->categories = $account->employees->pluck('name');
 
             $account->new = $account->employees->map(function($employee, $key){
                 return $employee->new;
@@ -94,5 +92,16 @@ trait TaskReports
     	});
 
     	return $data;
+    }
+
+    protected function formatSheet($sheet)
+    {
+    	$sheet = str_replace('/', '-', $sheet);
+
+    	$sheet = stripslashes($sheet);
+
+    	$sheet = substr($sheet, 0, 31);
+
+    	return $sheet;
     }
 }

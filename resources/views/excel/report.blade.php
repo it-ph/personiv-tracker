@@ -17,7 +17,7 @@
 	</tr>
 	@foreach($account->employees as $employee)
 		<tr>
-			<td align="center">{{$employee->last_name}}, {{$employee->first_name}}</td>
+			<td align="center">{{$employee->name}}</td>
 			@foreach($employee->data as $item)
 				<td align="center">{{$item['new']}}</td>
 				<td align="center">{{$item['revisions']}}</td>
