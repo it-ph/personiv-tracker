@@ -265,7 +265,7 @@ class DexMediaAPUsersBatch3 extends Seeder
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
 	        	[
-	        		'employee_number' => '10070820',
+	        		'employee_number' => '10071543',
 	        		'name' => 'Kristine Panado',
 		        	'email' => 'khristine.panado@personive.com',
 		        	'password' => bcrypt('!welcome10'),
