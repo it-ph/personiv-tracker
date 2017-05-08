@@ -10,16 +10,16 @@
 	            	<span class="md-subhead" ng-if="vm.paused">Paused at: {{vm.task.current.pauses[0].created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ vm.task.current.pauses[0].created_at | date: 'hh:mma'}}</span>
 	          	</md-card-title-text>
 	        </md-card-title>
-			<md-card-actions layout="row" layout-align="end center">
+			<md-card-actions layout="row" layout-align="space-between center">
 	          	<md-button ng-click="vm.pause()" ng-if="!vm.paused">
-	          		<md-icon class="mdi mdi-pause"></md-icon> 
+	          		<md-icon class="mdi mdi-pause grey"></md-icon> 
 	          		<span>Pause</span>
 	          	</md-button>
 	          	<md-button ng-click="vm.resume()" ng-if="vm.paused">
 					<md-icon class="mdi mdi-play"></md-icon>
 					<span>Resume</span>
 	          	</md-button>
-	          	<md-button ng-click="vm.finish()">
+	          	<md-button ng-click="vm.finish()" ng-if="!vm.paused" ng-class="{'md-raised md-primary' : !vm.paused}">
 	          		<md-icon class="mdi mdi-flag"></md-icon>
 	          		<span>Finish</span>
 	          	</md-button>
@@ -34,7 +34,7 @@
 	            	<span class="md-subhead">From: {{task.created_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ task.created_at | date: 'hh:mma'}}</span>
 	            	<span class="md-subhead">To: {{task.ended_at | date: 'EEEE, MMM. dd, yyyy'}} at {{ task.ended_at | date: 'hh:mma'}}</span>
 	            	<span class="md-subhead">Minutes Spent: {{task.minutes_spent}}</span>
-	            	<span class="md-subhead">Minutes Idle: {{task.minutes_idle}}</span>
+	            	<!-- <span class="md-subhead">Minutes Idle: {{task.minutes_idle}}</span> -->
 	          	</md-card-title-text>
 	        </md-card-title>
 	        <md-card-actions ng-show="hover" layout="row" layout-align="end center">

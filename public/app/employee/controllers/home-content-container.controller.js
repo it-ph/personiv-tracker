@@ -52,22 +52,32 @@ employee
 
 		// submit current task as finished
 		vm.finish = function(){
-			MaterialDesign.preloader();
+			var dialog = {
+				title: 'Finish Task',
+				message: 'Are you sure you want to finsih this task? This action cannot be undone.',
+				ok: 'Finish',
+				cancel: 'Cancel',
+			}
 
-			vm.task.finish()
-				.then(function(){
-					MaterialDesign.hide();
+			MaterialDesign.confirm(dialog)
+				.then(function(){			
+					MaterialDesign.preloader();
 
-					MaterialDesign.notify('Task completed.');
-					// remove the task pinned at top
-					vm.task.current = null;
+					vm.task.finish()
+						.then(function(){
+							MaterialDesign.hide();
 
-					vm.task.init();
+							MaterialDesign.notify('Task completed.');
+							// remove the task pinned at top
+							vm.task.current = null;
 
-					vm.paused = false;
-				}, function(){
-					MaterialDesign.error();
-				});
+							vm.task.init();
+
+							vm.paused = false;
+						}, function(){
+							MaterialDesign.error();
+						});
+				})
 		}
 
 		// edit a completed task record
@@ -117,13 +127,6 @@ employee
 					{
 						relationship: 'pauses',
 						whereNull: ['ended_at'],
-						where: [
-							{
-								column: 'user_id',
-								condition: '=',
-								value: vm.user.user.id,
-							}
-						],
 						orderBy: [
 							{
 								column: 'created_at',
@@ -133,6 +136,13 @@ employee
 					}
 				],
 				whereNull: ['ended_at'],
+				where: [
+					{
+						column: 'user_id',
+						condition: '=',
+						value: vm.user.user.id,
+					}
+				],
 				first: true,
 			}
 
