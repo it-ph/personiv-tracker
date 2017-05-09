@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Auth;
 use Carbon\Carbon;
 use Hash;
-use Storage;
 use App\User;
 use App\Notification;
 use Illuminate\Http\Request;
@@ -39,41 +38,6 @@ class UserController extends Controller
         $user = User::find($request->user()->id);
 
         $user->unreadNotifications()->update(['read_at' => Carbon::now()]);
-    }
-
-    /**
-     * View user avatar and upload new avatar.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function avatar($id)
-    {
-        $user = User::withTrashed()->where('id', $id)->first();
-
-        return response()->file(storage_path() .'/app/'. $user->avatar_path);
-    }
-
-    /**
-     * Upload post photo.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function uploadAvatar(Request $request, $id)
-    {
-        $user = User::where('id', $request->user()->id)->first();
-
-        if($user->avatar_path)
-        {
-            Storage::delete($user->avatar_path);
-        }
-
-        $path = Storage::putFileAs('avatars', $request->file('file'), $request->user()->id);
-
-        $user->avatar_path = $path;
-
-        $user->save();
-
-        return $user->avatar_path;
     }
 
     /**

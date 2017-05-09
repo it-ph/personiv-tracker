@@ -93,4 +93,13 @@ class User extends Authenticatable
         return $this->super_user ? true : false;
     }
 
+    public function isDepartmentHead()
+    {
+        $this->load(['roles' => function($query){
+            $query->where('name', 'Department Head');
+        }]);
+
+        return count($this->roles) ? true : false;
+    }
+
 }
