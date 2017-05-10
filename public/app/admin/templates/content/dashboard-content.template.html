@@ -1,19 +1,29 @@
 <div layout="row" flex layout-align="center center">
-	<div layout="column" flex-md="70" flex-gt-md="50" flex>	
-		<md-card ng-repeat="account in vm.task.data">
+	<div layout="column" flex-md="70" flex-gt-md="60" flex>	
+		<md-card ng-repeat="account in vm.task.data | orderBy:'name'">
 	        <md-card-content>
 	          	<highchart id="chart1" config="vm.chart.config(account)"></highchart>
-				<table class="table">
-					<tr>
+				<table class="table" ng-if="account.employees.length">
+					<tr ng-if="!account.batchable">
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">New</th>
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Revisions</th>
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Hours Spent</th>
 					</tr>
+					<tr ng-if="account.batchable">
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Name</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">New</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Batch Photos(New)</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Revisions</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Batch Photos(Revision)</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Hours Spent</th>
+					</tr>
 					<tr ng-repeat="employee in account.employees">
 						<td>{{employee.name}}</td>
 						<td>{{employee.new}}</td>
+						<td ng-if="account.batchable">{{employee.number_of_photos_new}}</td>
 						<td>{{employee.revisions}}</td>
+						<td ng-if="account.batchable">{{employee.number_of_photos_revisions}}</td>
 						<td>{{employee.hours_spent}}</td>
 					</tr>
 				</table>

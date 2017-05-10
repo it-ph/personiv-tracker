@@ -6,16 +6,15 @@ employee
 		vm.account = Account;
 		vm.user = User;
 
-		vm.department = vm.user.user.department.name;
-
 		vm.task.new.revision = false;
-
-		// determines the user if he can use batch tasks
-		if(vm.department == 'Revolve')
-		{
-			vm.batchable = true;
-		}
 		
+		// determines the user if he can use batch tasks
+		vm.setAccount = function(){
+			vm.task.new.account_id = vm.task.new.account.id;
+
+			vm.batchable = vm.task.new.account.batchable;
+		}
+
 		// fetch the accounts associated with the user
 		vm.accounts = function(){
 			var query = {
