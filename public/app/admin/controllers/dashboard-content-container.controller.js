@@ -5,25 +5,36 @@ admin
 		vm.toolbar = toolbarService;
 		vm.task = Task;
 		vm.user = User;
-		// vm.shiftSchedule = ShiftSchedule;
 		vm.chart = Chart;
 
-		vm.dashboard = function(){
-			vm.task.dashboard()
-				.then(function(response){
-					// vm.shiftSchedule.toDateObject();
+		vm.dashboard = dashboard;
+		vm.init = init;
 
+		vm.init();
+
+		function dashboard(){
+			return vm.task.dashboard()
+				.then(function(response){
+					vm.isLoading = false;
 					// data per project then set data to charts
 					vm.task.data = response.data;
 
-					vm.isLoading = false;
+					return vm.task.data;
 				})
+				.catch(error);
 		}
 
-		vm.init = function(){
+
+		function error(){
+			return MaterialDesign.failed()
+				.then(function(){
+					dashboard();
+				})
+				.catch(error);
+		}
+
+		function init (){
 			vm.dashboard();
 			vm.isLoading = true;
 		};
-
-		vm.init();
 	}]);
