@@ -33,23 +33,15 @@ trait TaskReports
         $data->each(function($account, $key) use($from, $to){
             $account->range = Carbon::parse($from)->toDayDateTimeString() . ' to ' . Carbon::parse($to)->toDayDateTimeString();
 
-            if($this->request->user()->isDepartmentHead())
-            {
-                $account->employees = User::where(function($query) use($account, $from, $to){
-                    $query->whereIn('id', $this->subordinateIds);
-                        
-                    $query->whereHas('tasks', function($query) use($account, $from, $to){
-                        $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
-                    });
-                })->with(['tasks' => function($query) use($account, $from, $to){
+            $account->employees = User::where(function($query) use($account, $from, $to){
+                $query->whereIn('id', $this->subordinateIds);
+                    
+                $query->whereHas('tasks', function($query) use($account, $from, $to){
                     $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
-                }])->get();
-            }
-            else{
-                $account->employees = User::whereIn('id', $this->subordinateIds)->with(['tasks' => function($query) use($account, $from, $to){
-                    $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
-                }])->get();
-            }
+                });
+            })->with(['tasks' => function($query) use($account, $from, $to){
+                $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
+            }])->get();
            
             $account->employees->each(function($employee, $key){
                 $employee->new = $employee->tasks->where('revision', false)->count();
