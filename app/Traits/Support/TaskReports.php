@@ -45,7 +45,11 @@ trait TaskReports
            
             $account->employees->each(function($employee, $key){
                 $employee->new = $employee->tasks->where('revision', false)->count();
+                $employee->number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
+
                 $employee->revisions = $employee->tasks->where('revision', true)->count();
+                $employee->number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');
+
                 $employee->hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
             });
 
@@ -55,8 +59,16 @@ trait TaskReports
                 return $employee->new;
             });
 
+            $account->number_of_photos_new = $account->employees->map(function($employee, $key){
+                return $employee->number_of_photos_new;
+            });
+
             $account->revisions = $account->employees->map(function($employee, $key){
                 return $employee->revisions;
+            });
+
+            $account->number_of_photos_revisions = $account->employees->map(function($employee, $key){
+                return $employee->number_of_photos_revisions;
             });
 
             $account->hours_spent = $account->employees->map(function($employee, $key){
@@ -94,11 +106,15 @@ trait TaskReports
 	            }]);
 
 				$account->employees->each(function($employee, $key){
-					$new = $employee->tasks->where('revision', false)->count();
-	                $revisions = $employee->tasks->where('revision', true)->count();
+                    $new = $employee->tasks->where('revision', false)->count();
+					$number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
+
+                    $revisions = $employee->tasks->where('revision', true)->count();
+	                $number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');
+
 	                $hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
 
-					$employee->data->push(compact('new', 'revisions', 'hours_spent'));
+					$employee->data->push(compact('new', 'number_of_photos_new', 'revisions', 'number_of_photos_revisions', 'hours_spent'));
 				});            
 	        }
     	});
