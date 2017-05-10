@@ -25,7 +25,7 @@
                 <!-- Project/Account -->
                 <md-input-container class="md-block" flex>
                     <label>Project</label>
-                    <md-select name="Account" ng-model="vm.task.data.account_id" ng-disabled="vm.busy" ng-required="vm.account.data.length">
+                    <md-select name="Account" ng-model="vm.task.data.account_id" ng-disabled="vm.busy" ng-required="vm.account.data.length" ng-change="vm.setAccount(vm.task.data.account_id)">
                         <md-option ng-repeat="account in vm.account.data | orderBy: 'name'" value="{{account.id}}">{{ account.name }}</md-option>                 
                     </md-select>
                     <div ng-messages="vm.taskForm.Account.$error">
@@ -39,7 +39,7 @@
                 <!-- Batch -->
                 <md-switch class="md-primary" ng-model="vm.batch" flex ng-change="vm.task.changeNumberOfPhotos(vm.task.data)" ng-if="vm.batchable">Batch</md-switch>
             </div>
-            <div layout="row" flex ng-if="vm.batch">
+            <div layout="row" flex ng-if="vm.batch && vm.batchable">
                 <!-- Number of photos -->
                 <md-input-container class="md-block" flex>
                     <label>Number of photos</label>

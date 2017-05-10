@@ -88,7 +88,7 @@ employee
 		return factory;
 	}]);
 employee
-	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', 'Account', 'User', function(MaterialDesign, taskFormService, formService, Account, User){
+	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', 'Account', 'User', '$filter', function(MaterialDesign, taskFormService, formService, Account, User, $filter){
 		var vm = this;
 
 		vm.task = taskFormService;
@@ -98,9 +98,15 @@ employee
 		vm.department = vm.user.user.department.name;
 
 		// determines the user if he can use batch tasks
-		if(vm.department == 'Revolve')
-		{
-			vm.batchable = true;
+		vm.setAccount = function(id){
+			var account = $filter('filter')(vm.account.data, {id:id})[0];
+
+			vm.batchable = account.batchable;
+
+			if(!vm.batchable)
+			{
+				vm.task.data.number_of_photos = null;
+			}
 		}
 
 		// determines the user if he can use batch tasks
@@ -121,9 +127,9 @@ employee
 				],
 			}
 
-			vm.account.enlist(query)
+			return vm.account.enlist(query)
 				.then(function(data){
-					vm.account.data = data.data;
+					return vm.account.data = data.data;
 				}, function(){
 					Helper.error();
 				});
@@ -163,7 +169,10 @@ employee
 		}
 
 		vm.init = function(){
-			vm.accounts();
+			vm.accounts()
+				.then(function(){
+					vm.setAccount(vm.task.data.account_id);
+				});
 		}();
 	}]);
 employee
@@ -425,16 +434,15 @@ employee
 		vm.account = Account;
 		vm.user = User;
 
-		vm.department = vm.user.user.department.name;
-
 		vm.task.new.revision = false;
-
-		// determines the user if he can use batch tasks
-		if(vm.department == 'Revolve')
-		{
-			vm.batchable = true;
-		}
 		
+		// determines the user if he can use batch tasks
+		vm.setAccount = function(){
+			vm.task.new.account_id = vm.task.new.account.id;
+
+			vm.batchable = vm.task.new.account.batchable;
+		}
+
 		// fetch the accounts associated with the user
 		vm.accounts = function(){
 			var query = {
