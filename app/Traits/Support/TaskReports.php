@@ -19,7 +19,7 @@ trait TaskReports
 
         if($this->request->user()->isDepartmentHead())
         {
-            $this->subordinateIds = User::where('department_id', $this->request->user()->department_id)->whereNotIn('id', [$this->request->user()->id])->get()->pluck('id');
+            $this->subordinateIds = User::where('department_id', $this->request->user()->department_id)->whereNotIn('id', [$this->request->user()->id])->doesntHave('roles')->get()->pluck('id');
         }
         else{
             $this->subordinateIds = $this->request->user()->subordinates->pluck('id');
@@ -117,6 +117,14 @@ trait TaskReports
 					$employee->data->push(compact('new', 'number_of_photos_new', 'revisions', 'number_of_photos_revisions', 'hours_spent'));
 				});            
 	        }
+
+            $account->employees->each(function($employee, $key){
+                $employee->total_new = $employee->data->sum('new'); 
+                $employee->total_number_of_photos_new = $employee->data->sum('number_of_photos_new'); 
+                $employee->total_revisions = $employee->data->sum('revisions'); 
+                $employee->total_number_of_photos_revisions = $employee->data->sum('number_of_photos_revisions'); 
+                $employee->total_hours_spent = $employee->data->sum('hours_spent'); 
+            });
     	});
 
     	return $data;

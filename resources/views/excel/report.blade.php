@@ -9,30 +9,36 @@
 			@endif
 			<th align="center"></th>
 		@endforeach
+		@if($account->batchable)
+			<th colspan="5" align="center">Total</th>
+		@else
+			<th colspan="3" align="center">Total</th>
+		@endif
 	</tr>
-	@if($account->batchable)
-		<tr>
-			<th align="center">Name</th>
-			@foreach($account->reportDates as $date)
-				<th align="center">New</th>
+	<tr>
+		<th align="center">Name</th>
+		@foreach($account->reportDates as $date)
+			<th align="center">New</th>
+			@if($account->batchable)
 				<th align="center">Batch Photos (New)</th>
-				<th align="center">Revisions</th>
+			@endif
+			<th align="center">Revisions</th>
+			@if($account->batchable)
 				<th align="center">Batch Photos (Revisions)</th>
-				<th align="center">Hours Spent</th>
-				<td align="center"></td>
-			@endforeach
-		</tr>
-	@else
-		<tr>
-			<th align="center">Name</th>
-			@foreach($account->reportDates as $date)
-				<th align="center">New</th>
-				<th align="center">Revisions</th>
-				<th align="center">Hours Spent</th>
-				<td align="center"></td>
-			@endforeach
-		</tr>
-	@endif
+			@endif
+			<th align="center">Hours Spent</th>
+			<td align="center"></td>
+		@endforeach
+		<th align="center">New</th>
+		@if($account->batchable)
+			<th align="center">Batch Photos (New)</th>
+		@endif
+		<th align="center">Revisions</th>
+		@if($account->batchable)
+			<th align="center">Batch Photos (Revisions)</th>
+		@endif
+		<th align="center">Hours Spent</th>
+	</tr>
 	@foreach($account->employees as $employee)
 		<tr>
 			<td align="center">{{$employee->name}}</td>
@@ -48,6 +54,15 @@
 				<td align="center">{{$item['hours_spent']}}</td>
 				<td align="center"></td>
 			@endforeach
+			<td align="center">{{$employee->total_new}}</td>
+			@if($account->batchable)
+				<td align="center">{{$employee->total_number_of_photos_new}}</td>
+			@endif
+			<td align="center">{{$employee->total_revisions}}</td>
+			@if($account->batchable)
+				<td align="center">{{$employee->total_number_of_photos_revisions}}</td>
+			@endif
+			<td align="center">{{$employee->total_hours_spent}}</td>
 		</tr>
 	@endforeach
 </table>
