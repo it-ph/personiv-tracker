@@ -66,7 +66,7 @@ class Task extends Model
     {
         $this->title = $request->title;
         $this->account_id = $request->account_id;
-        $this->revision = $request->revision;
+        $this->revision = $request->revision ? $request->revision : false;
         $this->number_of_photos = $request->number_of_photos;
     }
 
