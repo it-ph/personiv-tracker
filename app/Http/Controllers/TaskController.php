@@ -51,6 +51,8 @@ class TaskController extends Controller
             $task->loadUnfinishedPauses();
         });
 
+        $task->load('account');
+
         return $task;
     }
 
@@ -69,6 +71,8 @@ class TaskController extends Controller
 
             $task->loadUnfinishedPauses();
         });
+
+        $task->load('account');
 
         return $task;
     }
