@@ -47,7 +47,7 @@ class DexMediaAPUsersBatch3 extends Seeder
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
 	        	[
-	        		'employee_number' => '5100202',
+	        		'employee_number' => '05100202',
 	        		'name' => 'Daisy Martinez',
 		        	'email' => 'daisy.martinez@personiv.com',
 		        	'password' => bcrypt('!welcome10'),
@@ -59,7 +59,7 @@ class DexMediaAPUsersBatch3 extends Seeder
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
 	        	[
-	        		'employee_number' => '7010987',
+	        		'employee_number' => '07010987',
 	        		'name' => 'Bryan Del Prado',
 		        	'email' => 'ayan.delprado@personiv.com',
 		        	'password' => bcrypt('!welcome10'),
@@ -71,7 +71,7 @@ class DexMediaAPUsersBatch3 extends Seeder
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
 	        	[
-	        		'employee_number' => '7010028',
+	        		'employee_number' => '07010028',
 	        		'name' => 'Joel Bonete',
 		        	'email' => 'joel.bonete@personiv.com',
 		        	'password' => bcrypt('!welcome10'),
@@ -83,7 +83,7 @@ class DexMediaAPUsersBatch3 extends Seeder
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
 	        	[
-	        		'employee_number' => '7010031',
+	        		'employee_number' => '07010031',
 	        		'name' => 'Ibrahim Tangonan',
 		        	'email' => 'ib.tangonan@personiv.com',
 		        	'password' => bcrypt('!welcome10'),
@@ -205,7 +205,7 @@ class DexMediaAPUsersBatch3 extends Seeder
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
 	        	[
-	        		'employee_number' => '5100084',
+	        		'employee_number' => '05100084',
 	        		'name' => 'Nazario Capuz',
 		        	'email' => 'nazario.capuz@personive.com',
 		        	'password' => bcrypt('!welcome10'),
@@ -277,7 +277,7 @@ class DexMediaAPUsersBatch3 extends Seeder
 	        		'updated_at' => Carbon\Carbon::now(),
 	        	],
 	        	[
-	        		'employee_number' => '5100259',
+	        		'employee_number' => '05100259',
 	        		'name' => 'Russel Rivera',
 		        	'email' => 'russel.rivera@personive.com',
 		        	'password' => bcrypt('!welcome10'),
