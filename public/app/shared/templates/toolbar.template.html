@@ -39,40 +39,6 @@
 			<md-button class="md-icon-button" ng-click="vm.toolbar.showSearchBar()" ng-if="!vm.toolbar.hideSearchIcon" hide-xs hide-sm>
 				<md-icon class="mdi grey mdi-magnify" aria-label="Search"></md-icon>
 			</md-button>
-			<!-- Notifications -->
-			<!-- <md-menu md-position-mode="target-right target" hide-xs hide-sm>
-				<md-button layout="row" aria-label="Notifications" ng-click="$mdOpenMenu($event)">
-					<md-icon class="mdi mdi-bell grey"></md-icon>
-					<span class="badge" ng-if="mainVm.user.unread_notifications.length">{{ mainVm.user.unread_notifications.length }}</span>
-				</md-button>
-				<md-menu-content width="6">
-					<md-subheader ng-if="!mainVm.user.unread_notifications.length">No unread notifications <a ui-sref="main.notifications">See all</a></md-subheader>
-					<md-subheader class="md-primary" ng-if="mainVm.user.unread_notifications.length">Notifications <a ui-sref="main.notifications">See all</a></md-subheader>
-					<md-menu-item ng-if="mainVm.user.unread_notifications.length">
-					                <md-button aria-label="Mark All as Read" ng-click="mainVm.markAllAsRead()" flex>
-					                    <div layout="row">
-					                        <span class="secondary-text">Mark all as read</span>
-					                        <span flex></span>
-					                        <md-icon ng-show="showInactive" class="mdi mdi-check grey"></md-icon>
-					                    </div>
-					                </md-button>
-					            </md-menu-item>
-					<div ng-repeat="notification in mainVm.user.unread_notifications">
-						<md-list-item class="md-3-line secondary-button-padding" ng-mouseenter="hover = true" ng-mouseleave="hover = false" ng-click="mainVm.user.read(notification)">
-					        <img ng-if="notification.data.sender.avatar_path" ng-src="/user/avatar/{{notification.data.sender.id}}?={{mainVm.user.currentTime}}" class="md-avatar" alt="notification.data.sender.name photo" />
-					        <img ng-if="!notification.data.sender.avatar_path" src="/img/2Color-Favicon_512x512-1.png" class="md-avatar" alt="notification.data.sender.name photo" />
-					        <div class="md-list-item-text">
-					            <h3>{{ notification.data.sender.first_name }} {{notification.data.sender.last_name}}</h3>
-					            <h4>{{ notification.data.message }}</h4>
-					            <p><span am-time-ago="notification.created_at"></span></p>
-					        </div>
-					        <md-button class="md-secondary md-icon-button hide"  aria-label="Mark as read" ng-click="mainVm.markAsRead(notification)" ng-class="{show:hover}">
-								<md-icon class="mdi mdi-close grey"></md-icon>
-							</md-button>
-					    </md-list-item>
-					</div>
-				</md-menu-content>
-			</md-menu> -->
 			<!-- Options -->
 			<md-menu md-position-mode="target-right target" ng-if="vm.toolbar.options">
 				<md-button aria-label="Open options" class="md-icon-button" ng-click="$mdOpenMenu($event)">

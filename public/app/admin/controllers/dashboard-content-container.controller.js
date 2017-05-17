@@ -19,9 +19,25 @@ admin
 					// data per project then set data to charts
 					vm.task.data = response.data;
 
+					if(vm.task.data.length)
+					{
+						angular.forEach(vm.task.data, function(item){
+							setToolbarItem(item);
+						});
+					}
+
 					return vm.task.data;
 				})
 				.catch(error);
+		}
+
+		function setToolbarItem(item)
+		{
+			var entry = {}
+
+			entry.display = item.name;
+
+			toolbarService.items.push(entry);
 		}
 
 

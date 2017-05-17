@@ -83,6 +83,6 @@ shared
 					}
 				})
 			// vm.user.pusher();
-			vm.user.photoUploaderInit();
+			// vm.user.photoUploaderInit();
 		}();
 	}]);

@@ -2,8 +2,8 @@ admin
 	.controller('downloadDialogController', ['Department', 'User', 'MaterialDesign', 'formService', '$window', function(Department, User, MaterialDesign, formService, $window){
 		var vm = this;
 
-		vm.department = 'Department';
-		vm.user = 'User';
+		vm.department = Department;
+		vm.user = User;
 		vm.label = 'Download';
 
 		vm.data = {};

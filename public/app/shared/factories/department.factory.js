@@ -1,9 +1,11 @@
 shared
 	.factory('Department', ['$http', function($http){
-		return {
+		var factory = {
 			data : [],
 			index: index,
 		}
+
+		return factory;
 
 		function index(){
 			return $http.get('department');

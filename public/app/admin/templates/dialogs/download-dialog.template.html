@@ -16,8 +16,8 @@
                 <md-input-container flex>
                     <label>Department</label>
                     <md-select name="Department" ng-model="vm.data.department_id" required>
-                        <md-option ng-repeat="department in vm.department.data">
-                            
+                        <md-option value="{{department.id}}" ng-repeat="department in vm.department.data">
+                            {{department.name}}
                         </md-option>
                     </md-select>
                 </md-input-container>

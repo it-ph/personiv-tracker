@@ -11,7 +11,7 @@ use Excel;
 
 trait TaskReports
 {
-    protected function scope($department_id)
+    protected function scope($department_id = null)
     {
         $this->request = request();
 
@@ -36,7 +36,7 @@ trait TaskReports
 
         else if($this->request->user()->isSuperUser())
         {
-            $this->accounts = Account::all()    
+            $this->accounts = Account::all();    
         }
         else{
             $this->accounts = Account::where('department_id', $this->request->user()->department_id)->get();
