@@ -14,11 +14,11 @@ class TaskController extends Controller
 {
     use Enlist;
 
-    public function download($date_start, $date_end, $time_start, $time_end)
+    public function download($date_start, $date_end, $time_start, $time_end, $department_id)
     {
         $task = new Task;
 
-        return $task->toExcel($date_start, $date_end, $time_start, $time_end);
+        return $task->toExcel($date_start, $date_end, $time_start, $time_end, $department_id);
     }
 
     /**
@@ -51,6 +51,8 @@ class TaskController extends Controller
             $task->loadUnfinishedPauses();
         });
 
+        $task->load('account');
+
         return $task;
     }
 
@@ -69,6 +71,8 @@ class TaskController extends Controller
 
             $task->loadUnfinishedPauses();
         });
+
+        $task->load('account');
 
         return $task;
     }

@@ -11,13 +11,17 @@ use Excel;
 
 trait TaskReports
 {
-    protected function scope()
+    protected function scope($department_id = null)
     {
         $this->request = request();
 
         $this->request->user()->load('subordinates', 'shift_schedule');
 
-        if($this->request->user()->isDepartmentHead())
+        if($this->request->user()->isSuperUser())
+        {
+            $this->subordinateIds = User::whereNotIn('id', [$this->request->user()->id])->doesntHave('roles')->get()->pluck('id');
+        }
+        else if($this->request->user()->isDepartmentHead())
         {
             $this->subordinateIds = User::where('department_id', $this->request->user()->department_id)->whereNotIn('id', [$this->request->user()->id])->doesntHave('roles')->get()->pluck('id');
         }
@@ -25,12 +29,24 @@ trait TaskReports
             $this->subordinateIds = $this->request->user()->subordinates->pluck('id');
         }
 
-        $this->accounts = Account::where('department_id', $this->request->user()->department_id)->get();
+        if($department_id)
+        {
+            $this->accounts = Account::where('department_id', $department_id)->get();
+        }
+
+        else if($this->request->user()->isSuperUser())
+        {
+            $this->accounts = Account::all();    
+        }
+        else{
+            $this->accounts = Account::where('department_id', $this->request->user()->department_id)->get();
+        }
+
     }
 
-    protected function dashboardData($data, $from, $to)
+    protected function dashboardData($accounts, $from, $to)
     {
-        $data->each(function($account, $key) use($from, $to){
+        $accounts->each(function($account, $key) use($from, $to){
             $account->range = Carbon::parse($from)->toDayDateTimeString() . ' to ' . Carbon::parse($to)->toDayDateTimeString();
 
             $account->employees = User::where(function($query) use($account, $from, $to){
@@ -76,7 +92,7 @@ trait TaskReports
             });
         });
 
-        return $data;
+        return $accounts;
     }
 
     protected function reportData($data, $date_start, $date_end, $time_start, $time_end)
@@ -106,13 +122,22 @@ trait TaskReports
 	            }]);
 
 				$account->employees->each(function($employee, $key){
-                    $new = $employee->tasks->where('revision', false)->count();
-					$number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
+                    $new = 0;
+                    $number_of_photos_new  = 0;
+                    $revisions  = 0;
+                    $number_of_photos_revisions  = 0;
+                    $hours_spent  = 0;
 
-                    $revisions = $employee->tasks->where('revision', true)->count();
-	                $number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');
+                    if(count($employee->tasks))
+                    {
+                        $new = $employee->tasks->where('revision', false)->count();
+    					$number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
 
-	                $hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
+                        $revisions = $employee->tasks->where('revision', true)->count();
+    	                $number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');
+
+    	                $hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
+                    }
 
 					$employee->data->push(compact('new', 'number_of_photos_new', 'revisions', 'number_of_photos_revisions', 'hours_spent'));
 				});            

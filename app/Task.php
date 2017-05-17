@@ -5,6 +5,7 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use App\Traits\Support\TaskReports;
 
+use App\Department;
 use Carbon\Carbon;
 use Excel;
 
@@ -66,7 +67,7 @@ class Task extends Model
     {
         $this->title = $request->title;
         $this->account_id = $request->account_id;
-        $this->revision = $request->revision;
+        $this->revision = $request->revision ? $request->revision : false;
         $this->number_of_photos = $request->number_of_photos;
     }
 
@@ -135,15 +136,23 @@ class Task extends Model
         return $this->dashboardData($this->accounts, $from, $to);
     }
 
-    public function toExcel($date_start, $date_end, $time_start, $time_end)
+    public function toExcel($date_start, $date_end, $time_start, $time_end, $department_id)
     {
-        $this->scope();
+        if((int)$department_id)
+        {
+            $this->scope($department_id);
+            $department = Department::find($department_id)->name;
+        }
+        else{
+            $this->scope();
+            $department = request()->user()->department->name;
+        }
 
         $reports = $this->reportData($this->accounts, $date_start, $date_end, $time_start, $time_end);
 
         // return $reports;
 
-        Excel::create(request()->user()->department->name . ' report from ' . Carbon::parse($date_start)->toFormattedDateString() . ' to ' . Carbon::parse($date_end)->toFormattedDateString() .' Shift: ' . Carbon::parse($time_start)->toTimeString() . ' to ' . Carbon::parse($time_end)->toTimeString(), function($excel) use($reports){
+        Excel::create($department . ' report from ' . Carbon::parse($date_start)->toFormattedDateString() . ' to ' . Carbon::parse($date_end)->toFormattedDateString() .' Shift: ' . Carbon::parse($time_start)->toTimeString() . ' to ' . Carbon::parse($time_end)->toTimeString(), function($excel) use($reports){
             $reports->each(function($account, $key) use($excel){
                 $excel->sheet($this->formatSheet($account->name), function($sheet) use($account){
                     $sheet->loadView('excel.report')->with('account', $account);

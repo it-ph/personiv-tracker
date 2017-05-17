@@ -1,6 +1,6 @@
 <div layout="row" flex layout-align="center center">
 	<div layout="column" flex-md="70" flex-gt-md="60" flex>	
-		<md-card ng-repeat="account in vm.task.data | orderBy:'name'">
+		<md-card ng-repeat="account in vm.task.data | filter:vm.toolbar.searchText | orderBy:'name'">
 	        <md-card-content>
 	          	<highchart id="chart1" config="vm.chart.config(account)"></highchart>
 				<table class="table" ng-if="account.employees.length">

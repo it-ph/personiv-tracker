@@ -35,7 +35,7 @@
             </div>
             <div layout="row" flex>
                 <!-- Revision -->
-                <md-switch class="md-primary" ng-model="vm.task.data.revision" flex>Revision</md-switch>
+                <md-switch class="md-primary" ng-model="vm.task.data.revision" ng-true-value="true" ng-false-value="false" flex>Revision</md-switch>
                 <!-- Batch -->
                 <md-switch class="md-primary" ng-model="vm.batch" flex ng-change="vm.task.changeNumberOfPhotos(vm.task.data)" ng-if="vm.batchable">Batch</md-switch>
             </div>

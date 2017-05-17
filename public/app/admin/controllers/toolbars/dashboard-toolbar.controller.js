@@ -8,7 +8,7 @@ admin
 		vm.toolbar.parentState = null; //string
 		vm.toolbar.childState = 'Dashboard'; //string
 
-		vm.toolbar.hideSearchIcon = true; //bool - true if deeper search icon should be hidden
+		vm.toolbar.hideSearchIcon = false; //bool - true if deeper search icon should be hidden
 		vm.toolbar.searchAll = false; // bool - true if a deeper search can be executed
 
 		vm.toolbar.options = false; //bool - true if a menu button is needed in the view
