@@ -1,10 +1,24 @@
 admin
-	.controller('downloadDialogController', ['MaterialDesign', 'ShiftSchedule', 'formService', '$window', function(MaterialDesign, ShiftSchedule, formService, $window){
+	.controller('downloadDialogController', ['Department', 'User', 'MaterialDesign', 'formService', '$window', function(Department, User, MaterialDesign, formService, $window){
 		var vm = this;
 
+		vm.department = 'Department';
+		vm.user = 'User';
 		vm.label = 'Download';
 
 		vm.data = {};
+
+		vm.init = init;
+
+		function init() {
+			return vm.department.index()
+				.then(function(response){
+					vm.department.data = response.data;
+				})
+				.catch(function(){
+					MaterialDesign.error();
+				});
+		}
 
 		vm.cancel = function(){
 			formService.cancel();
@@ -51,9 +65,11 @@ admin
 				vm.toLocaleTimeString();
 				vm.toDateString();
 			
-				$window.open('/task/download/' + vm.data.date_start + '/to/' + vm.data.date_end + '/at/' + vm.data.time_start + '/until/' + vm.data.time_end, '_blank');
+				$window.open('/task/download/' + vm.data.date_start + '/to/' + vm.data.date_end + '/at/' + vm.data.time_start + '/until/' + vm.data.time_end + '/department/' + vm.data.department_id, '_blank');
 
 				MaterialDesign.hide();
 			}
 		}
+
+		vm.init();
 	}]);

@@ -135,9 +135,15 @@ class Task extends Model
         return $this->dashboardData($this->accounts, $from, $to);
     }
 
-    public function toExcel($date_start, $date_end, $time_start, $time_end)
+    public function toExcel($date_start, $date_end, $time_start, $time_end, $department_id)
     {
-        $this->scope();
+        if($department_id)
+        {
+            $this->scope($department_id);
+        }
+        else{
+            $this->scope();
+        }
 
         $reports = $this->reportData($this->accounts, $date_start, $date_end, $time_start, $time_end);
 

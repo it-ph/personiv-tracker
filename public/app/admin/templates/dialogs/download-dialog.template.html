@@ -11,6 +11,17 @@
         </md-toolbar>
         <md-dialog-content flex layout-padding layout-wrap>
             <md-subheader class="red-text" ng-if="vm.error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <div layout="row" ng-if="vm.user.user.super_user">
+                <!-- Department -->
+                <md-input-container flex>
+                    <label>Department</label>
+                    <md-select name="Department" ng-model="vm.data.department_id" required>
+                        <md-option ng-repeat="department in vm.department.data">
+                            
+                        </md-option>
+                    </md-select>
+                </md-input-container>
+            </div>
             <div layout="row">
                 <!-- Date Start -->
                 <div layout="column" flex-xs="100" flex-sm="100" flex-gt-sm>
