@@ -15,16 +15,16 @@ shared
 			            text: 'Compeleted Tasks',
 			        },
 			    },
-			    {
-			    	min: 0,
-			        title: {
-			            text: 'Hours Worked',
-			        },
-			        labels: {
-				        format: '{value} hrs.',
-				    },
-				    opposite: true
-			    },
+			    // {
+			    // 	min: 0,
+			    //     title: {
+			    //         text: 'Hours Worked',
+			    //     },
+			    //     labels: {
+				   //      format: '{value} hrs.',
+				   //  },
+				   //  opposite: true
+			    // },
 			],
 			plotOptions: {
 		        column: {
@@ -43,14 +43,14 @@ shared
 			    	name: 'Revisions',
 			    	type: 'column',
 			    },
-			    {
-			    	name: 'Hours Spent',
-			    	type: 'spline',
-			    	yAxis: 1,
-			        tooltip: {
-			            valueSuffix: ' hrs.'
-			        }
-			    },
+			    // {
+			    // 	name: 'Hours Spent',
+			    // 	type: 'spline',
+			    // 	yAxis: 1,
+			    //     tooltip: {
+			    //         valueSuffix: ' hrs.'
+			    //     }
+			    // },
 			],
 			navigation: {
 		        buttonOptions: {
@@ -67,7 +67,7 @@ shared
 
 			factory.data.series[0].data = data.new;
 			factory.data.series[1].data = data.revisions;
-			factory.data.series[2].data = data.hours_spent;
+			// factory.data.series[2].data = data.hours_spent;
 
 			return factory.data;
 		}

@@ -32,9 +32,9 @@ trait TaskReports
         $this->accounts = $this->request->user()->isSuperUser() ? Account::all() :  Account::where('department_id', $this->request->user()->department_id)->get();
     }
 
-    protected function dashboardData($data, $from, $to)
+    protected function dashboardData($accounts, $from, $to)
     {
-        $data->each(function($account, $key) use($from, $to){
+        $accounts->each(function($account, $key) use($from, $to){
             $account->range = Carbon::parse($from)->toDayDateTimeString() . ' to ' . Carbon::parse($to)->toDayDateTimeString();
 
             $account->employees = User::where(function($query) use($account, $from, $to){
@@ -80,7 +80,7 @@ trait TaskReports
             });
         });
 
-        return $data;
+        return $accounts;
     }
 
     protected function reportData($data, $date_start, $date_end, $time_start, $time_end)
