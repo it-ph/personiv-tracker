@@ -17,7 +17,12 @@ trait TaskReports
 
         $this->request->user()->load('subordinates', 'shift_schedule');
 
-        if($this->request->user()->isDepartmentHead())
+        if($this->request->user()->isSuperUser())
+        {
+            $this->subordinateIds = User::whereNotIn('id', [$this->request->user()->id])->doesntHave('roles')->get()->pluck('id');
+        }
+
+        else if($this->request->user()->isDepartmentHead())
         {
             $this->subordinateIds = User::where('department_id', $this->request->user()->department_id)->whereNotIn('id', [$this->request->user()->id])->doesntHave('roles')->get()->pluck('id');
         }
