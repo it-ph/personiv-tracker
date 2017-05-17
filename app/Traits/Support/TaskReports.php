@@ -21,7 +21,6 @@ trait TaskReports
         {
             $this->subordinateIds = User::whereNotIn('id', [$this->request->user()->id])->doesntHave('roles')->get()->pluck('id');
         }
-
         else if($this->request->user()->isDepartmentHead())
         {
             $this->subordinateIds = User::where('department_id', $this->request->user()->department_id)->whereNotIn('id', [$this->request->user()->id])->doesntHave('roles')->get()->pluck('id');
@@ -30,7 +29,7 @@ trait TaskReports
             $this->subordinateIds = $this->request->user()->subordinates->pluck('id');
         }
 
-        $this->accounts = Account::where('department_id', $this->request->user()->department_id)->get();
+        $this->accounts = $this->request->user()->isSuperUser() ? Account::all() :  Account::where('department_id', $this->request->user()->department_id)->get();
     }
 
     protected function dashboardData($data, $from, $to)
