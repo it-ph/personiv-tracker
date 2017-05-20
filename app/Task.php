@@ -19,7 +19,7 @@ class Task extends Model
      *
      * @var array
      */
-    protected $dates = ['ended_at'];
+    protected $dates = ['ended_at', 'deleted_at'];
 
     /**
      * The attributes that aren't mass assignable.
