@@ -1,8 +1,8 @@
 <div layout="row" flex layout-align="center center">
-	<div layout="column" flex-md="70" flex-gt-md="60" flex>	
+	<div layout="column" flex-md="70" flex-gt-md="60" flex>
 		<md-card ng-repeat="account in vm.task.data | filter:vm.toolbar.searchText | orderBy:'name'">
-	        <md-card-content>
-	          	<highchart id="chart1" config="vm.chart.config(account)"></highchart>
+      <md-card-content>
+      	<highchart id="chart1" config="vm.chart.config(account)"></highchart>
 				<table class="table" ng-if="account.employees.length">
 					<tr ng-if="!account.batchable">
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
@@ -27,8 +27,8 @@
 						<td>{{employee.hours_spent}}</td>
 					</tr>
 				</table>
-	        </md-card-content>
-	    </md-card>
+      </md-card-content>
+    </md-card>
 	</div>
 </div>
 <div layout="row" layout-align="center center" layout-padding layout-margin ng-if="vm.isLoading">

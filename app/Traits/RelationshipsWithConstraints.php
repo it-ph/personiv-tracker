@@ -1,14 +1,12 @@
-<?php 
+<?php
 
 namespace App\Traits;
 
-use Illuminate\Http\Request;
-
 trait RelationshipsWithConstraints
 {
-	public function populateRelationship(Request $request)
+	public function populateRelationship()
 	{
-		foreach ($request->relationshipsWithConstraints as $relationship) {
+		foreach (request()->relationshipsWithConstraints as $relationship) {
 			$this->model->with([$relationship['relationship'] => function($query) use($relationship){
 
 				if( isset($relationship['whereNull']) )

@@ -1,0 +1,47 @@
+<md-card>
+	<md-card-title>
+      	<md-card-title-text>
+        	<span class="md-headline">New User</span>
+      	</md-card-title-text>
+    </md-card-title>
+	<md-card-content>
+		<form name="vm.form" novalidate>
+			<div layout="row" flex>
+				<!-- Name -->
+				<md-input-container class="md-block" flex id="newUser">
+					<label>Name</label>
+					<input type="text" ng-model="vm.user.new.name" name="Name" ng-init="vm.test()" required ng-disabled="vm.busy"/>
+					<div ng-messages="vm.form.Name.$error">
+						<div ng-message="required">Name is required.</div>
+					</div>
+				</md-input-container>
+        <!-- Employee Number -->
+				<md-input-container class="md-block" flex>
+					<label>Employee Number</label>
+					<input type="text" ng-model="vm.user.new.employee_number" name="EmployeeNumber" required ng-disabled="vm.busy" ng-pattern="/^[0-9]*$/" ng-blur="vm.checkEmployeeNumber()"/>
+					<div class="pattern" ng-if="vm.duplicateEmployeeNumber">Employee number already in use.</div>
+					<div ng-messages="vm.form.EmployeeNumber.$error">
+						<div ng-message="required">Employee number is required.</div>
+						<div ng-message="pattern">Numeric characters only.</div>
+					</div>
+				</md-input-container>
+			</div>
+      <div layout="row" flex>
+        <!-- Email -->
+        <md-input-container class="md-block" flex>
+          <label>Email</label>
+          <input type="email" ng-model="vm.user.new.email" name="Email" required ng-blur="vm.checkEmail()">
+					<div class="pattern" ng-if="vm.duplicateEmail">Email already in use.</div>
+          <div ng-messages="vm.form.Email.$error">
+						<div ng-message="required">Email is required.</div>
+					</div>
+        </md-input-container>
+      </div>
+		</form>
+	</md-card-content>
+	<md-card-actions layout="row" layout-align="end center">
+    	<md-button ng-click="vm.cancel()" ng-if="!vm.busy">Cancel</md-button>
+    	<md-button ng-click="vm.submit()" ng-if="!vm.busy">Submit</md-button>
+    	<md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="45"></md-progress-circular>
+    </md-card-actions>
+</md-card>

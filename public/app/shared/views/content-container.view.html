@@ -9,8 +9,8 @@
         <md-content ui-view="content" flex></md-content>
     </div>
     <!-- FAB -->
-    <md-button class="md-fab md-primary md-fab-bottom-right z-index-75" ng-if="fab.show" ng-click="fab.action()" aria-label="FAB">
-        <md-icon class="mdi {{ fab.icon }}" aria-label="{{ fab.label }}"></md-icon>
-        <md-tooltip hide-xs hide-sm hide-md>{{ fab.label }}</md-tooltip>
+    <md-button class="md-fab md-primary md-fab-bottom-right z-index-75" ng-if="vm.fab.show" ng-click="vm.fab.action()" aria-label="FAB">
+        <md-icon class="mdi {{ vm.fab.icon }}" aria-label="{{ vm.fab.label }}"></md-icon>
+        <md-tooltip hide-xs hide-sm hide-md>{{ vm.fab.label }}</md-tooltip>
     </md-button>
 </div>

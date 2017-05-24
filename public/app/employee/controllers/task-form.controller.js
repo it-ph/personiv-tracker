@@ -7,7 +7,7 @@ employee
 		vm.user = User;
 
 		vm.task.new.revision = false;
-		
+
 		// determines the user if he can use batch tasks
 		vm.setAccount = function(){
 			vm.task.new.account_id = vm.task.new.account.id;
@@ -67,7 +67,7 @@ employee
 		}
 
 		/**
-		 * 
+		 *
 		*/
 		vm.init = function(){
 			vm.accounts();

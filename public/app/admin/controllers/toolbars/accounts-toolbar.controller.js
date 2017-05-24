@@ -1,12 +1,12 @@
 admin
-	.controller('dashboardToolbarController', ['MaterialDesign', 'toolbarService', 'Task', '$state', function(MaterialDesign, toolbarService, Task, $state){
+	.controller('accountsToolbarController', ['MaterialDesign', 'toolbarService', 'User', '$state', function(MaterialDesign, toolbarService, User, $state){
 		var vm = this;
 
 		vm.toolbar = toolbarService;
-		vm.toolbar.content = Task;
+		vm.toolbar.content = User;
 
 		vm.toolbar.parentState = null; //string
-		vm.toolbar.childState = 'Dashboard'; //string
+		vm.toolbar.childState = 'Accounts'; //string
 
 		vm.toolbar.hideSearchIcon = false; //bool - true if deeper search icon should be hidden
 		vm.toolbar.searchAll = false; // bool - true if a deeper search can be executed

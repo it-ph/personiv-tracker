@@ -1,5 +1,5 @@
 shared
-	.factory('User', ['$http', '$state', 'MaterialDesign', 'FileUploader', function($http, $state, MaterialDesign, FileUploader){
+	.factory('User', ['$http', '$state', '$filter', 'MaterialDesign', 'FileUploader', function($http, $state, $filter, MaterialDesign, FileUploader){
 		var factory = {};
 
 		factory.user = {};
@@ -7,21 +7,61 @@ shared
 		factory.currentTime = Date.now();
 
 		/*
-		 * Get the record of the authenticated user. 
+		 * Get the record of the authenticated user.
 		 */
 		factory.get = function(){
 			return $http.post('/user/check');
 		}
 
-		/*
-		 * Sets the user
-		*/
-		factory.set = function(user){
-			factory.user = user;
+		factory.update = function(user){
+			return $http.put('/user/' + user.id, user);
 		}
-		
+
+		factory.resetPassword = function(user){
+			return $http.put('/user/reset-password/' + user.id);
+		}
+
+		factory.delete = function(id) {
+			return $http.delete('/user/' + id);
+		}
+
+		factory.clone = function(index) {
+			var obj = {}
+
+			angular.forEach(factory[index], function(value, key){
+				obj[key] = value;
+			});
+
+			return obj;
+		}
+
 		/*
-		 * Ends the session of the authenticated user. 
+		 * Sets data in the factory
+		*/
+		factory.set = function(key, value){
+			return factory[key] = value;
+		}
+
+		/*
+		 * Checks if authenticated user is a supervisor
+		*/
+		factory.isSupervisor = function(){
+			var roles = $filter('filter')(factory.user.roles, {name:'Supervisor'}, true);
+			return roles.length ? true : false;
+		}
+
+		factory.store = function()
+		{
+			return $http.post('/user', factory.new);
+		}
+
+		factory.enlist = function(query)
+		{
+			return $http.post('/user/enlist', query);
+		}
+
+		/*
+		 * Ends the session of the authenticated user.
 		 */
 		factory.logout = function(){
 			return $http.post('/user/logout');
@@ -82,7 +122,7 @@ shared
 	        factory.photoUploader.onWhenAddingFileFailed = factory.uploader.error;
 			factory.photoUploader.onAfterAddingFile  = function(){
 				if(factory.photoUploader.queue.length)
-				{	
+				{
 					factory.photoUploader.uploadAll()
 				}
 			};

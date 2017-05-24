@@ -102,4 +102,31 @@ class User extends Authenticatable
         return count($this->roles) ? true : false;
     }
 
+    public function prepare()
+    {
+      $this->name = request()->name;
+      $this->employee_number = request()->employee_number;
+      $this->email = request()->email;
+      $this->password = request()->has('password') ? bcrypt(request()->password) : bcrypt('!welcome10');
+      $this->department_id = request()->user()->department_id;
+      $this->immediate_supervisor_id = request()->user()->id;
+    }
+
+    public function checkDuplicate()
+    {
+      $user = User::query();
+
+      if(request()->has('id')) {
+        $user->whereNotIn('id', [request()->id]);
+      }
+
+      $duplicate = $user->withTrashed()->where(function($query){
+        $query->where('employee_number', request()->employee_number);
+        $query->orWhere('email', request()->email);
+      })->first();
+
+      if($duplicate) {
+        abort(403, 'Duplicate entry.');
+      }
+    }
 }

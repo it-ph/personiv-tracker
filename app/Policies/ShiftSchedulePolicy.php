@@ -41,8 +41,6 @@ class ShiftSchedulePolicy
             $query->where('name', 'Settings');
         }]);
 
-        echo $user;
-
         return count($user->roles) ? true : false;
     }
 

@@ -24,11 +24,31 @@ admin
 					authentication: ['MaterialDesign', 'User', '$state', function(MaterialDesign, User, $state){
 						return User.get()
 							.then(function(data){
-								User.set(data.data);
+								User.set('user', data.data);
 							}, function(){
 								$state.go('page-not-found');
 							});
 					}],
 				},
 			})
+			.state('main.manage-users', {
+				url: 'users',
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'accountsContentContainerController as vm',
+					},
+					'toolbar@main.manage-users': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'accountsToolbarController as vm',
+					},
+					'content@main.manage-users':{
+						templateUrl: '/app/admin/templates/content/users-content.template.html',
+					},
+					'form@main.manage-users': {
+						templateUrl: '/app/admin/templates/content/user-form.template.html',
+						controller: 'userFormController as vm'
+					}
+				},
+			});
 	}]);

@@ -39,11 +39,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post('change-password', 'UserController@changePassword');
 		Route::post('check-default-password', 'UserController@checkDefaultPassword');
 		Route::post('verify-password', 'UserController@verifyPassword');
+		Route::put('reset-password/{user}', 'UserController@resetPassword');
 		Route::post('logout', 'UserController@logout');
-		Route::post('upload-avatar/{userID}', 'UserController@uploadAvatar');
-		Route::get('avatar/{userID}', 'UserController@avatar');
-		Route::post('mark-all-as-read', 'UserController@markAllAsRead');
-		Route::post('mark-as-read', 'UserController@markAsRead');
+		Route::post('enlist', 'UserController@enlist');
 	});
 
 	// Task resource
