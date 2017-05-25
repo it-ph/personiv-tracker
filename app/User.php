@@ -8,9 +8,8 @@ use Illuminate\Database\Eloquent\Softdeletes;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-    use Softdeletes;
-
+    use Notifiable, Softdeletes;
+    
     /**
      * The attributes that should be mutated to dates.
      *
@@ -42,6 +41,14 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany('App\Role', 'user_roles')->withTimestamps();
+    }
+
+    /**
+     * Get the exeperience records associated with the user.
+     */
+    public function experiences()
+    {
+      return $this->hasMany('App\Experience');
     }
 
     /**
@@ -83,7 +90,6 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\ShiftSchedule');
     }
-
 
     /**
      * Determines the authenticated user is a super user.

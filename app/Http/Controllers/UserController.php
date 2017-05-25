@@ -144,6 +144,8 @@ class UserController extends Controller
         $user->checkDuplicate();
         $user->prepare();
         $user->save();
+
+        return $user->id;
     }
 
     /**

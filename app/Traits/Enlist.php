@@ -38,6 +38,11 @@ trait Enlist
             $this->whereNotNull();
         }
 
+				if(request()->has('whereHas'))
+        {
+            $this->whereHas();
+        }
+
         if(request()->has('orderBy'))
         {
             $this->orderBy();
@@ -76,6 +81,17 @@ trait Enlist
 	{
 		foreach (request()->whereNotNull as $column) {
 			$this->model->whereNotNull($column);
+		}
+	}
+
+	public function whereHas()
+	{
+		foreach (request()->whereHas as $whereHas) {
+			$this->model->whereHas($whereHas['relationship'], function($query) use($whereHas){
+				foreach ($whereHas['where'] as $where) {
+					$query->where($where['column'], $where['condition'], $where['value']);
+				}
+			});
 		}
 	}
 

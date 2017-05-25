@@ -10,7 +10,7 @@
 				<!-- Name -->
 				<md-input-container class="md-block" flex id="newUser">
 					<label>Name</label>
-					<input type="text" ng-model="vm.user.new.name" name="Name" ng-init="vm.test()" required ng-disabled="vm.busy"/>
+					<input type="text" ng-model="vm.user.new.name" name="Name" ng-init="vm.focusOnForm()" required ng-disabled="vm.busy"/>
 					<div ng-messages="vm.form.Name.$error">
 						<div ng-message="required">Name is required.</div>
 					</div>
@@ -37,6 +37,22 @@
 					</div>
         </md-input-container>
       </div>
+			<md-subheader class="md-no-sticky">Experiences</md-subheader>
+			<div layout="column" ng-repeat="experience in vm.user.new.experiences" flex>
+				<md-checkbox class="md-primary" ng-model="experience.selected">{{experience.name}}</md-checkbox>
+				<div layout="row" flex ng-if="experience.selected">
+					<!-- Date Started -->
+					<md-input-container class="md-block" flex>
+						<label>Date Started</label>
+						<md-datepicker name="DateStarted{{$index}}" ng-model="experience.date_started" required></md-datepicker>
+						<div ng-messages="vm.form['DateStarted' + $index].$error">
+							<div ng-message="valid">The entered value is not a date.</div>
+							<div ng-message="required">Date started is required.</div>
+							<div ng-message="maxdate">Date cannot be later than today</div>
+						</div>
+					</md-input-container>
+				</div>
+			</div>
 		</form>
 	</md-card-content>
 	<md-card-actions layout="row" layout-align="end center">

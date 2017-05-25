@@ -579,12 +579,15 @@ admin
 admin
   .controller('userFormController', userFormController)
 
-  userFormController.$inject = ['MaterialDesign', 'User', 'formService', 'fab'];
+  userFormController.$inject = ['MaterialDesign', 'User', 'Position', 'Experience', 'formService', 'fab', '$filter'];
 
-  function userFormController(MaterialDesign, User, formService, fab) {
+  function userFormController(MaterialDesign, User, Position, Experience, formService, fab, $filter) {
     var vm = this;
 
     vm.user = User;
+    vm.user.new = {}
+    vm.user.new.experiences = [];
+
     vm.fab = fab;
 
     vm.checkEmployeeNumber = checkEmployeeNumber;
@@ -592,6 +595,37 @@ admin
     vm.focusOnForm = focusOnForm;
     vm.cancel = hideForm;
     vm.submit = submit;
+
+    init();
+
+    function init() {
+      return getPositions().then(function(positions){
+          angular.copy(positions, vm.user.new.experiences);
+      })
+    }
+
+    function getPositions(){
+      var query = {
+        whereHas : [
+          {
+            relationship: 'departments',
+            where: [
+              {
+                column: 'department_id',
+                condition: '=',
+                value: vm.user.user.department_id
+              }
+            ]
+          }
+        ]
+      }
+
+      return Position.enlist(query)
+        .then(function(response){
+          return vm.positions = response.data;
+        })
+        .catch(error);
+    }
 
     function checkEmployeeNumber() {
       var query = {
@@ -647,33 +681,51 @@ admin
 			else{
 				vm.busy = true;
 
+        convertDatesToString();
+
 				vm.user.store()
-					.then(function(){
-						vm.busy = false;
-						MaterialDesign.notify('User created.');
-					})
-          .then(hideForm)
+					.then(storeExperiences)
           .then(getUser)
+          .then(hideForm)
           .catch(error);
 			}
+
+      function storeExperiences(response){
+        vm.user.new.id = response.data;
+        return Experience.store(vm.user.new)
+      }
+
+      function getUser() {
+        return vm.user.get()
+          .then(function(response){
+            return vm.user.set('user', response.data);
+          });
+      }
+    }
+
+    function convertDatesToString(){
+      angular.forEach(vm.user.new.experiences, function(experience){
+        experience.date_started = experience.date_started.toDateString();
+      });
+    }
+
+    function revertDatesToObject(){
+      angular.forEach(vm.user.new.experiences, function(experience){
+        experience.date_started = new Date(experience.date_started);
+      });
     }
 
     function hideForm() {
+      vm.busy = false;
+      MaterialDesign.notify('User created.');
       vm.user.showForm = false;
       vm.user.new = {};
       vm.fab.show = true;
     }
 
-    function getUser() {
-      vm.user.get()
-      .then(function(response){
-        vm.user.set('user', response.data);
-      });
-    }
-
     function error() {
       vm.busy = false;
+      revertDatesToObject();
       MaterialDesign.error();
     }
-
   }
