@@ -26,7 +26,7 @@ class Task extends Model
      *
      * @var array
      */
-    protected $guarded = ['ended_at'];  
+    protected $guarded = ['ended_at'];
 
     /**
      * The attributes that should be cast to native types.
@@ -54,6 +54,14 @@ class Task extends Model
     }
 
     /**
+     * Get the experience record associated with the task.
+     */
+    public function experience()
+    {
+        return $this->belongsTo('App\Experience');
+    }
+
+    /**
      * Get the pause records associated with the task.
      */
     public function pauses()
@@ -68,6 +76,7 @@ class Task extends Model
     {
         $this->title = $request->title;
         $this->account_id = $request->account_id;
+        $this->experience_id = $request->experience_id;
         $this->revision = $request->revision ? $request->revision : false;
         $this->number_of_photos = $request->number_of_photos;
     }

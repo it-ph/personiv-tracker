@@ -21,17 +21,27 @@
                     </div>
                 </md-input-container>
             </div>
-            <div layout="row" flex ng-if="vm.account.data.length">                  
+            <div layout="row" flex ng-if="vm.account.data.length">
                 <!-- Project/Account -->
                 <md-input-container class="md-block" flex>
                     <label>Project</label>
                     <md-select name="Account" ng-model="vm.task.data.account_id" ng-disabled="vm.busy" ng-required="vm.account.data.length" ng-change="vm.setAccount(vm.task.data.account_id)">
-                        <md-option ng-repeat="account in vm.account.data | orderBy: 'name'" value="{{account.id}}">{{ account.name }}</md-option>                 
+                        <md-option ng-repeat="account in vm.account.data | orderBy: 'name'" value="{{account.id}}">{{ account.name }}</md-option>
                     </md-select>
                     <div ng-messages="vm.taskForm.Account.$error">
                         <div ng-message="required">Project is required.</div>
                     </div>
                 </md-input-container>
+                <!-- Position -->
+        				<md-input-container class="md-block" flex>
+        					<label>Position</label>
+        					<md-select name="Position" ng-model="vm.task.data.experience_id" ng-disabled="vm.busy">
+        						<md-option ng-repeat="experience in vm.user.user.experiences | orderBy: 'name'" value="{{experience.id}}">{{ experience.position.name }}</md-option>
+        					</md-select>
+        					<div ng-messages="vm.form.Position.$error">
+        						<div ng-message="required">Position is required.</div>
+        					</div>
+        				</md-input-container>
             </div>
             <div layout="row" flex>
                 <!-- Revision -->
@@ -52,7 +62,7 @@
             </div>
         </md-dialog-content>
     </form>
-    <div layout="row" layout-align="end center">        
+    <div layout="row" layout-align="end center">
         <md-button ng-if="!vm.busy" class="md-primary" aria-label="Submit" ng-click="vm.submit()">
             Submit
         </md-button>

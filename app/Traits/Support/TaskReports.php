@@ -36,7 +36,7 @@ trait TaskReports
 
         else if($this->request->user()->isSuperUser())
         {
-            $this->accounts = Account::all();    
+            $this->accounts = Account::all();
         }
         else{
             $this->accounts = Account::where('department_id', $this->request->user()->department_id)->get();
@@ -51,15 +51,22 @@ trait TaskReports
 
             $account->employees = User::where(function($query) use($account, $from, $to){
                 $query->whereIn('id', $this->subordinateIds);
-                    
+
                 $query->whereHas('tasks', function($query) use($account, $from, $to){
                     $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
                 });
             })->with(['tasks' => function($query) use($account, $from, $to){
                 $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
             }])->get();
-           
+
             $account->employees->each(function($employee, $key){
+                $employee->tasks->load('experience.position');
+
+                $employee->tasks->each(function($task, $key){
+                  $monthDiff = Carbon::parse($task->experience->date_started)->diffInMonths(Carbon::today());
+                  $task->experience->category = $monthDiff < 3 ? 'Beginner' : ($monthDiff > 3 && $monthDiff < 6 ? 'Moderately Experienced' : 'Experienced');
+                });
+
                 $employee->new = $employee->tasks->where('revision', false)->count();
                 $employee->number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
 
@@ -109,7 +116,7 @@ trait TaskReports
     		$timeStart = Carbon::parse($time_start)->toTimeString();
 	        $timeEnd = Carbon::parse($time_end)->toTimeString();
 
-	        for ($date = Carbon::parse($date_start); $date->lte(Carbon::parse($date_end)); $date->addDay()) { 
+	        for ($date = Carbon::parse($date_start); $date->lte(Carbon::parse($date_end)); $date->addDay()) {
 
 	            $from = Carbon::parse($date->toDateString() . ' ' . $timeStart);
 
@@ -140,15 +147,15 @@ trait TaskReports
                     }
 
 					$employee->data->push(compact('new', 'number_of_photos_new', 'revisions', 'number_of_photos_revisions', 'hours_spent'));
-				});            
+				});
 	        }
 
             $account->employees->each(function($employee, $key){
-                $employee->total_new = $employee->data->sum('new'); 
-                $employee->total_number_of_photos_new = $employee->data->sum('number_of_photos_new'); 
-                $employee->total_revisions = $employee->data->sum('revisions'); 
-                $employee->total_number_of_photos_revisions = $employee->data->sum('number_of_photos_revisions'); 
-                $employee->total_hours_spent = $employee->data->sum('hours_spent'); 
+                $employee->total_new = $employee->data->sum('new');
+                $employee->total_number_of_photos_new = $employee->data->sum('number_of_photos_new');
+                $employee->total_revisions = $employee->data->sum('revisions');
+                $employee->total_number_of_photos_revisions = $employee->data->sum('number_of_photos_revisions');
+                $employee->total_hours_spent = $employee->data->sum('hours_spent');
             });
     	});
 

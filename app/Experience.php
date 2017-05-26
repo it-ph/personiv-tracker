@@ -30,6 +30,14 @@ class Experience extends Model
       return $this->belongsTo('App\Position');
     }
 
+    /**
+    * Get the tasks record associated with the experience.
+    */
+    public function tasks()
+    {
+      return $this->hasMany('App\Task');
+    }
+
     public function validateRequest($i)
     {
       Validator::make(request()->all(), [

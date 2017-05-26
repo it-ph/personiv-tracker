@@ -6,20 +6,23 @@
 				<table class="table" ng-if="account.employees.length">
 					<tr ng-if="!account.batchable">
 						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
-						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">New</th>
-						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Revisions</th>
-						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Hours Spent</th>
+						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Category</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">New</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Revisions</th>
+						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Hours Spent</th>
 					</tr>
 					<tr ng-if="account.batchable">
-						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Name</th>
-						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">New</th>
-						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Batch Photos(New)</th>
-						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Revisions</th>
-						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Batch Photos(Revision)</th>
-						<th class="col-xs-2 col-sm-2 col-md-2 col-lg-2">Hours Spent</th>
+						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
+						<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Category</th>
+						<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">New</th>
+						<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Batch Photos(New)</th>
+						<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Revisions</th>
+						<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Batch Photos(Revision)</th>
+						<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Hours Spent</th>
 					</tr>
 					<tr ng-repeat="employee in account.employees">
 						<td>{{employee.name}}</td>
+						<td>{{employee.experience.category}}</td>
 						<td>{{employee.new}}</td>
 						<td ng-if="account.batchable">{{employee.number_of_photos_new}}</td>
 						<td>{{employee.revisions}}</td>
