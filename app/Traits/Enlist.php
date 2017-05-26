@@ -2,77 +2,103 @@
 
 namespace App\Traits;
 
-use Illuminate\Http\Request;
-
 trait Enlist
 {
 	use RelationshipsWithConstraints;
 
-	public function populate(Request $request)
+	public function populate()
 	{
-		if($request->has('relationships'))
+		if(request()->has('relationships'))
         {
-            $this->relationships($request);
+            $this->relationships();
         }
 
-        if($request->has('relationshipsWithConstraints'))
+        if(request()->has('relationshipsWithConstraints'))
         {
-        	$this->populateRelationship($request);
+        	$this->populateRelationship();
         }
 
-        if($request->has('where'))
+        if(request()->has('where'))
         {
-            $this->where($request);
+            $this->where();
         }
 
-        if($request->has('whereNull'))
+				if(request()->has('whereNotIn'))
         {
-            $this->whereNull($request);
+            $this->whereNotIn();
         }
 
-        if($request->has('whereNotNull'))
+        if(request()->has('whereNull'))
         {
-            $this->whereNotNull($request);
+            $this->whereNull();
         }
 
-        if($request->has('orderBy'))
+        if(request()->has('whereNotNull'))
         {
-            $this->orderBy($request);
+            $this->whereNotNull();
+        }
+
+				if(request()->has('whereHas'))
+        {
+            $this->whereHas();
+        }
+
+        if(request()->has('orderBy'))
+        {
+            $this->orderBy();
         }
 	}
 
-	public function relationships(Request $request)
+	public function relationships()
 	{
-		foreach ($request->relationships as $relationship) {
+		foreach (request()->relationships as $relationship) {
 			$this->model->with($relationship);
 		}
 	}
 
-	public function where(Request $request)
+	public function where()
 	{
-		foreach ($request->where as $where) {
+		foreach (request()->where as $where) {
 			$this->model->where($where['column'], $where['condition'], $where['value']);
-		}	
+		}
 	}
 
-	public function whereNull(Request $request)
+	public function whereNotIn()
 	{
-		foreach ($request->whereNull as $column) {
+		foreach (request()->whereNotIn as $whereNotIn) {
+			$this->model->whereNotIn($whereNotIn['column'], $whereNotIn['values']);
+		}
+	}
+
+	public function whereNull()
+	{
+		foreach (request()->whereNull as $column) {
 			$this->model->whereNull($column);
-		}	
+		}
 	}
 
-	public function whereNotNull(Request $request)
+	public function whereNotNull()
 	{
-		foreach ($request->whereNotNull as $column) {
+		foreach (request()->whereNotNull as $column) {
 			$this->model->whereNotNull($column);
-		}	
+		}
 	}
 
-	public function orderBy(Request $request)
+	public function whereHas()
 	{
-		foreach ($request->orderBy as $orderBy) {
+		foreach (request()->whereHas as $whereHas) {
+			$this->model->whereHas($whereHas['relationship'], function($query) use($whereHas){
+				foreach ($whereHas['where'] as $where) {
+					$query->where($where['column'], $where['condition'], $where['value']);
+				}
+			});
+		}
+	}
+
+	public function orderBy()
+	{
+		foreach (request()->orderBy as $orderBy) {
 			$this->model->orderBy($orderBy['column'], $orderBy['order']);
-		}	
+		}
 	}
 }

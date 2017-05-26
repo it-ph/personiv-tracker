@@ -4,42 +4,18 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Carbon\Carbon;
+use DB;
 use Hash;
 use App\User;
 use App\Notification;
+use App\Traits\Enlist;
 use Illuminate\Http\Request;
+use App\Http\Requests\StoreUser;
+use App\Http\Requests\UpdateUser;
 
 class UserController extends Controller
 {
-    /**
-     * Mark notifications as read.
-     *
-     * @return void
-     */
-    public function markAsRead(Request $request)
-    {
-        $notification = Notification::find($request->id);
-
-        if($notification->notifiable_id != $request->user()->id)
-        {
-            abort(403, 'Unauthorized action.');
-        }
-
-        Notification::where('id', $request->id)->update(['read_at' => Carbon::now()]);
-    }
-
-    /**
-     * Mark all notifications as read.
-     *
-     * @return void
-     */
-    public function markAllAsRead(Request $request)
-    {
-        $user = User::find($request->user()->id);
-
-        $user->unreadNotifications()->update(['read_at' => Carbon::now()]);
-    }
-
+    use Enlist;
     /**
      * Logout the authenticated user.
      *
@@ -53,6 +29,18 @@ class UserController extends Controller
     public function checkDefaultPassword(Request $request)
     {
         return response()->json(Hash::check('!welcome10', $request->user()->password));
+    }
+
+    /**
+     * Reset to default password.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function resetPassword(Request $request, User $user)
+    {
+      $this->authorize('update', $user);
+      $user->password = bcrypt('!welcome10');
+      $user->save();
     }
 
     /**
@@ -89,12 +77,41 @@ class UserController extends Controller
      */
     public function check(Request $request)
     {
-        $user = User::where('id', $request->user()->id)->with('department', 'immediateSupervisor', 'roles')->first();
+        $user = User::where('id', $request->user()->id)->with('department', 'immediateSupervisor', 'roles', 'subordinates')->first();
 
         $user->unread_notifications = $user->unreadNotifications;
 
         return $user;
     }
+
+    /**
+     * Display a listing of the resource with parameters.
+     *
+     * @return \Illuminate\Http\Response
+     */
+     public function enlist(Request $request)
+     {
+       $this->model = User::query();
+
+       if($request->has('withTrashed'))
+       {
+         $this->model->withTrashed();
+       }
+
+       $this->populate($request);
+
+       if($request->first)
+       {
+           return $this->model->first();
+       }
+
+       if($request->paginate)
+       {
+           return $this->model->paginate($request->paginate);
+       }
+
+       return $this->model->get();
+     }
 
     /**
      * Display a listing of the resource.
@@ -122,9 +139,17 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreUser $request)
     {
-        //
+      DB::transaction(function(){
+        $user = new User;
+        $user->checkDuplicate();
+        $user->prepare();
+        $user->save();
+
+        $experiences = $user->prepareExperiences();
+        $user->experiences()->saveMany($experiences);
+      });
     }
 
     /**
@@ -156,9 +181,15 @@ class UserController extends Controller
      * @param  \App\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, User $user)
+    public function update(UpdateUser $request, User $user)
     {
-        //
+        $user->checkDuplicate();
+        $user->prepare();
+        $user->save();
+
+        $user->deleteExperiences();
+        $experiences = $user->prepareExperiences();
+        $user->experiences()->saveMany($experiences);
     }
 
     /**
@@ -169,6 +200,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        //
+        $this->authorize('delete', $user);
+        $user->delete();
     }
 }

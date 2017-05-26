@@ -27,6 +27,7 @@ Route::group(['middleware' => 'auth'], function(){
 
 	Route::resource('account', 'AccountController');
 	Route::resource('department', 'DepartmentController');
+	Route::resource('position', 'PositionController');
 	Route::resource('role', 'RoleController');
 	Route::resource('shift-schedule', 'ShiftScheduleController');
 	Route::resource('task', 'TaskController');
@@ -39,11 +40,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post('change-password', 'UserController@changePassword');
 		Route::post('check-default-password', 'UserController@checkDefaultPassword');
 		Route::post('verify-password', 'UserController@verifyPassword');
+		Route::put('reset-password/{user}', 'UserController@resetPassword');
 		Route::post('logout', 'UserController@logout');
-		Route::post('upload-avatar/{userID}', 'UserController@uploadAvatar');
-		Route::get('avatar/{userID}', 'UserController@avatar');
-		Route::post('mark-all-as-read', 'UserController@markAllAsRead');
-		Route::post('mark-as-read', 'UserController@markAsRead');
+		Route::post('enlist', 'UserController@enlist');
 	});
 
 	// Task resource
@@ -59,5 +58,15 @@ Route::group(['middleware' => 'auth'], function(){
 	// Account resource
 	Route::group(['prefix' => 'account'], function(){
 		Route::post('enlist', 'AccountController@enlist');
+	});
+
+	// Position resource
+	Route::group(['prefix' => 'position'], function(){
+		Route::post('enlist', 'PositionController@enlist');
+	});
+
+	// Experience resource
+	Route::group(['prefix' => 'experience'], function(){
+		Route::post('enlist', 'ExperienceController@enlist');
 	});
 });

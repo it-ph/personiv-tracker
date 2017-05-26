@@ -8,8 +8,7 @@ use Illuminate\Database\Eloquent\Softdeletes;
 
 class User extends Authenticatable
 {
-    use Notifiable;
-    use Softdeletes;
+    use Notifiable, Softdeletes;
 
     /**
      * The attributes that should be mutated to dates.
@@ -42,6 +41,14 @@ class User extends Authenticatable
     public function roles()
     {
         return $this->belongsToMany('App\Role', 'user_roles')->withTimestamps();
+    }
+
+    /**
+     * Get the exeperience records associated with the user.
+     */
+    public function experiences()
+    {
+      return $this->hasMany('App\Experience');
     }
 
     /**
@@ -84,7 +91,6 @@ class User extends Authenticatable
         return $this->hasOne('App\ShiftSchedule');
     }
 
-
     /**
      * Determines the authenticated user is a super user.
      */
@@ -102,4 +108,54 @@ class User extends Authenticatable
         return count($this->roles) ? true : false;
     }
 
+    public function prepare()
+    {
+      $this->name = request()->name;
+      $this->employee_number = request()->employee_number;
+      $this->email = request()->email;
+      $this->password = request()->has('password') ? bcrypt(request()->password) : bcrypt('!welcome10');
+      $this->department_id = request()->user()->department_id;
+      $this->immediate_supervisor_id = request()->user()->id;
+    }
+
+    public function checkDuplicate()
+    {
+      $user = User::query();
+
+      if(request()->has('id')) {
+        $user->whereNotIn('id', [request()->id]);
+      }
+
+      $duplicate = $user->withTrashed()->where(function($query){
+        $query->where('employee_number', request()->employee_number);
+        $query->orWhere('email', request()->email);
+      })->first();
+
+      if($duplicate) {
+        abort(403, 'Duplicate entry.');
+      }
+    }
+
+    public function prepareExperiences()
+    {
+      $experiences = [];
+
+      for ($i=0; $i < count(request()->experiences); $i++) {
+        if(request()->input("experiences.{$i}.selected"))
+        {
+          $experience = new Experience;
+          $experience->validateRequest($i);
+          $experience->prepare($i);
+
+          array_push($experiences, $experience);
+        }
+      }
+
+      return $experiences;
+    }
+
+    public function deleteExperiences()
+    {
+      Experience::where('user_id', $this->id)->delete();
+    }
 }

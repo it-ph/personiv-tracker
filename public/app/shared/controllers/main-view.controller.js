@@ -74,15 +74,8 @@ shared
 					if(response.data)
 					{
 						vm.forceChangePassword();
-						// vm.user.changePassword()
-						// 	.then(function(){
-
-						// 	}, function(){
-
-						// 	})
 					}
 				})
-			// vm.user.pusher();
 			// vm.user.photoUploaderInit();
 		}();
 	}]);

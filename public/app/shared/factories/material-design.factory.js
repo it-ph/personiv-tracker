@@ -1,5 +1,5 @@
 shared
-	.factory('MaterialDesign', ['$mdDialog', '$mdToast', function($mdDialog, $mdToast){
+	.factory('MaterialDesign', ['$mdDialog', '$mdToast', '$q', function($mdDialog, $mdToast, $q){
 		var factory = {}
 		/*
 		 * Opens an alert dialog.
@@ -20,7 +20,7 @@ shared
 
 		/*
 		 * Opens a custom dialog.
-		 * 
+		 *
 		 * @params: controller, templateUrl, fullscreen
 		 */
 		factory.customDialog = function(data){
@@ -79,7 +79,7 @@ shared
 		      	.textContent(message)
 		      	.position('bottom right')
 		      	.hideDelay(3000);
-		      	
+
 		    return $mdToast.show(toast);
 		}
 
@@ -116,7 +116,12 @@ shared
 				'message': 'An error occured. Please try again later.',
 			}
 
-			return factory.alert(dialog);
+			factory.alert(dialog);
+			return factory.reject();
+		}
+
+		factory.reject = function () {
+			return $q.reject();
 		}
 
 		/*
