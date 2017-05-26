@@ -8,6 +8,7 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
 
   vm.user = User;
   vm.edit = edit;
+  vm.view = view;
   vm.resetPassword = resetPassword;
   vm.deleteUser = deleteUser;
 
@@ -20,11 +21,21 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
     vm.fab.show = false;
   }
 
-  function edit(user){
-    vm.user.set('edit', user);
+  function view(user) {
+    vm.user.set('view', user);
     var dialog = {
       controller: 'userFormDialogController as vm',
       templateUrl: '/app/admin/templates/dialogs/user-form-dialog.template.html',
+    }
+
+    MaterialDesign.customDialog(dialog);
+  }
+
+  function edit(user){
+    vm.user.set('edit', user);
+    var dialog = {
+      controller: 'editUserFormDialogController as vm',
+      templateUrl: '/app/admin/templates/dialogs/edit-user-form-dialog.template.html',
     }
 
     MaterialDesign.customDialog(dialog)

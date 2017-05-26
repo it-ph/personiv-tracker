@@ -1,9 +1,9 @@
 admin
   .controller('userFormController', userFormController)
 
-  userFormController.$inject = ['MaterialDesign', 'User', 'Position', 'Experience', 'formService', 'fab', '$filter'];
+  userFormController.$inject = ['MaterialDesign', 'User', 'Position', 'formService', 'fab', '$filter'];
 
-  function userFormController(MaterialDesign, User, Position, Experience, formService, fab, $filter) {
+  function userFormController(MaterialDesign, User, Position, formService, fab, $filter) {
     var vm = this;
 
     vm.user = User;
@@ -14,6 +14,7 @@ admin
 
     vm.checkEmployeeNumber = checkEmployeeNumber;
     vm.checkEmail = checkEmail;
+    vm.checkExperiences = checkExperiences;
     vm.focusOnForm = focusOnForm;
     vm.cancel = hideForm;
     vm.submit = submit;
@@ -22,6 +23,9 @@ admin
 
     function init() {
       return getPositions().then(function(positions){
+          angular.forEach(positions, function(item){
+              item.position_id = item.id;
+          });
           angular.copy(positions, vm.user.new.experiences);
       })
     }
@@ -85,6 +89,16 @@ admin
         });
     }
 
+    function checkExperiences() {
+      vm.hasExperience = false;
+      angular.forEach(vm.user.new.experiences, function(experience){
+        if(experience.selected)
+        {
+          vm.hasExperience = true;
+        }
+      });
+    }
+
     function focusOnForm()
     {
       angular.element(document).find('#newUser').addClass('md-input-focused');
@@ -93,10 +107,11 @@ admin
 
     function submit()
     {
+      vm.showErrors = true;
       // check every fields in the form for errors
 			var formHasError = formService.validate(vm.form);
 
-			if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber)
+			if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.hasExperience)
 			{
 				return;
 			}
@@ -106,15 +121,15 @@ admin
         convertDatesToString();
 
 				vm.user.store()
-					.then(storeExperiences)
+          .then(notify)
           .then(getUser)
           .then(hideForm)
           .catch(error);
 			}
 
-      function storeExperiences(response){
-        vm.user.new.id = response.data;
-        return Experience.store(vm.user.new)
+      function notify() {
+        vm.busy = false;
+        MaterialDesign.notify('User created.');
       }
 
       function getUser() {
@@ -127,19 +142,23 @@ admin
 
     function convertDatesToString(){
       angular.forEach(vm.user.new.experiences, function(experience){
-        experience.date_started = experience.date_started.toDateString();
+        if(experience.selected)
+        {
+          experience.date_started = experience.date_started.toDateString();
+        }
       });
     }
 
     function revertDatesToObject(){
       angular.forEach(vm.user.new.experiences, function(experience){
-        experience.date_started = new Date(experience.date_started);
+        if(experience.selected)
+        {
+          experience.date_started = new Date(experience.date_started);
+        }
       });
     }
 
     function hideForm() {
-      vm.busy = false;
-      MaterialDesign.notify('User created.');
       vm.user.showForm = false;
       vm.user.new = {};
       vm.fab.show = true;

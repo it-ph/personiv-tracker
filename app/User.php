@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Softdeletes;
 class User extends Authenticatable
 {
     use Notifiable, Softdeletes;
-    
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -134,5 +134,28 @@ class User extends Authenticatable
       if($duplicate) {
         abort(403, 'Duplicate entry.');
       }
+    }
+
+    public function prepareExperiences()
+    {
+      $experiences = [];
+
+      for ($i=0; $i < count(request()->experiences); $i++) {
+        if(request()->input("experiences.{$i}.selected"))
+        {
+          $experience = new Experience;
+          $experience->validateRequest($i);
+          $experience->prepare($i);
+
+          array_push($experiences, $experience);
+        }
+      }
+
+      return $experiences;
+    }
+
+    public function deleteExperiences()
+    {
+      Experience::where('user_id', $this->id)->delete();
     }
 }

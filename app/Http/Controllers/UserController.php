@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Auth;
 use Carbon\Carbon;
+use DB;
 use Hash;
 use App\User;
 use App\Notification;
@@ -140,12 +141,15 @@ class UserController extends Controller
      */
     public function store(StoreUser $request)
     {
+      DB::transaction(function(){
         $user = new User;
         $user->checkDuplicate();
         $user->prepare();
         $user->save();
 
-        return $user->id;
+        $experiences = $user->prepareExperiences();
+        $user->experiences()->saveMany($experiences);
+      });
     }
 
     /**
@@ -182,6 +186,10 @@ class UserController extends Controller
         $user->checkDuplicate();
         $user->prepare();
         $user->save();
+
+        $user->deleteExperiences();
+        $experiences = $user->prepareExperiences();
+        $user->experiences()->saveMany($experiences);
     }
 
     /**

@@ -33,15 +33,14 @@ class Experience extends Model
     public function validateRequest($i)
     {
       Validator::make(request()->all(), [
-        "experiences.{$i}.id" => 'required',
+        "experiences.{$i}.position_id" => 'required',
         "experiences.{$i}.date_started" => 'required',
       ])->validate();
     }
 
     public function prepare($i)
     {
-      $this->user_id = request()->id;
-      $this->position_id = request()->input("{$i}.position_id");
-      $this->date_started = Carbon::parse(request()->input("{$i}.date_started"));
+      $this->position_id = request()->input("experiences.{$i}.position_id");
+      $this->date_started = Carbon::parse(request()->input("experiences.{$i}.date_started"));
     }
 }

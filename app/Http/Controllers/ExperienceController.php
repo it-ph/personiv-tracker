@@ -5,9 +5,40 @@ namespace App\Http\Controllers;
 use App\Experience;
 use App\Http\Requests\StoreExperience;
 use Illuminate\Http\Request;
+use App\Traits\Enlist;
 
 class ExperienceController extends Controller
 {
+    use Enlist;
+    /**
+     * Display a listing of the resource with parameters.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function enlist(Request $request)
+    {
+      $this->model = Experience::query();
+
+      if($request->has('withTrashed'))
+      {
+        $this->model->withTrashed();
+      }
+
+      $this->populate($request);
+
+      if($request->first)
+      {
+          return $this->model->first();
+      }
+
+      if($request->paginate)
+      {
+          return $this->model->paginate($request->paginate);
+      }
+
+      return $this->model->get();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -36,12 +67,7 @@ class ExperienceController extends Controller
      */
     public function store(StoreExperience $request)
     {
-        for ($i=0; $i < count($request->experiences); $i++) {
-          $experience = new Experience;
-          $experience->validateRequest($i);
-          $experience->prepare($i);
-          $experience->save();
-        }
+        //
     }
 
     /**

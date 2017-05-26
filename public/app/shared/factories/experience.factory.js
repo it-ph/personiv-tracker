@@ -1,14 +1,19 @@
-shared
-  .factory('Experience', Experience)
+(function() {
+  'use strict';
 
-  Experience.$inject = ['$http'];
+  angular
+    .module('shared')
+    .factory('Experience', Experience);
 
-  function Experience($http) {
-    return {
-      store: store,
+    Experience.$inject = ['$http'];
+
+    function Experience($http) {
+      return {
+        enlist: enlist,
+      }
+
+      function enlist(query) {
+        return $http.post('/experience/enlist', query);
+      }
     }
-
-    function store(experience) {
-      return $http.post('/experience', experience);
-    }
-  }
+})();

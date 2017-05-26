@@ -117,6 +117,10 @@ shared
 			}
 
 			factory.alert(dialog);
+			return factory.reject();
+		}
+
+		factory.reject = function () {
 			return $q.reject();
 		}
 

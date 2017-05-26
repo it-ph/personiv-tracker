@@ -38,8 +38,9 @@
         </md-input-container>
       </div>
 			<md-subheader class="md-no-sticky">Experiences</md-subheader>
+			<md-subheader class="md-no-sticky red-text" ng-if="vm.showErrors && !vm.hasExperience">Check at least one experience</md-subheader>
 			<div layout="column" ng-repeat="experience in vm.user.new.experiences" flex>
-				<md-checkbox class="md-primary" ng-model="experience.selected">{{experience.name}}</md-checkbox>
+				<md-checkbox class="md-primary" ng-model="experience.selected" ng-change="vm.checkExperiences()">{{experience.name}}</md-checkbox>
 				<div layout="row" flex ng-if="experience.selected">
 					<!-- Date Started -->
 					<md-input-container class="md-block" flex>

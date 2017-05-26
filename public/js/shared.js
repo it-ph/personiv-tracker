@@ -173,20 +173,25 @@ shared
 
 		return factory;
 	}]);
-shared
-  .factory('Experience', Experience)
+(function() {
+  'use strict';
 
-  Experience.$inject = ['$http'];
+  angular
+    .module('shared')
+    .factory('Experience', Experience);
 
-  function Experience($http) {
-    return {
-      store: store,
+    Experience.$inject = ['$http'];
+
+    function Experience($http) {
+      return {
+        enlist: enlist,
+      }
+
+      function enlist(query) {
+        return $http.post('/experience/enlist', query);
+      }
     }
-
-    function store(experience) {
-      return $http.post('/experience', experience);
-    }
-  }
+})();
 
 shared
   .factory('fab', fab)
@@ -361,6 +366,10 @@ shared
 			}
 
 			factory.alert(dialog);
+			return factory.reject();
+		}
+
+		factory.reject = function () {
 			return $q.reject();
 		}
 
@@ -654,13 +663,7 @@ shared
 		}
 
 		factory.clone = function(index) {
-			var obj = {}
-
-			angular.forEach(factory[index], function(value, key){
-				obj[key] = value;
-			});
-
-			return obj;
+			return angular.copy(factory[index]);
 		}
 
 		/*

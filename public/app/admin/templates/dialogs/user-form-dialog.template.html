@@ -1,53 +1,31 @@
 <md-dialog aria-label="{{vm.label}}" flex flex-gt-sm="50" flex-gt-lg="40" ng-cloak>
-    <form name="vm.form">
-        <md-toolbar >
-            <div class="md-toolbar-tools">
-                <h2 class="white-text">{{vm.label}}</h2>
-                <span flex></span>
-                <md-button class="md-icon-button" ng-click="vm.cancel()">
-                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
-                </md-button>
-            </div>
-        </md-toolbar>
-        <md-dialog-content flex layout-padding layout-wrap>
-            <md-subheader class="red-text" ng-if="vm.error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
-            <div layout="row" flex>
-      				<!-- Name -->
-      				<md-input-container class="md-block" flex id="newUser">
-      					<label>Name</label>
-      					<input type="text" ng-model="vm.edit.name" name="Name" ng-init="vm.test()" required ng-disabled="vm.busy"/>
-      					<div ng-messages="vm.form.Name.$error">
-      						<div ng-message="required">Name is required.</div>
-      					</div>
-      				</md-input-container>
-              <!-- Employee Number -->
-      				<md-input-container class="md-block" flex>
-      					<label>Employee Number</label>
-      					<input type="text" ng-model="vm.edit.employee_number" name="EmployeeNumber" required ng-disabled="vm.busy" ng-pattern="/^[0-9]*$/" ng-blur="vm.checkEmployeeNumber()"/>
-      					<div class="pattern" ng-if="vm.duplicateEmployeeNumber">Employee number already in use.</div>
-      					<div ng-messages="vm.form.EmployeeNumber.$error">
-      						<div ng-message="required">Employee number is required.</div>
-      						<div ng-message="pattern">Numeric characters only.</div>
-      					</div>
-      				</md-input-container>
-      			</div>
-            <div layout="row" flex>
-              <!-- Email -->
-              <md-input-container class="md-block" flex>
-                <label>Email</label>
-                <input type="email" ng-model="vm.edit.email" name="Email" required ng-blur="vm.checkEmail()">
-      					<div class="pattern" ng-if="vm.duplicateEmail">Email already in use.</div>
-                <div ng-messages="vm.form.Email.$error">
-      						<div ng-message="required">Email is required.</div>
-      					</div>
-              </md-input-container>
-            </div>
-        </md-dialog-content>
-    </form>
-    <div layout="row" layout-align="end center">
-        <md-button ng-if="!vm.busy" class="md-primary" aria-label="Submit" ng-click="vm.submit()">
-            Submit
-        </md-button>
-        <md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
-    </div>
+    <md-toolbar >
+        <div class="md-toolbar-tools">
+            <h2 class="white-text">{{vm.label}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="vm.cancel()">
+                <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content flex layout-padding layout-wrap>
+      <md-list>
+        <md-list-item class="md-3-line">
+          <div class="md-list-item-text">
+            <h3>{{vm.user.name}}</h3>
+            <h4>{{vm.user.employee_number}}</h4>
+            <p>{{vm.user.email}}</p>
+          </div>
+        </md-list-item>
+      </md-list>
+      <md-subheader>Experiences</md-subheader>
+      <md-list layout="row" layout-wrap>
+        <md-list-item class="md-2-line" ng-repeat="experience in vm.user.experiences" flex-xs="100" flex-sm="100" flex-gt-sm="40" flex-gt-md="30">
+          <div class="md-list-item-text">
+            <h3>{{experience.position.name}}</h3>
+            <p>{{experience.date_started | date: 'MMM. dd, yyyy'}}</p>
+          </div>
+        </md-list-item>
+      </md-list>
+    </md-dialog-content>
 </md-dialog>

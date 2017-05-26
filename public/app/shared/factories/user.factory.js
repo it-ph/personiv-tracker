@@ -26,13 +26,7 @@ shared
 		}
 
 		factory.clone = function(index) {
-			var obj = {}
-
-			angular.forEach(factory[index], function(value, key){
-				obj[key] = value;
-			});
-
-			return obj;
+			return angular.copy(factory[index]);
 		}
 
 		/*

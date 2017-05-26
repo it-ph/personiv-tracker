@@ -27,7 +27,6 @@ Route::group(['middleware' => 'auth'], function(){
 
 	Route::resource('account', 'AccountController');
 	Route::resource('department', 'DepartmentController');
-	Route::resource('experience', 'ExperienceController');
 	Route::resource('position', 'PositionController');
 	Route::resource('role', 'RoleController');
 	Route::resource('shift-schedule', 'ShiftScheduleController');
@@ -64,5 +63,10 @@ Route::group(['middleware' => 'auth'], function(){
 	// Position resource
 	Route::group(['prefix' => 'position'], function(){
 		Route::post('enlist', 'PositionController@enlist');
+	});
+
+	// Experience resource
+	Route::group(['prefix' => 'experience'], function(){
+		Route::post('enlist', 'ExperienceController@enlist');
 	});
 });
