@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDepartmentPositionsTable extends Migration
+class CreateAccountPositionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateDepartmentPositionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('department_positions', function (Blueprint $table) {
+        Schema::create('account_positions', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('department_id')->unsigned();
+            $table->integer('account_id')->unsigned();
             $table->integer('position_id')->unsigned();
         });
     }
@@ -27,6 +27,6 @@ class CreateDepartmentPositionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('department_positions');
+        Schema::dropIfExists('account_positions');
     }
 }

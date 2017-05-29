@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class DepartmentPosition extends Model
+class AccountPosition extends Model
 {
     //
 }

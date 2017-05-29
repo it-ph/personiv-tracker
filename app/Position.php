@@ -13,4 +13,12 @@ class Position extends Model
     {
       return $this->belongsToMany('App\Department', 'department_positions');
     }
+
+    /**
+     * Get the experience records associated with the position.
+     */
+    public function experiences()
+    {
+      return $this->hasMany('App\Experience');
+    }
 }

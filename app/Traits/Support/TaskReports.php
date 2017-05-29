@@ -31,7 +31,7 @@ trait TaskReports
 
         if($department_id)
         {
-            $this->accounts = Account::where('department_id', $department_id)->get();
+            $this->accounts = Account::with('department.positions')->where('department_id', $department_id)->get();
         }
 
         else if($this->request->user()->isSuperUser())
@@ -39,7 +39,7 @@ trait TaskReports
             $this->accounts = Account::all();
         }
         else{
-            $this->accounts = Account::where('department_id', $this->request->user()->department_id)->get();
+            $this->accounts = Account::with('department.positions')->where('department_id', $this->request->user()->department_id)->get();
         }
 
     }
@@ -49,17 +49,23 @@ trait TaskReports
         $accounts->each(function($account, $key) use($from, $to){
             $account->range = Carbon::parse($from)->toDayDateTimeString() . ' to ' . Carbon::parse($to)->toDayDateTimeString();
 
-            $account->employees = User::where(function($query) use($account, $from, $to){
+            $account->department->positions->each(function($position, $key) use($account, $from, $to){
+
+              $position->employees = User::where(function($query) use($position, $account, $from, $to){
                 $query->whereIn('id', $this->subordinateIds);
 
-                $query->whereHas('tasks', function($query) use($account, $from, $to){
-                    $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
+                $query->whereHas('tasks', function($query) use($position, $account, $from, $to){
+                  $query->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)])->whereHas('experience', function($query) use($position){
+                    $query->where('position_id', $position->id);
+                  });
                 });
-            })->with(['tasks' => function($query) use($account, $from, $to){
-                $query->where('account_id', $account->id)->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)]);
-            }])->get();
+              })->with(['tasks' => function($query) use($position, $account, $from, $to){
+                $query->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)])->whereHas('experience', function($query) use($position){
+                  $query->where('position_id', $position->id);
+                });
+              }])->get();
 
-            $account->employees->each(function($employee, $key){
+              $position->employees->each(function($employee, $key){
                 $employee->tasks->load('experience.position');
 
                 $employee->tasks->each(function($task, $key){
@@ -74,28 +80,29 @@ trait TaskReports
                 $employee->number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');
 
                 $employee->hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
-            });
+              });
 
-            $account->categories = $account->employees->pluck('name');
+              $position->names = $position->employees->pluck('name');
 
-            $account->new = $account->employees->map(function($employee, $key){
+              $position->new = $position->employees->map(function($employee, $key){
                 return $employee->new;
-            });
+              });
 
-            $account->number_of_photos_new = $account->employees->map(function($employee, $key){
+              $position->number_of_photos_new = $position->employees->map(function($employee, $key){
                 return $employee->number_of_photos_new;
-            });
+              });
 
-            $account->revisions = $account->employees->map(function($employee, $key){
+              $position->revisions = $position->employees->map(function($employee, $key){
                 return $employee->revisions;
-            });
+              });
 
-            $account->number_of_photos_revisions = $account->employees->map(function($employee, $key){
+              $position->number_of_photos_revisions = $position->employees->map(function($employee, $key){
                 return $employee->number_of_photos_revisions;
-            });
+              });
 
-            $account->hours_spent = $account->employees->map(function($employee, $key){
+              $position->hours_spent = $position->employees->map(function($employee, $key){
                 return $employee->hours_spent;
+              });
             });
         });
 

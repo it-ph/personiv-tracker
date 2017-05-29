@@ -15,13 +15,13 @@ class Account extends Model
         'batchable' => 'boolean',
     ];
 
-	/**
+  	/**
      * Get the department record associated with the account.
      */
-	public function department()
-	{
-		return $this->belongsTo('App\Department');
-	}
+  	public function department()
+  	{
+  		return $this->belongsTo('App\Department');
+  	}
 
     /**
      * Get the task records associated with the account.
@@ -29,5 +29,13 @@ class Account extends Model
     public function tasks()
     {
         return $this->hasMany('App\Task');
+    }
+
+    /**
+     * Get the position records associated with the account.
+     */
+    public function positions()
+    {
+    	return $this->belongsToMany('App\Position', 'account_positions');
     }
 }
