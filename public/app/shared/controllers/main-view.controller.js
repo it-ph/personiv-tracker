@@ -3,67 +3,32 @@ shared
 		var vm = this;
 
 		vm.user = User;
-
+		vm.logout = logout;
+		vm.forceChangePassword = forceChangePassword;
 		/*
 		 * Ends the session of the authenticated user.
 		 */
-		vm.logout = function(){
-			vm.user.logout()
-				.then(function(){
-					window.location.href = '/';
-				});
-		}
+		 function logout() {
+			 MaterialDesign.reject();
+			 return vm.user.logout()
+ 				.then(function(){
+ 					window.location.href = '/';
+ 				});
+		 }
 
-  		/**
-		 * Opens the upload form of avatar
-  		*/
-		vm.clickUpload = function(){
-		    angular.element('#upload').trigger('click');
-		};
+		 function forceChangePassword() {
+			 var dialog = {
+ 				title: 'Change Password',
+ 				message: 'Please change your default password.',
+ 				ok: 'Got it!',
+ 			}
 
-		/**
-		 * Mark notification as read
-		*/
-		vm.markAsRead = function(data){
-			vm.user.markAsRead()
-				.then(function(){
-					vm.user.removeNotification(data);
-				}, function(){
-					MaterialDesign.error();
-				});
-		}
-		/**
-		 * Mark all unread notifications as read
-		*/
-		vm.markAllAsRead = function(){
-			vm.user.markAllAsRead()
-				.then(function(){
-					vm.user.clearNotifications();
-				}, function(){
-					MaterialDesign.error();
-				});
-		}
+ 			return MaterialDesign.confirm(dialog)
+		 }
 
-		vm.forceChangePassword = function(){
-			var dialog = {
-				title: 'Change Password',
-				message: 'Please change your default password.',
-				ok: 'Got it!',
-			}
-
-			MaterialDesign.confirm(dialog)
-				.then(function(){
-					vm.user.changePassword()
-						.then(function(){
-							console.log('done')
-							MaterialDesign.hide();
-						}, function(){
-							vm.forceChangePassword();
-						});
-				}, function(){
-					vm.logout();
-				});
-		}
+		 function changePasswordDialog() {
+			 return vm.user.changePassword()
+		 }
 
 		/**
 		 * Initialize
@@ -73,9 +38,10 @@ shared
 				.then(function(response){
 					if(response.data)
 					{
-						vm.forceChangePassword();
+						return vm.forceChangePassword()
+							.then(changePasswordDialog)
+							.catch(logout);
 					}
 				})
-			// vm.user.photoUploaderInit();
 		}();
 	}]);

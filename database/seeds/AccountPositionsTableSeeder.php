@@ -14,49 +14,49 @@ class AccountPositionsTableSeeder extends Seeder
     public function run()
     {
         DB::transaction(function(){
-          $artist = Position::where('name', 'Artist')->first()->id;
-          $proofer = Position::where('name', 'Proofer')->first()->id;
-          $sme = Position::where('name', 'SME')->first()->id;
-          $qualityAuditor = Position::where('name', 'Quality Auditor')->first()->id;
-          $designProofer = Position::where('name', 'Design Proofer')->first()->id;
-          $qc = Position::where('name', 'QC')->first()->id;
-          $csr = Position::where('name', 'CSR')->first()->id;
-          $webAdminPosition = Position::where('name', 'Web Admin')->first()->id;
-          $designer = Position::where('name', 'Designer')->first()->id;
-          $editor = Position::where('name', 'Editor')->first()->id;
+          $artist = Position::where('name', 'Artist')->firstOrFail()->id;
+          $proofer = Position::where('name', 'Proofer')->firstOrFail()->id;
+          $sme = Position::where('name', 'SME')->firstOrFail()->id;
+          $qc = Position::where('name', 'QC')->firstOrFail()->id;
+          $csr = Position::where('name', 'CSR')->firstOrFail()->id;
+          $webAdminPosition = Position::where('name', 'Web Admin')->firstOrFail()->id;
+          $designer = Position::where('name', 'Designer')->firstOrFail()->id;
+          $qualityAuditor = Position::where('name', 'Quality Auditor')->firstOrFail()->id;
+          $designProofer = Position::where('name', 'Design Proofer')->firstOrFail()->id;
+          $editor = Position::where('name', 'Editor')->firstOrFail()->id;
 
-          $allison = Account::where('name', 'Allison')->first()->id;
-          $lamar = Account::where('name', 'Lamar')->first()->id;
-          $fDOSoldIncolumn = Account::where('name', 'fDO Sold Incolumn')->first()->id;
-          $fDOSoldDisplay = Account::where('name', 'fDO Sold Display')->first()->id;
-          $fDOSpecIncolumn = Account::where('name', 'fDO Spec Incolumn')->first()->id;
-          $fDOSpecDisplay = Account::where('name', 'fDO Spec Display')->first()->id;
-          $fDOAwareness = Account::where('name', 'fDO Awareness')->first()->id;
-          $fSMDisplaySpec = Account::where('name', 'fSM Display Spec')->first()->id;
-          $fSMIncolumnSpec = Account::where('name', 'fSM Incolumn Spec')->first()->id;
-          $fSMDisplaySold = Account::where('name', 'fSM Display Sold')->first()->id;
-          $fSMIncolumnSold = Account::where('name', 'fSM Incolumn Sold')->first()->id;
-          $fSMAwareness = Account::where('name', 'fSM Awareness')->first()->id;
-          $var = Account::where('name', 'VAR')->first()->id;
-          $bau = Account::where('name', 'BAU')->first()->id;
-          $preLauchMods = Account::where('name', 'Pre-Launch Mods')->first()->id;
-          $postLauchMods = Account::where('name', 'Post-Launch Mods')->first()->id;
-          $scheduling = Account::where('name', 'Scheduling')->first()->id;
-          $boosting = Account::where('name', 'Boosting')->first()->id;
-          $setup = Account::where('name', 'Setup')->first()->id;
-          $ordering = Account::where('name', 'Ordering')->first()->id;
-          $urlMigration = Account::where('name', 'URL Migration')->first()->id;
-          $expiringDomain = Account::where('name', 'Expiring Domain')->first()->id;
-          $webAdminAccount = Account::where('name', 'Web Admin')->first()->id;
-          $legacyRevision = Account::where('name', 'Legacy Revision')->first()->id;
-          $logisticExecutives = Account::where('name', 'Logistic Executives')->first()->id;
-          $logoDesign = Account::where('name', 'Logo Design')->first()->id;
-          $webQC = Account::where('name', 'Web QC')->first()->id;
-          $var1 = Account::where('name', 'VAR 1')->first()->id;
-          $var2 = Account::where('name', 'VAR 2')->first()->id;
-          $var3 = Account::where('name', 'VAR 3')->first()->id;
-          $proofreading = Account::where('name', 'Proofreading')->first()->id;
-          $revolve = Account::where('name', 'Revolve')->first()->id;
+          $allison = Account::where('name', 'Allison')->firstOrFail()->id;
+          $lamar = Account::where('name', 'Lamar')->firstOrFail()->id;
+          $fDOSoldIncolumn = Account::where('name', 'fDO Sold Incolumn')->firstOrFail()->id;
+          $fDOSoldDisplay = Account::where('name', 'fDO Sold Display')->firstOrFail()->id;
+          $fDOSpecIncolumn = Account::where('name', 'fDO Spec Incolumn')->firstOrFail()->id;
+          $fDOSpecDisplay = Account::where('name', 'fDO Spec Display')->firstOrFail()->id;
+          $fDOAwareness = Account::where('name', 'fDO Awareness')->firstOrFail()->id;
+          $fSMDisplaySpec = Account::where('name', 'fSM Display Spec')->firstOrFail()->id;
+          $fSMIncolumnSpec = Account::where('name', 'fSM Incolumn Spec')->firstOrFail()->id;
+          $fSMDisplaySold = Account::where('name', 'fSM Display Sold')->firstOrFail()->id;
+          $fSMIncolumnSold = Account::where('name', 'fSM Incolumn Sold')->firstOrFail()->id;
+          $fSMAwareness = Account::where('name', 'fSM Awareness')->firstOrFail()->id;
+          $var = Account::where('name', 'VAR')->firstOrFail()->id;
+          $bau = Account::where('name', 'BAU')->firstOrFail()->id;
+          $preLauchMods = Account::where('name', 'Pre-Launch Mods')->firstOrFail()->id;
+          $postLauchMods = Account::where('name', 'Post-Launch Mods')->firstOrFail()->id;
+          $scheduling = Account::where('name', 'Scheduling')->firstOrFail()->id;
+          $boosting = Account::where('name', 'Boosting')->firstOrFail()->id;
+          $setup = Account::where('name', 'Setup')->firstOrFail()->id;
+          $ordering = Account::where('name', 'Ordering')->firstOrFail()->id;
+          $urlMigration = Account::where('name', 'URL Migration')->firstOrFail()->id;
+          $expiringDomain = Account::where('name', 'Expiring Domain')->firstOrFail()->id;
+          $webAdminAccount = Account::where('name', 'Web Admin')->firstOrFail()->id;
+          $legacyRevision = Account::where('name', 'Legacy Revision')->firstOrFail()->id;
+          $logisticExecutives = Account::where('name', 'Logistic Executives')->firstOrFail()->id;
+          $logoDesign = Account::where('name', 'Logo Design')->firstOrFail()->id;
+          $webQC = Account::where('name', 'Web QC')->firstOrFail()->id;
+          $var1 = Account::where('name', 'VAR1')->firstOrFail()->id;
+          $var2 = Account::where('name', 'VAR2')->firstOrFail()->id;
+          $var3 = Account::where('name', 'VAR3')->firstOrFail()->id;
+          $proofreading = Account::where('name', 'Proofreading')->firstOrFail()->id;
+          $revolve = Account::where('name', 'Revolve')->firstOrFail()->id;
 
           // Allison
           DB::table('account_positions')->insert([
@@ -209,6 +209,276 @@ class AccountPositionsTableSeeder extends Seeder
               'position_id' => $artist,
             ],
           ]);
+          // BAU
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $bau,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $bau,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $bau,
+              'position_id' => $qc,
+            ],
+            [
+              'account_id' => $bau,
+              'position_id' => $csr,
+            ],
+            [
+              'account_id' => $bau,
+              'position_id' => $webAdminPosition,
+            ],
+            [
+              'account_id' => $bau,
+              'position_id' => $designer,
+            ],
+          ]);
+          // Pre-launch Mods
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $preLauchMods,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $preLauchMods,
+              'position_id' => $proofer,
+            ],
+          ]);
+          // Post-launch Mods
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $postLauchMods,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $postLauchMods,
+              'position_id' => $proofer,
+            ],
+          ]);
+          // Scheduling
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $scheduling,
+              'position_id' => $csr,
+            ],
+          ]);
+          // Boosting
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $boosting,
+              'position_id' => $csr,
+            ],
+          ]);
+          // Setup
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $setup,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $setup,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $setup,
+              'position_id' => $qc,
+            ],
+            [
+              'account_id' => $setup,
+              'position_id' => $csr,
+            ],
+            [
+              'account_id' => $setup,
+              'position_id' => $designer,
+            ],
+          ]);
+          // Ordering
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $ordering,
+              'position_id' => $csr,
+            ],
+          ]);
+          // URL Migration
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $urlMigration,
+              'position_id' => $proofer,
+            ],
+          ]);
+          // Expiring Domain
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $expiringDomain,
+              'position_id' => $proofer,
+            ],
+          ]);
+          // Web Admin
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $webAdminAccount,
+              'position_id' => $webAdminPosition,
+            ],
+          ]);
+          // Legacy Revision
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $legacyRevision,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $legacyRevision,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $legacyRevision,
+              'position_id' => $qc,
+            ],
+          ]);
+          // Logistic Executives
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $logisticExecutives,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $logisticExecutives,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $logisticExecutives,
+              'position_id' => $qc,
+            ],
+            [
+              'account_id' => $logisticExecutives,
+              'position_id' => $csr,
+            ],
+            [
+              'account_id' => $logisticExecutives,
+              'position_id' => $designer,
+            ],
+          ]);
+          // Logo Design
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $logoDesign,
+              'position_id' => $designer,
+            ],
+          ]);
+          // Web QC
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $webQC,
+              'position_id' => $qc,
+            ],
+          ]);
+          // VAR1
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $var1,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $var1,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $var1,
+              'position_id' => $qc,
+            ],
+            [
+              'account_id' => $var1,
+              'position_id' => $csr,
+            ],
+            [
+              'account_id' => $var1,
+              'position_id' => $designer,
+            ],
+          ]);
+          // VAR2
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $var2,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $var2,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $var2,
+              'position_id' => $qc,
+            ],
+            [
+              'account_id' => $var2,
+              'position_id' => $csr,
+            ],
+            [
+              'account_id' => $var2,
+              'position_id' => $designer,
+            ],
+          ]);
+          // VAR3
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $var3,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $var3,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $var3,
+              'position_id' => $qc,
+            ],
+            [
+              'account_id' => $var3,
+              'position_id' => $csr,
+            ],
+            [
+              'account_id' => $var3,
+              'position_id' => $designer,
+            ],
+          ]);
+          // Proofreading
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $proofreading,
+              'position_id' => $artist,
+            ],
+            [
+              'account_id' => $proofreading,
+              'position_id' => $proofer,
+            ],
+            [
+              'account_id' => $proofreading,
+              'position_id' => $qc,
+            ],
+            [
+              'account_id' => $proofreading,
+              'position_id' => $csr,
+            ],
+            [
+              'account_id' => $proofreading,
+              'position_id' => $designer,
+            ],
+          ]);
+          // Revolve
+          DB::table('account_positions')->insert([
+            [
+              'account_id' => $revolve,
+              'position_id' => $editor,
+            ],
+            [
+              'account_id' => $revolve,
+              'position_id' => $qc,
+            ],
+          ]);
         });
+
     }
 }

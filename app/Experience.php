@@ -31,6 +31,14 @@ class Experience extends Model
     }
 
     /**
+    * Get the account record associated with the experience.
+    */
+    public function account()
+    {
+      return $this->belongsTo('App\Account');
+    }
+
+    /**
     * Get the tasks record associated with the experience.
     */
     public function tasks()
@@ -41,6 +49,7 @@ class Experience extends Model
     public function validateRequest($i)
     {
       Validator::make(request()->all(), [
+        "experiences.{$i}.account_id" => 'required',
         "experiences.{$i}.position_id" => 'required',
         "experiences.{$i}.date_started" => 'required',
       ])->validate();
@@ -48,6 +57,7 @@ class Experience extends Model
 
     public function prepare($i)
     {
+      $this->account_id = request()->input("experiences.{$i}.account_id");
       $this->position_id = request()->input("experiences.{$i}.position_id");
       $this->date_started = Carbon::parse(request()->input("experiences.{$i}.date_started"));
     }

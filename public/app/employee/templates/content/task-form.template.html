@@ -30,8 +30,8 @@
 				<!-- Position -->
 				<md-input-container class="md-block" flex>
 					<label>Position</label>
-					<md-select name="Position" ng-model="vm.task.new.experience_id" ng-disabled="vm.busy">
-						<md-option ng-repeat="experience in vm.user.user.experiences | orderBy: 'name'" value="{{experience.id}}">{{ experience.position.name }}</md-option>
+					<md-select name="Position" ng-model="vm.task.new.experience_id" ng-disabled="vm.busy" required>
+						<md-option ng-repeat="experience in vm.experiences | orderBy: 'name'" value="{{experience.id}}">{{ experience.position.name }}</md-option>
 					</md-select>
 					<div ng-messages="vm.form.Position.$error">
 						<div ng-message="required">Position is required.</div>

@@ -59,9 +59,9 @@ shared
 		    }
 		}
 
-		factory.config = function(position){
-			factory.data.title.text = position.name;
-			// factory.data.subtitle.text = account.range;
+		factory.config = function(account, position){
+			factory.data.title.text = account.name + ' - ' + position.name;
+			factory.data.subtitle.text = account.range;
 
 			factory.data.xAxis.categories = position.names;
 

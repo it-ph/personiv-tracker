@@ -39,7 +39,7 @@ trait TaskReports
             $this->accounts = Account::all();
         }
         else{
-            $this->accounts = Account::with('department.positions')->where('department_id', $this->request->user()->department_id)->get();
+            $this->accounts = Account::with('positions')->where('department_id', $this->request->user()->department_id)->get();
         }
 
     }
@@ -49,32 +49,32 @@ trait TaskReports
         $accounts->each(function($account, $key) use($from, $to){
             $account->range = Carbon::parse($from)->toDayDateTimeString() . ' to ' . Carbon::parse($to)->toDayDateTimeString();
 
-            $account->department->positions->each(function($position, $key) use($account, $from, $to){
+            $account->positions->each(function($position, $key) use($account, $from, $to){
 
               $position->employees = User::where(function($query) use($position, $account, $from, $to){
                 $query->whereIn('id', $this->subordinateIds);
 
                 $query->whereHas('tasks', function($query) use($position, $account, $from, $to){
-                  $query->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)])->whereHas('experience', function($query) use($position){
-                    $query->where('position_id', $position->id);
+                  $query->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)])->whereHas('experience', function($query) use($position, $account){
+                    $query->where('position_id', $position->id)->where('account_id', $account->id);
                   });
                 });
               })->with(['tasks' => function($query) use($position, $account, $from, $to){
-                $query->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)])->whereHas('experience', function($query) use($position){
-                  $query->where('position_id', $position->id);
+                $query->whereBetween('ended_at', [Carbon::parse($from), Carbon::parse($to)])->whereHas('experience', function($query) use($position, $account){
+                  $query->where('position_id', $position->id)->where('account_id', $account->id);
                 });
               }])->get();
 
-              $position->employees->each(function($employee, $key){
-                $employee->tasks->load('experience.position');
+              $position->employees->each(function($employee, $key) use($account, $position){
+                $employee->load(['experiences' => function($query) use($account, $position){
+                  $query->where('position_id', $position->id)->where('account_id', $account->id);
+                }]);
 
-                $employee->tasks->each(function($task, $key){
-                  $monthDiff = Carbon::parse($task->experience->date_started)->diffInMonths(Carbon::today());
-                  $task->experience->category = $monthDiff < 3 ? 'Beginner' : ($monthDiff > 3 && $monthDiff < 6 ? 'Moderately Experienced' : 'Experienced');
-                });
+                $monthDiff = Carbon::parse($employee->experiences->first()->date_started)->diffInMonths(Carbon::today());
 
                 $employee->new = $employee->tasks->where('revision', false)->count();
                 $employee->number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
+                $employee->category = $monthDiff < 3 ? 'Beginner' : ($monthDiff > 3 && $monthDiff < 6 ? 'Moderately Experienced' : 'Experienced');
 
                 $employee->revisions = $employee->tasks->where('revision', true)->count();
                 $employee->number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');

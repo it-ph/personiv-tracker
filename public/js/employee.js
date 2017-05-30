@@ -89,7 +89,7 @@ employee
 		return factory;
 	}]);
 employee
-	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', 'Account', 'User', '$filter', function(MaterialDesign, taskFormService, formService, Account, User, $filter){
+	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', 'Account', 'User', 'Experience', '$filter', function(MaterialDesign, taskFormService, formService, Account, User, Experience, $filter){
 		var vm = this;
 
 		vm.task = taskFormService;
@@ -99,7 +99,7 @@ employee
 		vm.department = vm.user.user.department.name;
 
 		// determines the user if he can use batch tasks
-		vm.setAccount = function(id){
+		vm.setAccount = function(id, reset){
 			var account = $filter('filter')(vm.account.data, {id:id})[0];
 
 			vm.batchable = account.batchable;
@@ -108,6 +108,38 @@ employee
 			{
 				vm.task.data.number_of_photos = null;
 			}
+
+			if(reset)
+			{
+				vm.task.data.experience_id = null;
+			}
+			fetchExperiences();
+		}
+
+		function fetchExperiences(){
+			var query = {
+				where: [
+					{
+						column: 'user_id',
+						condition: '=',
+						value: vm.user.user.id
+					},
+					{
+						column: 'account_id',
+						condition: '=',
+						value: vm.task.data.account_id
+					},
+				],
+				relationships: ['position'],
+			}
+
+			Experience.enlist(query)
+				.then(function(response) {
+					vm.experiences = response.data;
+				})
+				.catch(function(){
+					Helper.error();
+				})
 		}
 
 		// determines the user if he can use batch tasks
@@ -115,7 +147,7 @@ employee
 		{
 			vm.batch = true;
 		}
-		
+
 		// fetch the accounts associated with the user
 		vm.accounts = function(){
 			var query = {
@@ -158,7 +190,7 @@ employee
 						vm.busy = false;
 
 						MaterialDesign.notify('Changes saved.');
-						
+
 						MaterialDesign.hide();
 
 						vm.task.init();
@@ -172,10 +204,11 @@ employee
 		vm.init = function(){
 			vm.accounts()
 				.then(function(){
-					vm.setAccount(vm.task.data.account_id);
+					vm.setAccount(vm.task.data.account_id, false);
 				});
 		}();
 	}]);
+
 employee
 	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', 'User', function(MaterialDesign, toolbarService, Task, taskFormService, User){
 		var vm = this;
@@ -429,7 +462,7 @@ employee
 	}]);
 
 employee
-	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', 'User', 'Account',  function(MaterialDesign, taskFormService, formService, User, Account){
+	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', 'User', 'Account', 'Experience',  function(MaterialDesign, taskFormService, formService, User, Account, Experience){
 		var vm = this;
 
 		vm.task = taskFormService;
@@ -441,8 +474,38 @@ employee
 		// determines the user if he can use batch tasks
 		vm.setAccount = function(){
 			vm.task.new.account_id = vm.task.new.account.id;
-
 			vm.batchable = vm.task.new.account.batchable;
+			vm.task.new.experience_id = null;
+			fetchExperiences();
+		}
+
+		function fetchExperiences(){
+			var query = {
+				where: [
+					{
+						column: 'user_id',
+						condition: '=',
+						value: vm.user.user.id
+					},
+					{
+						column: 'account_id',
+						condition: '=',
+						value: vm.task.new.account_id
+					},
+				],
+				relationships: ['position'],
+			}
+
+			Experience.enlist(query)
+				.then(function(response) {
+					vm.experiences = response.data;
+				})
+				.catch(function(){
+					Helper.failed()
+						.then(function(){
+							fetchExperiences();
+						});
+				})
 		}
 
 		// fetch the accounts associated with the user

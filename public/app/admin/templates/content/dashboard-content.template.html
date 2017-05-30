@@ -1,16 +1,16 @@
 <div layout="row" flex layout-align="center center">
 	<div layout="column" flex-md="70" flex-gt-md="60" flex>
 		<md-card ng-repeat="account in vm.task.data | filter:vm.toolbar.searchText | orderBy:'name'">
-			<md-card-title>
+			<!-- <md-card-title>
         <md-card-title-text>
           <span class="md-headline">{{account.name}}</span>
 					<span class="md-subhead">{{account.range}}</span>
         </md-card-title-text>
-      </md-card-title>
+      </md-card-title> -->
 			<md-card-content>
-				<div ng-repeat="position in account.department.positions">
-					<highchart id="chart1" config="vm.chart.config(position)"></highchart>
-					<table class="table" ng-if="account.employees.length">
+				<div ng-repeat="position in account.positions">
+					<highchart id="chart1" config="vm.chart.config(account, position)"></highchart>
+					<table class="table" ng-if="position.employees.length">
 						<tr ng-if="!account.batchable">
 							<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Name</th>
 							<th class="col-xs-3 col-sm-3 col-md-3 col-lg-3">Category</th>
@@ -27,9 +27,9 @@
 							<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Batch Photos(Revision)</th>
 							<th class="col-xs-1 col-sm-1 col-md-1 col-lg-1">Hours Spent</th>
 						</tr>
-						<tr ng-repeat="employee in account.employees">
+						<tr ng-repeat="employee in position.employees">
 							<td>{{employee.name}}</td>
-							<td>{{employee.experience.category}}</td>
+							<td>{{employee.category}}</td>
 							<td>{{employee.new}}</td>
 							<td ng-if="account.batchable">{{employee.number_of_photos_new}}</td>
 							<td>{{employee.revisions}}</td>

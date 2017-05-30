@@ -32,6 +32,14 @@ class Account extends Model
     }
 
     /**
+     * Get the experience records associated with the account.
+     */
+    public function experiences()
+    {
+        return $this->hasMany('App\Experience');
+    }
+
+    /**
      * Get the position records associated with the account.
      */
     public function positions()

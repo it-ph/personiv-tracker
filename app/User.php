@@ -141,14 +141,11 @@ class User extends Authenticatable
       $experiences = [];
 
       for ($i=0; $i < count(request()->experiences); $i++) {
-        if(request()->input("experiences.{$i}.selected"))
-        {
-          $experience = new Experience;
-          $experience->validateRequest($i);
-          $experience->prepare($i);
+        $experience = new Experience;
+        $experience->validateRequest($i);
+        $experience->prepare($i);
 
-          array_push($experiences, $experience);
-        }
+        array_push($experiences, $experience);
       }
 
       return $experiences;

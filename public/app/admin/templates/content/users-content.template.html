@@ -1,41 +1,43 @@
 <div layout="row" flex layout-align="center center">
 	<div layout="column" flex-md="50" flex-gt-md="30" flex>
     <div ui-view="form" ng-if="vm.user.showForm"></div>
-    <md-subheader class="md-no-sticky">Subordinates</md-subheader>
-		<p ng-if="!vm.user.user.subordinates.length">Nothing to display.</p>
-    <md-list>
-      <md-list-item class="md-3-line secondary-button-padding" ng-repeat="user in vm.user.user.subordinates" ng-click="vm.view(user)">
-        <div class="md-list-item-text">
-          <h3>{{user.name}}</h3>
-          <h4>{{user.employee_number}}</h4>
-          <p>{{user.email}}</p>
-        </div>
-        <md-menu>
-            <md-button aria-label="Menu" class="md-icon-button" ng-click="$mdMenu.open($event)">
-              <md-icon class="mdi mdi-dots-vertical grey"></md-icon>
-            </md-button>
-            <md-menu-content width="4">
-              <!-- Edit -->
-              <md-menu-item>
-                  <md-button aria-label="Edit" ng-click="vm.edit(user)" flex>
-                      Edit
-                  </md-button>
-              </md-menu-item>
-              <!-- Reset Password -->
-              <md-menu-item>
-                  <md-button aria-label="Reset Password" ng-click="vm.resetPassword(user)" flex>
-                      Reset Password
-                  </md-button>
-              </md-menu-item>
-              <!-- Delete -->
-              <md-menu-item>
-                  <md-button aria-label="Delete" ng-click="vm.deleteUser(user)" flex>
-                      Delete
-                  </md-button>
-              </md-menu-item>
-            </md-menu-content>
-        </md-menu>
-      </md-list-item>
-    </md-list>
+		<div ng-if="!vm.user.showForm">
+			<md-subheader class="md-no-sticky">Subordinates</md-subheader>
+			<p ng-if="!vm.user.user.subordinates.length">Nothing to display.</p>
+			<md-list>
+				<md-list-item class="md-3-line secondary-button-padding" ng-repeat="user in vm.user.user.subordinates" ng-click="vm.view(user)">
+					<div class="md-list-item-text">
+						<h3>{{user.name}}</h3>
+						<h4>{{user.employee_number}}</h4>
+						<p>{{user.email}}</p>
+					</div>
+					<md-menu>
+						<md-button aria-label="Menu" class="md-icon-button" ng-click="$mdMenu.open($event)">
+							<md-icon class="mdi mdi-dots-vertical grey"></md-icon>
+						</md-button>
+						<md-menu-content width="4">
+							<!-- Edit -->
+							<md-menu-item>
+								<md-button aria-label="Edit" ng-click="vm.edit(user)" flex>
+									Edit
+								</md-button>
+							</md-menu-item>
+							<!-- Reset Password -->
+							<md-menu-item>
+								<md-button aria-label="Reset Password" ng-click="vm.resetPassword(user)" flex>
+									Reset Password
+								</md-button>
+							</md-menu-item>
+							<!-- Delete -->
+							<md-menu-item>
+								<md-button aria-label="Delete" ng-click="vm.deleteUser(user)" flex>
+									Delete
+								</md-button>
+							</md-menu-item>
+						</md-menu-content>
+					</md-menu>
+				</md-list-item>
+			</md-list>
+		</div>
   </div>
 </div>
