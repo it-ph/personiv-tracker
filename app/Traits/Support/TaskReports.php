@@ -31,12 +31,12 @@ trait TaskReports
 
         if($department_id)
         {
-            $this->accounts = Account::with('department.positions')->where('department_id', $department_id)->get();
+            $this->accounts = Account::with('positions')->where('department_id', $department_id)->get();
         }
 
         else if($this->request->user()->isSuperUser())
         {
-            $this->accounts = Account::all();
+            $this->accounts = Account::with('positions')->get();
         }
         else{
             $this->accounts = Account::with('positions')->where('department_id', $this->request->user()->department_id)->get();
@@ -111,59 +111,82 @@ trait TaskReports
 
     protected function reportData($data, $date_start, $date_end, $time_start, $time_end)
     {
-    	$data->each(function($account, $key) use($date_start, $date_end, $time_start, $time_end) {
-	        $account->employees = User::whereIn('id', $this->subordinateIds)->get();
+      $data->each(function($account, $key) use($date_start, $date_end, $time_start, $time_end) {
 
-	        $account->employees->each(function($employee, $key){
-	        	$employee->data = collect([]);
-	        });
+        $account->positions->each(function($position) use($account, $date_start, $date_end, $time_start, $time_end){
 
-    		$account->reportDates = collect([]);
+          $position->employees = User::where(function($query) use($position, $account, $date_start, $date_end){
+            $query->whereIn('id', $this->subordinateIds);
 
-    		$timeStart = Carbon::parse($time_start)->toTimeString();
-	        $timeEnd = Carbon::parse($time_end)->toTimeString();
-
-	        for ($date = Carbon::parse($date_start); $date->lte(Carbon::parse($date_end)); $date->addDay()) {
-
-	            $from = Carbon::parse($date->toDateString() . ' ' . $timeStart);
-
-	            $to = $from->gte(Carbon::parse($date->toDateString() . ' ' . $timeEnd)) ? Carbon::parse($date->toDateString() . ' ' . $timeEnd)->addDay() : Carbon::parse($date->toDateString() . ' ' . $timeEnd);
-
-	            $account->reportDates->push($date->toFormattedDateString());
-
-	            $account->employees->load(['tasks' => function($query) use($account, $from, $to){
-	            	$query->where('account_id', $account->id)->whereBetween('ended_at', [$from, $to]);
-	            }]);
-
-				$account->employees->each(function($employee, $key){
-                    $new = 0;
-                    $number_of_photos_new  = 0;
-                    $revisions  = 0;
-                    $number_of_photos_revisions  = 0;
-                    $hours_spent  = 0;
-
-                    if(count($employee->tasks))
-                    {
-                        $new = $employee->tasks->where('revision', false)->count();
-    					$number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
-
-                        $revisions = $employee->tasks->where('revision', true)->count();
-    	                $number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');
-
-    	                $hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
-                    }
-
-					$employee->data->push(compact('new', 'number_of_photos_new', 'revisions', 'number_of_photos_revisions', 'hours_spent'));
-				});
-	        }
-
-            $account->employees->each(function($employee, $key){
-                $employee->total_new = $employee->data->sum('new');
-                $employee->total_number_of_photos_new = $employee->data->sum('number_of_photos_new');
-                $employee->total_revisions = $employee->data->sum('revisions');
-                $employee->total_number_of_photos_revisions = $employee->data->sum('number_of_photos_revisions');
-                $employee->total_hours_spent = $employee->data->sum('hours_spent');
+            $query->whereHas('tasks', function($query) use($position, $account, $date_start, $date_end){
+              $query->whereBetween('ended_at', [Carbon::parse($date_start), Carbon::parse($date_end)])->whereHas('experience', function($query) use($position, $account){
+                $query->where('position_id', $position->id)->where('account_id', $account->id);
+              });
             });
+          })->get();
+
+          $position->employees->each(function($employee, $key) use($account, $position){
+            $employee->data = collect([]);
+            $employee->load(['experiences' => function($query) use($account, $position){
+              $query->where('position_id', $position->id)->where('account_id', $account->id);
+            }]);
+          });
+
+          $account->reportDates = collect([]);
+
+          $timeStart = Carbon::parse($time_start)->toTimeString();
+          $timeEnd = Carbon::parse($time_end)->toTimeString();
+
+          for ($date = Carbon::parse($date_start); $date->lte(Carbon::parse($date_end)); $date->addDay()) {
+            $from = Carbon::parse($date->toDateString() . ' ' . $timeStart);
+
+            $to = $from->gte(Carbon::parse($date->toDateString() . ' ' . $timeEnd)) ? Carbon::parse($date->toDateString() . ' ' . $timeEnd)->addDay() : Carbon::parse($date->toDateString() . ' ' . $timeEnd);
+
+            $account->reportDates->push($date->toFormattedDateString());
+
+            if(count($position->employees))
+            {
+              $position->employees->load(['tasks' => function($query) use($account, $position, $from, $to){
+                $query->whereBetween('ended_at', [$from, $to])->whereHas('experience', function($query) use($position, $account){
+                  $query->where('position_id', $position->id)->where('account_id', $account->id);
+                });
+              }]);
+
+              $position->employees->each(function($employee, $key){
+                $monthDiff = Carbon::parse($employee->experiences->first()->date_started)->diffInMonths(Carbon::today());
+                $category = $monthDiff < 3 ? 'Beginner' : ($monthDiff > 3 && $monthDiff < 6 ? 'Moderately Experienced' : 'Experienced');
+
+                $new = 0;
+                $number_of_photos_new  = 0;
+                $revisions  = 0;
+                $number_of_photos_revisions  = 0;
+                $hours_spent  = 0;
+
+                if(count($employee->tasks))
+                {
+                  $new = $employee->tasks->where('revision', false)->count();
+                  $number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
+
+                  $revisions = $employee->tasks->where('revision', true)->count();
+                  $number_of_photos_revisions = $employee->tasks->where('revision', true)->sum('number_of_photos');
+
+                  $hours_spent = round($employee->tasks->sum('minutes_spent') / 60, 2);
+                }
+
+                $employee->data->push(compact('category', 'new', 'number_of_photos_new', 'revisions', 'number_of_photos_revisions', 'hours_spent'));
+              });
+            }
+          }
+
+          $position->employees->each(function($employee, $key){
+            $employee->total_new = $employee->data->sum('new');
+            $employee->total_number_of_photos_new = $employee->data->sum('number_of_photos_new');
+            $employee->total_revisions = $employee->data->sum('revisions');
+            $employee->total_number_of_photos_revisions = $employee->data->sum('number_of_photos_revisions');
+            $employee->total_hours_spent = $employee->data->sum('hours_spent');
+          });
+        });
+
     	});
 
     	return $data;

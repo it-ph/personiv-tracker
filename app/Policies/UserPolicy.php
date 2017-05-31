@@ -52,7 +52,7 @@ class UserPolicy
      */
     public function update(User $user, User $subordinate)
     {
-        return $subordinate->immediate_supervisor_id === $user->id;
+        return $subordinate->immediate_supervisor_id === $user->id || $user->id === $subordinate->id;
     }
 
     /**

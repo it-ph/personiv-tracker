@@ -1,19 +1,18 @@
-admin
-  .controller('editUserFormDialogController', editUserFormDialogController)
+(function() {
+  'use strict';
 
-  userFormController.$inject = ['MaterialDesign', 'User', 'Account', 'Experience', 'formService', '$filter'];
+  angular
+    .module('app')
+    .controller('experiencesDialogController', experiencesDialogController)
 
-  function editUserFormDialogController(MaterialDesign, User, Account, Experience, formService, $filter) {
+  experiencesDialogController.$inject = ['User', 'Account', 'Experience', 'MaterialDesign', 'formService', '$filter'];
+
+  function experiencesDialogController(User, Account, Experience, MaterialDesign, formService, $filter) {
     var vm = this;
 
-    vm.label = 'Edit user';
-
-    vm.user = User;
-    vm.edit = vm.user.clone('edit');
-    vm.edit.experiences = [];
-
-    vm.checkEmployeeNumber = checkEmployeeNumber;
-    vm.checkEmail = checkEmail;
+    vm.label = "Positions"
+    vm.user = User.user;
+    vm.user.experiences = [];
     vm.cancel = cancel;
     vm.submit = submit;
     init();
@@ -32,7 +31,7 @@ admin
           {
             column: 'department_id',
             condition: '=',
-            value: vm.user.user.department_id,
+            value: vm.user.department_id,
           }
         ],
         relationships: ['positions'],
@@ -51,7 +50,7 @@ admin
           {
             column: 'user_id',
             condition: '=',
-            value: vm.edit.id,
+            value: vm.user.id,
           },
         ],
         relationships: ['account.positions'],
@@ -63,7 +62,6 @@ admin
     function matchExperiences(response) {
       angular.forEach(response.data, function(experience){
           var account = $filter('filter')(vm.accounts, {id: experience.account_id});
-
           if(account)
           {
             var accountIndex = vm.accounts.indexOf(account[0]);
@@ -83,56 +81,6 @@ admin
       });
     }
 
-    function checkEmployeeNumber() {
-      var query = {
-          where: [
-            {
-              column: 'employee_number',
-              condition: '=',
-              value: vm.edit.employee_number,
-            },
-          ],
-          whereNotIn: [
-            {
-              column: 'id',
-              values: [vm.edit.id],
-            }
-          ],
-          withTrashed: true,
-          first: true,
-      }
-
-      vm.user.enlist(query)
-        .then(function(response){
-          vm.duplicateEmployeeNumber = response.data ? true : false;
-        });
-    }
-
-    function checkEmail() {
-      var query = {
-          where: [
-            {
-              column: 'email',
-              condition: '=',
-              value: vm.edit.email,
-            },
-          ],
-          whereNotIn: [
-            {
-              column: 'id',
-              values: [vm.edit.id],
-            }
-          ],
-          withTrashed: true,
-          first: true,
-      }
-
-      vm.user.enlist(query)
-        .then(function(response){
-          vm.duplicateEmail = response.data ? true : false;
-        });
-    }
-
     function cancel() {
       MaterialDesign.cancel();
     }
@@ -146,13 +94,13 @@ admin
       setExperiences();
       convertDatesToString();
 
-      if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.edit.experiences.length)
+      if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.user.experiences.length)
 			{
 				return;
 			}
 			else{
 				vm.busy = true;
-				vm.user.update(vm.edit)
+				User.update(vm.user)
 					.then(function(){
 						vm.busy = false;
 						MaterialDesign.notify('Changes saved.');
@@ -173,7 +121,7 @@ admin
                   position_id: position.id,
                   date_started: position.date_started,
                 }
-                vm.edit.experiences.push(experience);
+                vm.user.experiences.push(experience);
               }
             });
           }
@@ -182,13 +130,13 @@ admin
     }
 
     function convertDatesToString(){
-      angular.forEach(vm.edit.experiences, function(experience){
+      angular.forEach(vm.user.experiences, function(experience){
         experience.date_started = experience.date_started.toDateString();
       });
     }
 
     function revertDatesToObject(){
-      angular.forEach(vm.edit.experiences, function(experience){
+      angular.forEach(vm.user.experiences, function(experience){
         experience.date_started = new Date(experience.date_started);
       });
     }
@@ -199,5 +147,5 @@ admin
       vm.busy = false;
       vm.error = true;
     }
-
   }
+})();

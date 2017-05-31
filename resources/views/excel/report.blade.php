@@ -15,9 +15,21 @@
 			<th colspan="3" align="center">Total</th>
 		@endif
 	</tr>
-	<tr>
-		<th align="center">Name</th>
-		@foreach($account->reportDates as $date)
+	@foreach($account->positions as $position)
+		<tr>
+			<th align="center">{{$position->name}}</th>
+			@foreach($account->reportDates as $date)
+				<th align="center">New</th>
+				@if($account->batchable)
+					<th align="center">Batch Photos (New)</th>
+				@endif
+				<th align="center">Revisions</th>
+				@if($account->batchable)
+					<th align="center">Batch Photos (Revisions)</th>
+				@endif
+				<th align="center">Hours Spent</th>
+				<td align="center"></td>
+			@endforeach
 			<th align="center">New</th>
 			@if($account->batchable)
 				<th align="center">Batch Photos (New)</th>
@@ -27,42 +39,33 @@
 				<th align="center">Batch Photos (Revisions)</th>
 			@endif
 			<th align="center">Hours Spent</th>
-			<td align="center"></td>
-		@endforeach
-		<th align="center">New</th>
-		@if($account->batchable)
-			<th align="center">Batch Photos (New)</th>
-		@endif
-		<th align="center">Revisions</th>
-		@if($account->batchable)
-			<th align="center">Batch Photos (Revisions)</th>
-		@endif
-		<th align="center">Hours Spent</th>
-	</tr>
-	@foreach($account->employees as $employee)
-		<tr>
-			<td align="center">{{$employee->name}}</td>
-			@foreach($employee->data as $item)
-				<td align="center">{{$item['new']}}</td>
-				@if($account->batchable)
-					<td align="center">{{$item['number_of_photos_new']}}</td>
-				@endif
-				<td align="center">{{$item['revisions']}}</td>
-				@if($account->batchable)
-					<td align="center">{{$item['number_of_photos_revisions']}}</td>
-				@endif
-				<td align="center">{{$item['hours_spent']}}</td>
-				<td align="center"></td>
-			@endforeach
-			<td align="center">{{$employee->total_new}}</td>
-			@if($account->batchable)
-				<td align="center">{{$employee->total_number_of_photos_new}}</td>
-			@endif
-			<td align="center">{{$employee->total_revisions}}</td>
-			@if($account->batchable)
-				<td align="center">{{$employee->total_number_of_photos_revisions}}</td>
-			@endif
-			<td align="center">{{$employee->total_hours_spent}}</td>
 		</tr>
+		@foreach($position->employees as $employee)
+			<tr>
+				<td align="center">{{$employee->name}}</td>
+				@foreach($employee->data as $item)
+					<td align="center">{{$item['new']}}</td>
+					@if($account->batchable)
+						<td align="center">{{$item['number_of_photos_new']}}</td>
+					@endif
+					<td align="center">{{$item['revisions']}}</td>
+					@if($account->batchable)
+						<td align="center">{{$item['number_of_photos_revisions']}}</td>
+					@endif
+					<td align="center">{{$item['hours_spent']}}</td>
+					<td align="center"></td>
+				@endforeach
+				<td align="center">{{$employee->total_new}}</td>
+				@if($account->batchable)
+					<td align="center">{{$employee->total_number_of_photos_new}}</td>
+				@endif
+				<td align="center">{{$employee->total_revisions}}</td>
+				@if($account->batchable)
+					<td align="center">{{$employee->total_number_of_photos_revisions}}</td>
+				@endif
+				<td align="center">{{$employee->total_hours_spent}}</td>
+			</tr>
+		@endforeach
+		<tr></tr>
 	@endforeach
 </table>

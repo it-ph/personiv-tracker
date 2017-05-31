@@ -113,9 +113,9 @@ class User extends Authenticatable
       $this->name = request()->name;
       $this->employee_number = request()->employee_number;
       $this->email = request()->email;
-      $this->password = request()->has('password') ? bcrypt(request()->password) : bcrypt('!welcome10');
-      $this->department_id = request()->user()->department_id;
-      $this->immediate_supervisor_id = request()->user()->id;
+      $this->password = $this->id ? $this->password : bcrypt('!welcome10');
+      $this->department_id = $this->id ? $this->department_id : request()->user()->department_id;
+      $this->immediate_supervisor_id = $this->id ? $this->immediate_supervisor_id : request()->user()->id;
     }
 
     public function checkDuplicate()

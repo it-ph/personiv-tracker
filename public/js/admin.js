@@ -546,6 +546,7 @@ admin
     }
 
     function error() {
+      revertDatesToObject();
       MaterialDesign.reject();
       vm.busy = false;
       vm.error = true;

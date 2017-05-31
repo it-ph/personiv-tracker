@@ -1,6 +1,7 @@
 employee
 	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', 'User', function(MaterialDesign, toolbarService, Task, taskFormService, User){
 		var vm = this;
+		var busy = false;
 
 		vm.toolbar = toolbarService;
 		vm.task = Task;
@@ -25,6 +26,11 @@ employee
 		}
 
 		vm.pause = function(){
+			if(busy)
+			{
+				return serverBusy();
+			}
+			busy = true;
 			vm.task.pause()
 				.then(function(response){
 					vm.paused = true;
@@ -32,12 +38,19 @@ employee
 					vm.setCurrent(response.data);
 
 					MaterialDesign.notify('Paused');
+					busy = false;
 				}, function(){
+					busy = false;
 					MaterialDesign.error();
 				})
 		}
 
 		vm.resume = function(){
+			if(busy)
+			{
+				return serverBusy();
+			}
+			busy = true;
 			vm.task.resume()
 				.then(function(response){
 					vm.paused = false;
@@ -45,7 +58,9 @@ employee
 					vm.setCurrent(response.data);
 
 					MaterialDesign.notify('Resumed');
+					busy = false;
 				}, function(){
+					busy = false;
 					MaterialDesign.error();
 				})
 		}
@@ -248,4 +263,13 @@ employee
 		}
 
 		vm.task.init();
+
+		function serverBusy() {
+			var alert = {
+				title: 'Server Busy',
+				message: 'Your request is being processed.',
+			}
+
+			MaterialDesign.alert(alert);
+		}
 	}]);
