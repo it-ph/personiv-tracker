@@ -118,7 +118,7 @@
 				</md-button>
 				<md-menu-content width="4">
 					<md-subheader>Account</md-subheader>
-					<md-menu-item ng-if="!mainVm.user.user.isRankAndFile()">
+					<md-menu-item ng-if="mainVm.user.isRankAndFile()">
 						<md-button flex ng-click="mainVm.setPositions()">
 							<div layout="row" flex>
 									<md-icon class="mdi mdi-account-box grey"></md-icon>

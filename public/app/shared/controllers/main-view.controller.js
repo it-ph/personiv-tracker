@@ -14,7 +14,6 @@ shared
 		 	}
 
 			MaterialDesign.customDialog(dialog)
-				.catch(logout);
 		}
 
 		/*
@@ -88,5 +87,6 @@ shared
 				})
 				.then(forceSetPosition)
 				.then(setPositions)
+				// .catch(logout);
 		}();
 	}]);
