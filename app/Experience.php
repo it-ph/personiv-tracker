@@ -3,17 +3,19 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Validator;
 use Carbon\Carbon;
 
 class Experience extends Model
 {
+    use SoftDeletes;
     /**
      * The attributes that should be mutated to dates.
      *
      * @var array
      */
-    protected $dates = ['date_started'];
+    protected $dates = ['date_started', 'deleted_at'];
     /**
      * Get the user record associated with the experience.
      */
