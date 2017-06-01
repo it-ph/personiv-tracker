@@ -10,6 +10,8 @@ class User extends Authenticatable
 {
     use Notifiable, Softdeletes;
 
+    protected static $whiteListExperience = [];
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -141,11 +143,21 @@ class User extends Authenticatable
       $experiences = [];
 
       for ($i=0; $i < count(request()->experiences); $i++) {
-        $experience = new Experience;
+        $hasRecord = request()->has("experiences.{$i}.id") ? true : false;
+
+        $experience = $hasRecord ? Experience::find(request()->input("experiences.{$i}.id")) : new Experience;
         $experience->validateRequest($i);
         $experience->prepare($i);
 
-        array_push($experiences, $experience);
+        if(! $hasRecord) {
+          array_push($experiences, $experience);
+        }
+        else {
+          $experience->user_id = $this->id;
+          $experience->save();
+        }
+
+        array_push(static::$whiteListExperience, $experience->id);
       }
 
       return $experiences;
@@ -153,6 +165,6 @@ class User extends Authenticatable
 
     public function deleteExperiences()
     {
-      Experience::where('user_id', $this->id)->delete();
+      Experience::whereNotIn('id', static::$whiteListExperience)->where('user_id', $this->id)->doesntHave('tasks')->delete();
     }
 }

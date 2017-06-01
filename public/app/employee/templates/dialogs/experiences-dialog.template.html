@@ -13,9 +13,9 @@
             <md-subheader class="red-text" ng-if="vm.error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
             <md-subheader class="md-no-sticky red-text" ng-if="vm.showErrors && !vm.user.experiences.length">User must have at least one experience</md-subheader>
       			<div layout="column" ng-repeat="account in vm.accounts" flex>
-      				<md-switch class="md-primary" ng-model="account.selected">{{account.name}}</md-switch>
+      				<md-switch class="md-primary" ng-model="account.selected" ng-disabled="account.locked">{{account.name}}</md-switch>
       				<div flex ng-repeat="position in account.positions" ng-if="account.selected">
-      					<md-checkbox class="md-primary" ng-model="position.selected">{{position.name}}</md-checkbox>
+      					<md-checkbox class="md-primary" ng-model="position.selected" ng-disabled="position.locked">{{position.name}}</md-checkbox>
       					<div layout="row" flex ng-if="position.selected">
       						<!-- Date Started -->
       						<md-input-container class="md-block" flex>

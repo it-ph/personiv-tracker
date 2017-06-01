@@ -75,6 +75,7 @@ admin
             if(position)
             {
               var positionIndex = vm.accounts[accountIndex].positions.indexOf(position[0]);
+              position[0].experience_id = experience.id;
               position[0].date_started = new Date(experience.date_started);
               position[0].selected = true;
               vm.accounts[accountIndex].positions[positionIndex] = position[0];
@@ -169,6 +170,7 @@ admin
               if(position.selected)
               {
                 var experience = {
+                  id: position.experience_id,
                   account_id: account.id,
                   position_id: position.id,
                   date_started: position.date_started,

@@ -54,6 +54,7 @@
           },
         ],
         relationships: ['account.positions'],
+        relationshipCount: ['tasks'],
       }
 
       return Experience.enlist(query);
@@ -66,6 +67,7 @@
           {
             var accountIndex = vm.accounts.indexOf(account[0]);
             account[0].selected = true;
+            account[0].locked = experience.tasks_count ? true : false;
             vm.accounts[accountIndex] = account[0];
 
             var position = $filter('filter')(vm.accounts[accountIndex].positions, {id: experience.position_id});
@@ -73,8 +75,12 @@
             if(position)
             {
               var positionIndex = vm.accounts[accountIndex].positions.indexOf(position[0]);
+
+              position[0].experience_id = experience.id;
               position[0].date_started = new Date(experience.date_started);
               position[0].selected = true;
+              position[0].locked = experience.tasks_count ? true : false;
+
               vm.accounts[accountIndex].positions[positionIndex] = position[0];
             }
           }
@@ -117,6 +123,7 @@
               if(position.selected)
               {
                 var experience = {
+                  id: position.experience_id,
                   account_id: account.id,
                   position_id: position.id,
                   date_started: position.date_started,

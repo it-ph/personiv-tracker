@@ -33,7 +33,7 @@
                     </div>
                 </md-input-container>
                 <!-- Position -->
-        				<md-input-container class="md-block" flex>
+        				<md-input-container class="md-block" flex ng-if="vm.experiences.length">
         					<label>Position</label>
         					<md-select name="Position" ng-model="vm.task.data.experience_id" ng-disabled="vm.busy" required>
         						<md-option ng-repeat="experience in vm.experiences | orderBy: 'name'" value="{{experience.id}}">{{ experience.position.name }}</md-option>
