@@ -70,12 +70,12 @@ trait TaskReports
                   });
                 }])->get();
 
-                $position->employees->each(function($employee, $key) use($account, $position){
+                $position->employees->each(function($employee, $key) use($account, $position, $to){
                   $employee->load(['experiences' => function($query) use($account, $position){
                     $query->where('position_id', $position->id)->where('account_id', $account->id);
                   }]);
 
-                  $monthDiff = Carbon::parse($employee->experiences->first()->date_started)->diffInMonths(Carbon::today());
+                  $monthDiff = Carbon::parse($employee->experiences->first()->date_started)->diffInMonths(Carbon::parse($to));
 
                   $employee->new = $employee->tasks->where('revision', false)->count();
                   $employee->number_of_photos_new = $employee->tasks->where('revision', false)->sum('number_of_photos');
@@ -165,9 +165,6 @@ trait TaskReports
               }]);
 
               $position->employees->each(function($employee, $key){
-                $monthDiff = Carbon::parse($employee->experiences->first()->date_started)->diffInMonths(Carbon::today());
-                $category = $monthDiff < 3 ? 'Beginner' : ($monthDiff > 3 && $monthDiff < 6 ? 'Moderately Experienced' : 'Experienced');
-
                 $new = 0;
                 $number_of_photos_new  = 0;
                 $revisions  = 0;
@@ -190,7 +187,10 @@ trait TaskReports
             }
           }
 
-          $position->employees->each(function($employee, $key){
+          $position->employees->each(function($employee, $key) use($date_end){
+            $monthDiff = Carbon::parse($employee->experiences->first()->date_started)->diffInMonths(Carbon::parse($date_end));
+            $employee->category = $monthDiff < 3 ? 'Beginner' : ($monthDiff > 3 && $monthDiff < 6 ? 'Moderately Experienced' : 'Experienced');
+
             $employee->total_new = $employee->data->sum('new');
             $employee->total_number_of_photos_new = $employee->data->sum('number_of_photos_new');
             $employee->total_revisions = $employee->data->sum('revisions');

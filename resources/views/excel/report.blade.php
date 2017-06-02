@@ -18,6 +18,7 @@
 	@foreach($account->positions as $position)
 		<tr>
 			<th align="center">{{$position->name}}</th>
+			<th align="center">Category</th>
 			@foreach($account->reportDates as $date)
 				<th align="center">New</th>
 				@if($account->batchable)
@@ -43,6 +44,7 @@
 		@foreach($position->employees as $employee)
 			<tr>
 				<td align="center">{{$employee->name}}</td>
+				<td align="center">{{$employee->category}}</td>
 				@foreach($employee->data as $item)
 					<td align="center">{{$item['new']}}</td>
 					@if($account->batchable)
