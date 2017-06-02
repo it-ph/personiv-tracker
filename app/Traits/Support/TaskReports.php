@@ -133,7 +133,10 @@ trait TaskReports
               $dateStart = Carbon::parse($date_start);
               $dateEnd = Carbon::parse($date_start);
 
-              $query->whereBetween('ended_at', [Carbon::parse($dateStart->toDateString() . ' ' . $timeStart), Carbon::parse($dateEnd->toDateString() . ' ' . $timeEnd)])->whereHas('experience', function($query) use($position, $account){
+              $from = Carbon::parse($dateStart->toDateString() . ' ' . $timeStart);
+              $to = $from->gte(Carbon::parse($dateStart->toDateString() . ' ' . $timeEnd)) ? Carbon::parse($dateStart->toDateString() . ' ' . $timeEnd)->addDay() : Carbon::parse($dateStart->toDateString() . ' ' . $timeEnd);
+
+              $query->whereBetween('ended_at', [$from, $to])->whereHas('experience', function($query) use($position, $account){
                 $query->where('position_id', $position->id)->where('account_id', $account->id);
               });
             });

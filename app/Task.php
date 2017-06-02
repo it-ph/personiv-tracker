@@ -42,7 +42,7 @@ class Task extends Model
      */
     public function user()
     {
-    	return $this->belongsTo('App\Task');
+    	return $this->belongsTo('App\User');
     }
 
     /**
