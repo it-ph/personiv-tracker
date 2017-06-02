@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Traits\Enlist;
 
-use Auth;;
+use Auth;
 use Carbon\Carbon;
 use DB;
 use Gate;
@@ -47,7 +47,7 @@ class AccountController extends Controller
      */
     public function index()
     {
-        
+
     }
 
     /**
