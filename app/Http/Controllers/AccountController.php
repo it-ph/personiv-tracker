@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Account;
+use App\Position;
+use App\AccountPosition;
 use Illuminate\Http\Request;
 
 use App\Traits\Enlist;
@@ -47,7 +49,7 @@ class AccountController extends Controller
      */
     public function index()
     {
-
+      // 
     }
 
     /**
