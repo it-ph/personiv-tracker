@@ -1,6 +1,6 @@
 <table>
 	<tr>
-		<th align="center"></th>
+		<th align="center" colspan="2"></th>
 		@foreach($account->reportDates as $date)
 			@if($account->batchable)
 				<th colspan="5" align="center">{{$date}}</th>
