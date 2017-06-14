@@ -164,9 +164,12 @@ class Task extends Model
 
         Excel::create($department . ' report from ' . Carbon::parse($date_start)->toFormattedDateString() . ' to ' . Carbon::parse($date_end)->toFormattedDateString() .' Shift: ' . Carbon::parse($time_start)->toTimeString() . ' to ' . Carbon::parse($time_end)->toTimeString(), function($excel) use($reports){
             $reports->each(function($account, $key) use($excel){
+              if(count($account->reportDates))
+              {
                 $excel->sheet($this->formatSheet($account->name), function($sheet) use($account){
-                    $sheet->loadView('excel.report')->with('account', $account);
+                  $sheet->loadView('excel.report')->with('account', $account);
                 });
+              }
             });
         })->download('xls');
     }
