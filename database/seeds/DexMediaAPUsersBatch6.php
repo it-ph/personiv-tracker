@@ -15,7 +15,7 @@ class DexMediaAPUsersBatch6 extends Seeder
     public function run()
     {
         DB::transaction(function(){
-          $dexMediaAP = Department::where('name', 'DexMedia AP')->first();
+          $digitalFulfillment = Department::where('name', 'Digital Fulfillment')->first();
           $settings = Role::where('name', 'Settings')->first();
           $supervisor = Role::where('name', 'Supervisor')->first();
 
@@ -25,7 +25,7 @@ class DexMediaAPUsersBatch6 extends Seeder
           $joseph->name = 'Joseph Juntilla';
           $joseph->email = 'jos.juntilla@personiv.com';
           $joseph->password = bcrypt('!welcome10');
-          $joseph->department_id = $dexMediaAP->id;
+          $joseph->department_id = $digitalFulfillment->id;
 
           $joseph->save();
           $joseph->roles()->attach($settings->id);
@@ -37,7 +37,7 @@ class DexMediaAPUsersBatch6 extends Seeder
           $noel->name = 'Noel Cruz';
           $noel->email = 'noel.cruz@personiv.com';
           $noel->password = bcrypt('!welcome10');
-          $noel->department_id = $dexMediaAP->id;
+          $noel->department_id = $digitalFulfillment->id;
 
           $noel->save();
           $noel->roles()->attach($settings->id);
