@@ -1,0 +1,39 @@
+<md-card>
+	<md-card-title>
+      	<md-card-title-text>
+        	<span class="md-headline">New Project</span>
+      	</md-card-title-text>
+    </md-card-title>
+	<md-card-content>
+		<form name="vm.form" novalidate>
+			<div layout="row" flex>
+				<!-- Name -->
+				<md-input-container class="md-block" flex id="newAccount">
+					<label>Name</label>
+					<input type="text" ng-model="vm.account.name" name="Name" ng-init="vm.focusOnForm()" ng-blur="vm.checkDuplicate()" required ng-disabled="vm.busy"/>
+					<div class="pattern" ng-if="vm.duplicate">Project already exists.</div>
+					<div ng-messages="vm.form.Name.$error">
+						<div ng-message="required">Name is required.</div>
+					</div>
+				</md-input-container>
+				<!-- Department -->
+				<md-input-container class="md-block" flex ng-if="vm.user.super_user">
+					<label>Department</label>
+					<md-select name="Department" ng-model="vm.account.department_id" ng-change="vm.checkDuplicate()" required>
+						<md-option ng-repeat="department in vm.departments" value="{{department.id}}">{{department.name}}</md-option>
+					</md-select>
+					<div ng-messages="vm.form.Department.$error">
+						<div ng-message="required">Department is required.</div>
+					</div>
+				</md-input-container>
+			</div>
+			<!-- Batchable -->
+			<md-checkbox ng-model="vm.account.batchable" ng-true-value="true" ng-false-value="false" class="md-primary">Batch</md-checkbox>
+		</form>
+	</md-card-content>
+	<md-card-actions layout="row" layout-align="end center">
+  	<md-button ng-click="vm.hideForm()" ng-if="!vm.busy">Cancel</md-button>
+  	<md-button ng-click="vm.submit()" ng-if="!vm.busy">Submit</md-button>
+  	<md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="45"></md-progress-circular>
+  </md-card-actions>
+</md-card>

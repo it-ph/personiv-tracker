@@ -2,10 +2,13 @@
 
 namespace App\Providers;
 
+use App\Account;
 use App\Experience;
 use App\Task;
 use App\ShiftSchedule;
 use App\User;
+
+use App\Policies\AccountPolicy;
 use App\Policies\ExperiencePolicy;
 use App\Policies\TaskPolicy;
 use App\Policies\ShiftSchedulePolicy;
@@ -25,6 +28,7 @@ class AuthServiceProvider extends ServiceProvider
         'App\Task' => 'App\Policies\TaskPolicy',
         'App\ShiftSchedule' => 'App\Policies\ShiftSchedulePolicy',
         'App\User' => 'App\Policies\UserPolicy',
+        'App\Account' => 'App\Policies\AccountPolicy',
     ];
 
     /**

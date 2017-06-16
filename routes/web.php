@@ -24,16 +24,6 @@ Route::get('/register', 'HomeController@index');
 
 Route::group(['middleware' => 'auth'], function(){
 	Route::post('/pusher/auth', 'PusherController@auth');
-
-	Route::resource('account', 'AccountController');
-	Route::resource('department', 'DepartmentController');
-	Route::resource('position', 'PositionController');
-	Route::resource('role', 'RoleController');
-	Route::resource('shift-schedule', 'ShiftScheduleController');
-	Route::resource('task', 'TaskController');
-	Route::resource('user', 'UserController');
-	Route::resource('user-role', 'UserRoleController');
-
 	// User resource
 	Route::group(['prefix' => 'user'], function(){
 		Route::post('check', 'UserController@check');
@@ -53,6 +43,7 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::post('finish/{task}', 'TaskController@finish');
 		Route::post('pause/{task}', 'TaskController@pause');
 		Route::post('resume/{task}', 'TaskController@resume');
+		Route::get('checker', 'TaskController@checker');
 	});
 
 	// Account resource
@@ -69,4 +60,13 @@ Route::group(['middleware' => 'auth'], function(){
 	Route::group(['prefix' => 'experience'], function(){
 		Route::post('enlist', 'ExperienceController@enlist');
 	});
+
+	Route::resource('account', 'AccountController');
+	Route::resource('department', 'DepartmentController');
+	Route::resource('position', 'PositionController');
+	Route::resource('role', 'RoleController');
+	Route::resource('shift-schedule', 'ShiftScheduleController');
+	Route::resource('task', 'TaskController');
+	Route::resource('user', 'UserController');
+	Route::resource('user-role', 'UserRoleController');
 });

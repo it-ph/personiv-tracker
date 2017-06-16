@@ -46,4 +46,39 @@ class Account extends Model
     {
     	return $this->belongsToMany('App\Position', 'account_positions');
     }
+
+    public function checkDuplicate()
+    {
+      $account = Account::query();
+
+      $account->where('name', request()->name);
+
+      if(request()->has('department_id'))
+      {
+        $account->where('department_id', request()->department_id);
+      }
+      else
+      {
+        $account->where('department_id', request()->user()->department_id);
+      }
+
+      if(request()->has('id'))
+      {
+        $account->whereNotIn('id', [request()->id]);
+      }
+
+      $duplicate = $account->first();
+
+      if($duplicate)
+      {
+        abort(403, 'Duplicate entry.');
+      }
+    }
+
+    public function prepare()
+    {
+      $this->name = request()->name;
+      $this->batchable = request()->batchable;
+      $this->department_id = request()->has('department_id') ? request()->department_id : request()->user()->department_id;
+    }
 }

@@ -50,5 +50,25 @@ admin
 						controller: 'userFormController as vm'
 					}
 				},
+			})
+			.state('main.manage-projects', {
+				url: 'projects',
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'projectsContentContainerController as vm',
+					},
+					'toolbar@main.manage-projects': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'projectsToolbarController as vm',
+					},
+					'content@main.manage-projects':{
+						templateUrl: '/app/admin/templates/content/projects-content.template.html',
+					},
+					'form@main.manage-projects': {
+						templateUrl: '/app/admin/templates/content/project-form.template.html',
+						controller: 'projectFormController as vm'
+					}
+				},
 			});
 	}]);

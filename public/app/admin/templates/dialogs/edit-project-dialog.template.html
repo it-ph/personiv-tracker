@@ -1,0 +1,44 @@
+<md-dialog aria-label="{{vm.label}}" flex flex-gt-sm="50" flex-gt-lg="30" ng-cloak>
+  <form name="vm.form">
+    <md-toolbar>
+        <div class="md-toolbar-tools">
+            <h2 class="white-text">{{vm.label}}</h2>
+            <span flex></span>
+            <md-button class="md-icon-button" ng-click="vm.cancel()">
+                <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+    <md-dialog-content flex layout-padding layout-wrap>
+      <md-subheader class="red-text" ng-if="vm.error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+      <div layout="row" flex>
+        <md-input-container class="md-block" flex>
+          <label>Name</label>
+          <input type="text" name="Name" ng-model="vm.account.name" ng-blur="vm.checkDuplicate()" required>
+          <div class="pattern" ng-if="vm.duplicate">Project already exists.</div>
+          <div ng-messages="vm.form.Name.$error">
+            <div ng-message="required">Name is required</div>
+          </div>
+        </md-input-container>
+        <!-- Department -->
+				<md-input-container class="md-block" flex ng-if="vm.user.super_user">
+					<label>Department</label>
+					<md-select name="Department" ng-model="vm.account.department_id" ng-change="vm.checkDuplicate()" required>
+						<md-option ng-repeat="department in vm.departments" value="{{department.id}}">{{department.name}}</md-option>
+					</md-select>
+					<div ng-messages="vm.form.Department.$error">
+						<div ng-message="required">Department is required.</div>
+					</div>
+				</md-input-container>
+      </div>
+      <!-- Batchable -->
+      <md-checkbox ng-model="vm.account.batchable" ng-true-value="true" ng-false-value="false" class="md-primary">Batch</md-checkbox>
+    </md-dialog-content>
+  </form>
+  <div layout="row" layout-align="end center">
+    <md-button ng-if="!vm.busy" class="md-primary" aria-label="Submit" ng-click="vm.submit()">
+        Submit
+    </md-button>
+    <md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+  </div>
+</md-dialog>
