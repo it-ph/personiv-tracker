@@ -170,11 +170,14 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
       .then(deleteRequest)
       .then(spliceUser)
       .then(notifyChanges)
-      .catch(error);
 
     function deleteRequest(){
       MaterialDesign.preloader();
-      return vm.user.delete(user.id);
+      return vm.user.delete(user.id)
+        .catch(function() {
+          MaterialDesign.reject();
+          MaterialDesign.error();
+        });
     }
 
     function spliceUser(){
@@ -198,12 +201,15 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
 
     MaterialDesign.confirm(dialog)
       .then(function(){
-        return vm.user.resetPassword(user);
+        return vm.user.resetPassword(user)
+          .catch(function() {
+            MaterialDesign.reject();
+            MaterialDesign.error();
+          });
       })
       .then(function(){
         MaterialDesign.notify('Changes saved.');
       })
-      .catch(error);
   }
 
   function error(){
