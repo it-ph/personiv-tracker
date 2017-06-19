@@ -3,9 +3,9 @@
     .module('app')
     .controller('projectsContentContainerController', projectsContentContainerController)
 
-    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'fab'];
+    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'fab', '$state',];
 
-    function projectsContentContainerController(User, Account, MaterialDesign, dataService, fab) {
+    function projectsContentContainerController(User, Account, MaterialDesign, dataService, fab, $state) {
       var vm = this;
 
       vm.account = Account;
@@ -33,7 +33,7 @@
 
       function init() {
         vm.showList = false;
-        
+
         return getAccounts()
           .then(collectAccounts, error)
           .then(showList)
@@ -68,7 +68,7 @@
       }
 
       function view(account) {
-
+        $state.go('main.manage-positions', {accountId: account.id});
       }
 
       function edit(account) {
@@ -92,11 +92,15 @@
         }
 
         MaterialDesign.confirm(dialog)
-          .then(deleteRequest, error)
+          .then(deleteRequest)
           .then(applyChanges);
 
         function deleteRequest() {
-          return Account.delete(account.id);
+          return Account.delete(account.id)
+            .catch(function() {
+              MaterialDesign.reject();
+              MaterialDesign.error();
+            });
         }
 
         function applyChanges() {

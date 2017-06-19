@@ -8,6 +8,10 @@ shared
 			return $http.post('/account/enlist', query);
 		}
 
+		factory.show = function(id) {
+			return $http.get('/account/' + id);
+		}
+
 		factory.store = function(data){
 			return $http.post('/account', data);
 		}

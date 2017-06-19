@@ -23,6 +23,11 @@ trait Enlist
     	$this->populateRelationship();
     }
 
+		if(request()->has('relationshipCountWithConstraints'))
+    {
+    	$this->populateRelationshipCount();
+    }
+
     if(request()->has('where'))
     {
         $this->where();

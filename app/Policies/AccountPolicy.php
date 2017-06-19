@@ -26,7 +26,7 @@ class AccountPolicy
      */
     public function view(User $user, Account $account)
     {
-      //
+      return $user->department_id === $account->department_id;
     }
 
     /**

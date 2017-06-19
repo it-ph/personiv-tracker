@@ -6,6 +6,10 @@ use App\Position;
 use App\Traits\Enlist;
 use Illuminate\Http\Request;
 
+use App\Http\Requests\{StorePosition, UpdatePosition, DetachPosition};
+
+use DB;
+
 class PositionController extends Controller
 {
     use Enlist;
@@ -65,7 +69,12 @@ class PositionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+      DB::transaction(function(){
+        $position = new Position;
+        $position->checkDuplicate();
+        $current = $position->checkExistence();
+        $current->syncAccount();
+      });
     }
 
     /**
@@ -97,9 +106,14 @@ class PositionController extends Controller
      * @param  \App\Position  $position
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Position $position)
+    public function update(UpdatePosition $request, Position $position)
     {
-        //
+      DB::transaction(function() use($position){
+        $position->checkDuplicate();
+        $position->detachOldAccount();
+        $current = $position->checkExistence();
+        $current->syncAccount();
+      });
     }
 
     /**
@@ -110,6 +124,20 @@ class PositionController extends Controller
      */
     public function destroy(Position $position)
     {
-        //
+      $this->authorize('delete', $position);
+
+      $position->delete();
     }
+
+    /**
+     * Detach the position relationship from the account.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Position  $position
+     * @return \Illuminate\Http\Response
+     */
+     public function detach(DetachPosition $request, Position $position)
+     {
+       $position->accounts()->detach([request()->account_id]);
+     }
 }

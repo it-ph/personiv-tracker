@@ -47,6 +47,10 @@ shared
 			return $http.post('/account/enlist', query);
 		}
 
+		factory.show = function(id) {
+			return $http.get('/account/' + id);
+		}
+
 		factory.store = function(data){
 			return $http.post('/account', data);
 		}
@@ -436,6 +440,9 @@ shared
       set: set,
       get: get,
       enlist: enlist,
+      store: store,
+      update: update,
+      detach: detach,
     }
 
     return factory;
@@ -456,6 +463,25 @@ shared
 
     function enlist(query) {
       return $http.post('/position/enlist', query);
+    }
+
+    function store(position) {
+      return $http.post('/position', position);
+    }
+
+    function update(position) {
+      return $http.put('/position/' + position.id, position);
+    }
+
+    function destroy(id) {
+      return $http.delete('/position/' + id);
+    }
+
+    function detach(positionId, accountId) {
+      return $http.post('/position/detach/' + positionId, {
+        position_id: positionId,
+        account_id: accountId,
+      });
     }
   }
 

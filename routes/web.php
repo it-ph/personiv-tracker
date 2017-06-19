@@ -54,6 +54,7 @@ Route::group(['middleware' => 'auth'], function(){
 	// Position resource
 	Route::group(['prefix' => 'position'], function(){
 		Route::post('enlist', 'PositionController@enlist');
+		Route::post('detach/{position}', 'PositionController@detach');
 	});
 
 	// Experience resource

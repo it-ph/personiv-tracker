@@ -22,7 +22,7 @@ admin
 					}
 				},
 				resolve: {
-					authentication: ['MaterialDesign', 'User', '$state', function(MaterialDesign, User, $state){
+					authentication: ['User', '$state', function(User, $state){
 						return User.get()
 							.then(function(data){
 								User.set('user', data.data);
@@ -69,6 +69,38 @@ admin
 					'form@main.manage-projects': {
 						templateUrl: '/app/admin/templates/content/project-form.template.html',
 						controller: 'projectFormController as vm'
+					}
+				},
+			})
+			.state('main.manage-positions', {
+				url: 'project/{accountId}/positions',
+				params: {accountId: null},
+				resolve: {
+					authorize: ['Account', 'dataService', '$state', '$stateParams', function(Account, dataService, $state, $stateParams){
+						return Account.show($stateParams.accountId)
+							.then(function(response) {
+								dataService.set('account', response.data);
+							})
+							.catch(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'positionsContentContainerController as vm',
+					},
+					'toolbar@main.manage-positions': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'positionsToolbarController as vm',
+					},
+					'content@main.manage-positions':{
+						templateUrl: '/app/admin/templates/content/positions-content.template.html',
+					},
+					'form@main.manage-positions': {
+						templateUrl: '/app/admin/templates/content/position-form.template.html',
+						controller: 'positionFormController as vm'
 					}
 				},
 			});
@@ -370,6 +402,116 @@ admin
 
 		vm.init();
 	}]);
+(function(){
+  angular
+    .module('app')
+    .controller('editPositionDialogController', editPositionDialogController);
+
+    editPositionDialogController.inject = ['MaterialDesign', 'User', 'Account', 'Position', 'dataService', 'formService'];
+
+    function editPositionDialogController(MaterialDesign, User, Account, Position, dataService, formService) {
+      var vm = this;
+
+      vm.account = dataService.get('account');
+      vm.user = User.user;
+
+      vm.cancel = MaterialDesign.cancel;
+      vm.checkDuplicate = checkDuplicate;
+      vm.label = dataService.get('position').name;
+      vm.submit = submit;
+
+      init();
+
+      function error() {
+        MaterialDesign.error();
+      }
+
+      function checkDuplicate() {
+        vm.duplicate = false;
+
+        var request = {
+          whereHas: [
+            {
+              relationship: 'positions',
+              where: [
+                  {
+                    column: 'name',
+                    condition: '=',
+                    value: vm.position.name
+                  },
+              ]
+            },
+          ],
+          where: [
+            {
+              column: 'id',
+              condition: '=',
+              value: vm.account.id
+            },
+          ],
+          first: true
+        }
+
+        Account.enlist(request)
+          .then(duplicateResponse)
+
+          function duplicateResponse(response) {
+            if(response.data)
+            {
+              vm.duplicate = true;
+            }
+          }
+      }
+
+      function init() {
+        var query = {
+          where: [
+            {
+              column: 'id',
+              condition: '=',
+              value: dataService.get('position').id,
+            }
+          ],
+          first: true,
+        }
+
+        return Position.enlist(query)
+          .then(function(response){
+            vm.position = response.data;
+            vm.position.account_id = vm.account.id;
+            console.log(vm.position);
+            return vm.position;
+          });
+      }
+
+      function submit() {
+        var formhasError = formService.validate(vm.form);
+
+        if(formhasError || vm.duplicate || vm.busy)
+        {
+          return;
+        }
+
+        vm.busy = true;
+
+        Position.update(vm.position)
+          .then(hideForm)
+          .catch(showErrorMessage)
+
+        function hideForm() {
+          vm.busy = false;
+          MaterialDesign.hide();
+          MaterialDesign.notify('Changes saved.');
+        }
+
+        function showErrorMessage() {
+          vm.error = true;
+          vm.busy = false;
+        }
+      }
+    }
+})();
+
 (function(){
   angular
     .module('app')
@@ -818,15 +960,257 @@ admin
     }
   }
 
+admin
+  .controller('positionFormController', positionFormController)
+
+  positionFormController.$inject = ['MaterialDesign', 'User', 'Account', 'Position', 'formService', 'dataService', 'fab'];
+
+  function positionFormController(MaterialDesign, User, Account, Position, formService, dataService, fab) {
+    var vm = this;
+
+    vm.account = dataService.get('account');
+    vm.user = User.user;
+    vm.position = {}
+    vm.position.account_id = vm.account.id;
+    vm.form = {}
+    vm.fab = fab;
+
+    vm.checkDuplicate = checkDuplicate;
+    vm.focusOnForm = focusOnForm;
+    vm.hideForm = hideForm;
+    vm.submit = submit;
+
+    function hideForm() {
+      Position.showForm = false;
+      vm.fab.show = true;
+    }
+
+    function focusOnForm() {
+      angular.element(document).find('#newPosition').addClass('md-input-focused');
+      angular.element(document).find('#newPosition > input').focus();
+    }
+
+    function checkDuplicate() {
+      vm.duplicate = false;
+
+      var request = {
+        whereHas: [
+          {
+            relationship: 'positions',
+            where: [
+                {
+                  column: 'name',
+                  condition: '=',
+                  value: vm.position.name
+                },
+            ]
+          },
+        ],
+        where: [
+          {
+            column: 'id',
+            condition: '=',
+            value: vm.account.id
+          },
+        ],
+        first: true
+      }
+
+      Account.enlist(request)
+        .then(duplicateResponse)
+
+        function duplicateResponse(response) {
+          if(response.data)
+          {
+            vm.duplicate = true;
+          }
+        }
+    }
+
+    function submit() {
+      // check every fields in the form for errors
+			var formHasError = formService.validate(vm.form);
+
+			if(formHasError || vm.duplicate || vm.busy) {
+				return;
+			}
+
+			vm.busy = true;
+
+			Position.store(vm.position)
+        .then(getPositions)
+        .then(hideForm)
+        .then(notify)
+        .catch(error);
+
+      function notify() {
+        vm.busy = false;
+        MaterialDesign.notify('Project created.');
+      }
+
+      function getPositions() {
+        var query = {
+          relationshipCountWithConstraints: [
+            {
+              relationship: 'experiences',
+              where: [
+                {
+                  column: 'account_id',
+                  condition: '=',
+                  value: vm.account.id
+                },
+              ]
+            }
+          ],
+          whereHas: [
+            {
+              relationship: 'accounts',
+              where: [
+                {
+                  column: 'account_id',
+                  condition: '=',
+                  value: vm.account.id
+                },
+              ]
+            },
+          ],
+        }
+
+        return Position.enlist(query)
+          .then(function(response) {
+            return Position.data = response.data;
+          });
+      }
+    }
+
+    function error() {
+      vm.busy = false;
+      MaterialDesign.error();
+    }
+  }
+
 (function() {
   angular
     .module('app')
-    .controller('positionFormController', positionFormController)
+    .controller('positionsContentContainerController', positionsContentContainerController)
 
-    positionFormController.$inject = ['User', 'Position', 'MaterialDesign']
+    positionsContentContainerController.$inject = ['User', 'Position', 'MaterialDesign', 'dataService', 'fab',];
 
-    function positionFormController(User, Position, MaterialDesign) {
+    function positionsContentContainerController(User, Position, MaterialDesign, dataService, fab) {
       var vm = this;
+
+      vm.account = dataService.get('account');
+      vm.position = Position;
+      vm.user = User.user;
+      vm.view = view;
+      vm.edit = edit;
+      vm.remove = remove;
+
+      vm.fab = fab;
+      vm.fab.icon = 'mdi-plus';
+      vm.fab.label = 'Position';
+      vm.fab.show = true;
+      vm.fab.action = showForm;
+
+      init();
+
+      function error() {
+        MaterialDesign.error();
+      }
+
+      function showForm() {
+        vm.position.showForm = true;
+        vm.fab.show = false;
+      }
+
+      function init() {
+        vm.showList = false;
+
+        return getPositions()
+          .then(collectPositions, error)
+          .then(showList)
+
+          function getPositions() {
+            var query = {
+              relationshipCountWithConstraints: [
+                {
+                  relationship: 'experiences',
+                  where: [
+                    {
+                      column: 'account_id',
+                      condition: '=',
+                      value: vm.account.id
+                    },
+                  ]
+                }
+              ],
+              whereHas: [
+                {
+                  relationship: 'accounts',
+                  where: [
+                    {
+                      column: 'account_id',
+                      condition: '=',
+                      value: vm.account.id
+                    },
+                  ]
+                },
+              ],
+            }
+
+            return Position.enlist(query);
+          }
+
+          function collectPositions(response) {
+            vm.position.data = response.data;
+          }
+
+          function showList() {
+            vm.showList = true;
+          }
+      }
+
+      function view(position) {
+        // $state.go('manage-positions', {accountId: account.id});
+      }
+
+      function edit(position) {
+        dataService.set('position', position);
+
+        var dialog = {
+          controller: 'editPositionDialogController as vm',
+          templateUrl: '/app/admin/templates/dialogs/edit-position-dialog.template.html',
+        }
+
+        MaterialDesign.customDialog(dialog)
+          .then(init);
+      }
+
+      function remove(position) {
+        var dialog = {
+          title: 'Delete position',
+          message: 'Are you sure you want to delete this position?',
+          ok: 'Delete',
+          cancel: 'Cancel',
+        }
+
+        MaterialDesign.confirm(dialog)
+          .then(deleteRequest)
+          .then(applyChanges);
+
+        function deleteRequest() {
+          return Position.detach(position.id, vm.account.id)
+            .catch(function() {
+              MaterialDesign.reject();
+              MaterialDesign.error();
+            });
+        }
+
+        function applyChanges() {
+          MaterialDesign.notify('Position deleted.');
+          init();
+        }
+      }
     }
 })();
 
@@ -958,9 +1342,9 @@ admin
     .module('app')
     .controller('projectsContentContainerController', projectsContentContainerController)
 
-    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'fab'];
+    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'fab', '$state',];
 
-    function projectsContentContainerController(User, Account, MaterialDesign, dataService, fab) {
+    function projectsContentContainerController(User, Account, MaterialDesign, dataService, fab, $state) {
       var vm = this;
 
       vm.account = Account;
@@ -988,7 +1372,7 @@ admin
 
       function init() {
         vm.showList = false;
-        
+
         return getAccounts()
           .then(collectAccounts, error)
           .then(showList)
@@ -1023,7 +1407,7 @@ admin
       }
 
       function view(account) {
-
+        $state.go('main.manage-positions', {accountId: account.id});
       }
 
       function edit(account) {
@@ -1047,11 +1431,15 @@ admin
         }
 
         MaterialDesign.confirm(dialog)
-          .then(deleteRequest, error)
+          .then(deleteRequest)
           .then(applyChanges);
 
         function deleteRequest() {
-          return Account.delete(account.id);
+          return Account.delete(account.id)
+            .catch(function() {
+              MaterialDesign.reject();
+              MaterialDesign.error();
+            });
         }
 
         function applyChanges() {
@@ -1099,6 +1487,34 @@ admin
 
 		vm.toolbar.parentState = null; //string
 		vm.toolbar.childState = 'Dashboard'; //string
+
+		vm.toolbar.hideSearchIcon = false; //bool - true if deeper search icon should be hidden
+		vm.toolbar.searchAll = false; // bool - true if a deeper search can be executed
+
+		vm.toolbar.options = false; //bool - true if a menu button is needed in the view
+		vm.toolbar.showInactive = false; //bool - true if user wants to view deleted records
+
+		vm.toolbar.state = $state.current.name;
+
+		// Sort options
+		vm.sort = [
+			{
+				'label': 'Recently added',
+				'type': 'created_at',
+				'sortReverse': false,
+			},
+		];
+	}]);
+
+admin
+	.controller('positionsToolbarController', ['MaterialDesign', 'toolbarService', 'User', '$state', 'dataService', function(MaterialDesign, toolbarService, User, $state, dataService){
+		var vm = this;
+
+		vm.toolbar = toolbarService;
+		vm.toolbar.content = User;
+
+		vm.toolbar.parentState = dataService.get('account').name; //string
+		vm.toolbar.childState = 'Positions'; //string
 
 		vm.toolbar.hideSearchIcon = false; //bool - true if deeper search icon should be hidden
 		vm.toolbar.searchAll = false; // bool - true if a deeper search can be executed

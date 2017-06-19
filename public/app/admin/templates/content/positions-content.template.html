@@ -1,27 +1,27 @@
 <div layout="row" flex layout-align="center center">
 	<div layout="column" flex-md="50" flex-gt-md="30" flex>
-    <div ui-view="form" ng-if="vm.account.showForm"></div>
-		<div ng-if="!vm.showForm">
-			<p ng-if="!vm.account.data.length && vm.showList">Nothing to display.</p>
+    <div ui-view="form" ng-if="vm.position.showForm"></div>
+		<div ng-if="!vm.position.showForm">
+			<p ng-if="!vm.position.data.length && vm.showList">Nothing to display.</p>
 			<md-list ng-if="vm.showList">
-				<md-list-item class="md-2-line" ng-repeat="account in vm.account.data" ng-click="vm.view(account)">
+				<md-list-item class="md-2-line" ng-repeat="position in vm.position.data" ng-click="vm.view(position)">
 					<div class="md-list-item-text">
-						<h3>{{account.name}}</h3>
+						<h3>{{position.name}}</h3>
 					</div>
-					<md-menu ng-if="!account.tasks_count">
+					<md-menu ng-if="!position.experiences_count">
 						<md-button aria-label="Menu" class="md-icon-button" ng-click="$mdMenu.open($event)">
 							<md-icon class="mdi mdi-dots-vertical grey"></md-icon>
 						</md-button>
 						<md-menu-content width="4">
 							<!-- Edit -->
 							<md-menu-item>
-								<md-button aria-label="Edit" ng-click="vm.edit(account)" flex>
+								<md-button aria-label="Edit" ng-click="vm.edit(position)" flex>
 									Edit
 								</md-button>
 							</md-menu-item>
 							<!-- Delete -->
 							<md-menu-item>
-								<md-button aria-label="Delete" ng-click="vm.remove(account)" flex>
+								<md-button aria-label="Delete" ng-click="vm.remove(position)" flex>
 									Delete
 								</md-button>
 							</md-menu-item>

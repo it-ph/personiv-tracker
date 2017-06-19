@@ -82,7 +82,9 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        //
+        $this->authorize($account);
+
+        return $account;
     }
 
     /**

@@ -1,25 +1,27 @@
 <md-card>
 	<md-card-title>
       	<md-card-title-text>
-        	<span class="md-headline">New User</span>
+        	<span class="md-headline">New Position</span>
       	</md-card-title-text>
     </md-card-title>
 	<md-card-content>
 		<form name="vm.form" novalidate>
 			<div layout="row" flex>
 				<!-- Name -->
-				<md-input-container class="md-block" flex id="newUser">
+				<md-input-container class="md-block" flex id="newPosition">
 					<label>Name</label>
-					<input type="text" ng-model="vm.user.new.name" name="Name" ng-init="vm.focusOnForm()" required ng-disabled="vm.busy"/>
+					<input type="text" ng-model="vm.position.name" name="Name" ng-init="vm.focusOnForm()" ng-blur="vm.checkDuplicate()" required ng-disabled="vm.busy"/>
+					<div class="pattern" ng-if="vm.duplicate">Position already exists.</div>
 					<div ng-messages="vm.form.Name.$error">
 						<div ng-message="required">Name is required.</div>
 					</div>
 				</md-input-container>
+			</div>
 		</form>
 	</md-card-content>
 	<md-card-actions layout="row" layout-align="end center">
-    	<md-button ng-click="vm.cancel()" ng-if="!vm.busy">Cancel</md-button>
-    	<md-button ng-click="vm.submit()" ng-if="!vm.busy">Submit</md-button>
-    	<md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="45"></md-progress-circular>
-    </md-card-actions>
+  	<md-button ng-click="vm.hideForm()" ng-if="!vm.busy">Cancel</md-button>
+  	<md-button ng-click="vm.submit()" ng-if="!vm.busy">Submit</md-button>
+  	<md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="45"></md-progress-circular>
+  </md-card-actions>
 </md-card>

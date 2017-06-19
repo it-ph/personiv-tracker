@@ -21,7 +21,7 @@ admin
 					}
 				},
 				resolve: {
-					authentication: ['MaterialDesign', 'User', '$state', function(MaterialDesign, User, $state){
+					authentication: ['User', '$state', function(User, $state){
 						return User.get()
 							.then(function(data){
 								User.set('user', data.data);
@@ -68,6 +68,38 @@ admin
 					'form@main.manage-projects': {
 						templateUrl: '/app/admin/templates/content/project-form.template.html',
 						controller: 'projectFormController as vm'
+					}
+				},
+			})
+			.state('main.manage-positions', {
+				url: 'project/{accountId}/positions',
+				params: {accountId: null},
+				resolve: {
+					authorize: ['Account', 'dataService', '$state', '$stateParams', function(Account, dataService, $state, $stateParams){
+						return Account.show($stateParams.accountId)
+							.then(function(response) {
+								dataService.set('account', response.data);
+							})
+							.catch(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'positionsContentContainerController as vm',
+					},
+					'toolbar@main.manage-positions': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'positionsToolbarController as vm',
+					},
+					'content@main.manage-positions':{
+						templateUrl: '/app/admin/templates/content/positions-content.template.html',
+					},
+					'form@main.manage-positions': {
+						templateUrl: '/app/admin/templates/content/position-form.template.html',
+						controller: 'positionFormController as vm'
 					}
 				},
 			});
