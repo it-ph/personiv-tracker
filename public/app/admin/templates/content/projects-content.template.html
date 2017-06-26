@@ -4,7 +4,7 @@
 		<div ng-if="!vm.showForm">
 			<p ng-if="!vm.account.data.length && vm.showList">Nothing to display.</p>
 			<md-list ng-if="vm.showList">
-				<md-list-item class="md-2-line" ng-repeat="account in vm.account.data" ng-click="vm.view(account)">
+				<md-list-item class="md-2-line" ng-repeat="account in vm.account.data | filter:vm.toolbar.searchText" ng-click="vm.view(account)">
 					<div class="md-list-item-text">
 						<h3>{{account.name}}</h3>
 					</div>

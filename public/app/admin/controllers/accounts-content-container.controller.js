@@ -1,11 +1,12 @@
 admin
   .controller('accountsContentContainerController', accountsContentContainerController)
 
-accountsContentContainerController.$inject = ['MaterialDesign', 'User', 'fab', '$q'];
+accountsContentContainerController.$inject = ['MaterialDesign', 'toolbarService', 'User', 'fab', '$q'];
 
-function accountsContentContainerController(MaterialDesign, User, fab, $q) {
+function accountsContentContainerController(MaterialDesign, toolbarService, User, fab, $q) {
   var vm = this;
 
+  vm.toolbar = toolbarService;
   vm.user = User;
   vm.edit = edit;
   vm.view = view;
@@ -19,6 +20,17 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
   vm.fab.action = function() {
     vm.user.showForm = true;
     vm.fab.show = false;
+  }
+
+  init();
+
+  function init(){
+    vm.toolbar.clearItems();
+
+    angular.forEach(vm.user.user.subordinates, function(subordinate){
+      var item = {display: subordinate.name}
+      vm.toolbar.items.push(item);
+    });
   }
 
   function view(user) {

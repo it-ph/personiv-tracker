@@ -3,11 +3,12 @@
     .module('app')
     .controller('projectsContentContainerController', projectsContentContainerController)
 
-    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'fab', '$state',];
+    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'toolbarService', 'fab', '$state',];
 
-    function projectsContentContainerController(User, Account, MaterialDesign, dataService, fab, $state) {
+    function projectsContentContainerController(User, Account, MaterialDesign, dataService, toolbarService, fab, $state) {
       var vm = this;
 
+      vm.toolbar = toolbarService;
       vm.account = Account;
       vm.user = User.user;
       vm.view = view;
@@ -36,6 +37,7 @@
 
         return getAccounts()
           .then(collectAccounts, error)
+          .then(setAutoComplete)
           .then(showList)
 
           function getAccounts() {
@@ -60,6 +62,15 @@
 
           function collectAccounts(response) {
             vm.account.data = response.data;
+          }
+
+          function setAutoComplete() {
+            vm.toolbar.clearItems();
+
+            angular.forEach(vm.account.data, function(account){
+              var item = {display: account.name}
+              vm.toolbar.items.push(item);
+            });
           }
 
           function showList() {

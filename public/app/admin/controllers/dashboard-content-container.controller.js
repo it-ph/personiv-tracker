@@ -33,6 +33,7 @@ admin
 
 		function setToolbarItem(item)
 		{
+			vm.toolbar.clearItems();
 			var entry = {}
 
 			entry.display = item.name;

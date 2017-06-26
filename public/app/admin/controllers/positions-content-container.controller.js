@@ -3,11 +3,12 @@
     .module('app')
     .controller('positionsContentContainerController', positionsContentContainerController)
 
-    positionsContentContainerController.$inject = ['User', 'Position', 'MaterialDesign', 'dataService', 'fab',];
+    positionsContentContainerController.$inject = ['User', 'Position', 'MaterialDesign', 'dataService', 'toolbarService', 'fab',];
 
-    function positionsContentContainerController(User, Position, MaterialDesign, dataService, fab) {
+    function positionsContentContainerController(User, Position, MaterialDesign, dataService, toolbarService, fab) {
       var vm = this;
 
+      vm.toolbar = toolbarService;
       vm.account = dataService.get('account');
       vm.position = Position;
       vm.user = User.user;
@@ -37,6 +38,7 @@
 
         return getPositions()
           .then(collectPositions, error)
+          .then(setAutoComplete)
           .then(showList)
 
           function getPositions() {
@@ -72,6 +74,15 @@
 
           function collectPositions(response) {
             vm.position.data = response.data;
+          }
+
+          function setAutoComplete() {
+            vm.toolbar.clearItems();
+
+            angular.forEach(vm.position.data, function(position){
+              var item = {display: position.name}
+              vm.toolbar.items.push(item);
+            });
           }
 
           function showList() {

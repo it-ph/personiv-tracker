@@ -5,7 +5,7 @@
 			<md-subheader class="md-no-sticky">Subordinates</md-subheader>
 			<p ng-if="!vm.user.user.subordinates.length">Nothing to display.</p>
 			<md-list>
-				<md-list-item class="md-3-line secondary-button-padding" ng-repeat="user in vm.user.user.subordinates" ng-click="vm.view(user)">
+				<md-list-item class="md-3-line secondary-button-padding" ng-repeat="user in vm.user.user.subordinates | filter:vm.toolbar.searchText" ng-click="vm.view(user)">
 					<div class="md-list-item-text">
 						<h3>{{user.name}}</h3>
 						<h4>{{user.employee_number}}</h4>

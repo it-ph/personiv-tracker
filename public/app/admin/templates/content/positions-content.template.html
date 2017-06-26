@@ -4,7 +4,7 @@
 		<div ng-if="!vm.position.showForm">
 			<p ng-if="!vm.position.data.length && vm.showList">Nothing to display.</p>
 			<md-list ng-if="vm.showList">
-				<md-list-item class="md-2-line" ng-repeat="position in vm.position.data" ng-click="vm.view(position)">
+				<md-list-item class="md-2-line" ng-repeat="position in vm.position.data | filter:vm.toolbar.searchText" ng-click="vm.view(position)">
 					<div class="md-list-item-text">
 						<h3>{{position.name}}</h3>
 					</div>

@@ -109,11 +109,12 @@ admin
 admin
   .controller('accountsContentContainerController', accountsContentContainerController)
 
-accountsContentContainerController.$inject = ['MaterialDesign', 'User', 'fab', '$q'];
+accountsContentContainerController.$inject = ['MaterialDesign', 'toolbarService', 'User', 'fab', '$q'];
 
-function accountsContentContainerController(MaterialDesign, User, fab, $q) {
+function accountsContentContainerController(MaterialDesign, toolbarService, User, fab, $q) {
   var vm = this;
 
+  vm.toolbar = toolbarService;
   vm.user = User;
   vm.edit = edit;
   vm.view = view;
@@ -127,6 +128,17 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
   vm.fab.action = function() {
     vm.user.showForm = true;
     vm.fab.show = false;
+  }
+
+  init();
+
+  function init(){
+    vm.toolbar.clearItems();
+
+    angular.forEach(vm.user.user.subordinates, function(subordinate){
+      var item = {display: subordinate.name}
+      vm.toolbar.items.push(item);
+    });
   }
 
   function view(user) {
@@ -252,6 +264,7 @@ admin
 
 		function setToolbarItem(item)
 		{
+			vm.toolbar.clearItems();
 			var entry = {}
 
 			entry.display = item.name;
@@ -1100,11 +1113,12 @@ admin
     .module('app')
     .controller('positionsContentContainerController', positionsContentContainerController)
 
-    positionsContentContainerController.$inject = ['User', 'Position', 'MaterialDesign', 'dataService', 'fab',];
+    positionsContentContainerController.$inject = ['User', 'Position', 'MaterialDesign', 'dataService', 'toolbarService', 'fab',];
 
-    function positionsContentContainerController(User, Position, MaterialDesign, dataService, fab) {
+    function positionsContentContainerController(User, Position, MaterialDesign, dataService, toolbarService, fab) {
       var vm = this;
 
+      vm.toolbar = toolbarService;
       vm.account = dataService.get('account');
       vm.position = Position;
       vm.user = User.user;
@@ -1134,6 +1148,7 @@ admin
 
         return getPositions()
           .then(collectPositions, error)
+          .then(setAutoComplete)
           .then(showList)
 
           function getPositions() {
@@ -1169,6 +1184,15 @@ admin
 
           function collectPositions(response) {
             vm.position.data = response.data;
+          }
+
+          function setAutoComplete() {
+            vm.toolbar.clearItems();
+
+            angular.forEach(vm.position.data, function(position){
+              var item = {display: position.name}
+              vm.toolbar.items.push(item);
+            });
           }
 
           function showList() {
@@ -1348,11 +1372,12 @@ admin
     .module('app')
     .controller('projectsContentContainerController', projectsContentContainerController)
 
-    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'fab', '$state',];
+    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'toolbarService', 'fab', '$state',];
 
-    function projectsContentContainerController(User, Account, MaterialDesign, dataService, fab, $state) {
+    function projectsContentContainerController(User, Account, MaterialDesign, dataService, toolbarService, fab, $state) {
       var vm = this;
 
+      vm.toolbar = toolbarService;
       vm.account = Account;
       vm.user = User.user;
       vm.view = view;
@@ -1381,6 +1406,7 @@ admin
 
         return getAccounts()
           .then(collectAccounts, error)
+          .then(setAutoComplete)
           .then(showList)
 
           function getAccounts() {
@@ -1405,6 +1431,15 @@ admin
 
           function collectAccounts(response) {
             vm.account.data = response.data;
+          }
+
+          function setAutoComplete() {
+            vm.toolbar.clearItems();
+
+            angular.forEach(vm.account.data, function(account){
+              var item = {display: account.name}
+              vm.toolbar.items.push(item);
+            });
           }
 
           function showList() {
