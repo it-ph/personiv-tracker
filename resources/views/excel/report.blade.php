@@ -7,7 +7,7 @@
 			@else
 				<th colspan="3" align="center">{{$date}}</th>
 			@endif
-			<th align="center"></th>
+			<!--<th align="center"></th>-->
 		@endforeach
 		@if($account->batchable)
 			<th colspan="5" align="center">Total</th>
@@ -29,7 +29,7 @@
 					<th align="center">Batch Photos (Revisions)</th>
 				@endif
 				<th align="center">Hours Spent</th>
-				<td align="center"></td>
+				<!--<td align="center"></td>-->
 			@endforeach
 			<th align="center">New</th>
 			@if($account->batchable)
@@ -55,7 +55,7 @@
 						<td align="center">{{$item['number_of_photos_revisions']}}</td>
 					@endif
 					<td align="center">{{$item['hours_spent']}}</td>
-					<td align="center"></td>
+					<!--<td align="center"></td>-->
 				@endforeach
 				<td align="center">{{$employee->total_new}}</td>
 				@if($account->batchable)

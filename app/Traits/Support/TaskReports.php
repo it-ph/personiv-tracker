@@ -154,7 +154,7 @@ trait TaskReports
 
             $to = $from->gte(Carbon::parse($date->toDateString() . ' ' . $timeEnd)) ? Carbon::parse($date->toDateString() . ' ' . $timeEnd)->addDay() : Carbon::parse($date->toDateString() . ' ' . $timeEnd);
 
-            $account->reportDates->push($date->toFormattedDateString());
+            $account->reportDates->push($from->format('M j, H:i'). ' to ' . $to->format('M j, H:i'));
 
             if(count($position->employees))
             {
