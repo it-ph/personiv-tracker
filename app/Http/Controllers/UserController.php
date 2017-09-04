@@ -83,6 +83,20 @@ class UserController extends Controller
 
         return $user;
     }
+    public function test(Request $request){
+
+      $user = User::where('id', $request->user()->id)->with('department', 'immediateSupervisor', 'roles', 'subordinates')->first();
+      $user->unread_notifications = $user->unreadNotifications;
+
+      return $user;
+    }
+
+    /*Returns all subordinates of the currently authenticated user*/
+    public function getSubordinates(){
+      return User::where('immediate_supervisor_id',Auth::user()->id)->get();
+    }
+
+
 
     /**
      * Display a listing of the resource with parameters.
@@ -203,4 +217,20 @@ class UserController extends Controller
         $this->authorize('delete', $user);
         $user->delete();
     }
+
+    /*Returns all the users*/
+    public function getUsers(){
+      return DB::table('users')->get();
+    }
+
+    /*Returns all users filtered by id*/
+    public function getUsersById($id){
+      return DB::table('users')->where('id',$id)->get();
+    }
+
+    /*Returns all subordinates of user with id*/
+    public function getUsersSubordinates($id){
+      return DB::table('users')->where('immediate_supervisor_id',$id)->get();
+    }
+
 }

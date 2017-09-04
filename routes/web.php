@@ -17,6 +17,23 @@
 
 Route::get('/', 'HomeController@index');
 
+//TODO: this need to be authenticated
+Route::get('Accounts', 'AccountController@getAccounts');
+Route::get('Departments', 'DepartmentController@getDepartments');
+Route::get('Experiences', 'ExperienceController@getExperiences');
+Route::get('Positions', 'PositionController@getPositions');
+Route::get('Roles', 'RoleController@getRoles');
+Route::get('ShiftSchedules', 'ShiftScheduleController@getShiftSchedules');
+
+Route::get('Subordinates', 'UserController@getSubordinates');
+
+Route::get('Users', 'UserController@getUsers');
+Route::get('Users/{id}', 'UserController@getUsersById');
+Route::get('Users/{id}/Subordinates', 'UserController@getUsersSubordinatesng');
+
+Route::get('Tasks', 'TaskController@getTasks');
+
+
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
@@ -43,7 +60,9 @@ Route::group(['middleware' => 'auth'], function(){
 		Route::put('reset-password/{user}', 'UserController@resetPassword');
 		Route::post('logout', 'UserController@logout');
 		Route::post('enlist', 'UserController@enlist');
+
 	});
+
 
 	// Task resource
 	Route::group(['prefix' => 'task'], function(){

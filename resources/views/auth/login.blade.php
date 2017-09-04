@@ -10,15 +10,15 @@
 					<!-- Employee Number -->
 					<md-input-container>
 						<label>Employee Number</label>
-						<input type="text" name="employee_number" value="{{ old('employee_number') }}">
+						<input type="text" name="employee_number" value="07010785">
 					</md-input-container>
 
 					<!-- Password -->
 					<md-input-container>
 						<label>Password</label>
-						<input type="password" name="password">
+						<input type="password" name="password" value="Login@123">
 					</md-input-container>
-					
+
 					<a class="primary-text" href="{{ route('password.request') }}">Forgot Your Password?</a>
 
 					<div class="md-actions" layout="row" layout-align="space-between center">

@@ -82,4 +82,9 @@ class DepartmentController extends Controller
     {
         //
     }
+
+    public function getDepartments()
+    {
+      return Department::all();
+    }
 }

@@ -6,6 +6,7 @@ use App\Experience;
 use App\Http\Requests\StoreExperience;
 use Illuminate\Http\Request;
 use App\Traits\Enlist;
+use DB;
 
 class ExperienceController extends Controller
 {
@@ -113,5 +114,10 @@ class ExperienceController extends Controller
     public function destroy(Experience $experience)
     {
         //
+    }
+    /*Returns all experiences*/
+    public function getExperiences()
+    {
+      return DB::table('experiences')->get();
     }
 }

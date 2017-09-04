@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Role;
 use Illuminate\Http\Request;
-
+use DB;
 class RoleController extends Controller
 {
     /**
@@ -81,5 +81,9 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         //
+    }
+    /*return all roles*/
+    public function getRoles(){
+      return DB::table('roles')->get();
     }
 }

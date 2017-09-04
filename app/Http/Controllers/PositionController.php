@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Position;
 use App\Traits\Enlist;
 use Illuminate\Http\Request;
-
+use DB;
 class PositionController extends Controller
 {
     use Enlist;
@@ -111,5 +111,10 @@ class PositionController extends Controller
     public function destroy(Position $position)
     {
         //
+    }
+    /*Returns all positions*/
+    public function getPositions()
+    {
+      return DB::table('positions')->get();
     }
 }

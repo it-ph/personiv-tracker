@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Traits\Enlist;
 
-use Auth;;
+use Auth;
 use Carbon\Carbon;
 use DB;
 use Gate;
@@ -47,7 +47,7 @@ class AccountController extends Controller
      */
     public function index()
     {
-        
+
     }
 
     /**
@@ -114,5 +114,10 @@ class AccountController extends Controller
     public function destroy(Account $account)
     {
         //
+    }
+    /*Returns list of account*/
+    public function getAccounts()
+    {
+      return Account::all();
     }
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Auth;
 use Gate;
 use Carbon\Carbon;
+use DB;
 
 class ShiftScheduleController extends Controller
 {
@@ -107,5 +108,10 @@ class ShiftScheduleController extends Controller
     public function destroy(ShiftSchedule $shiftSchedule)
     {
         //
+    }
+    /*Returns all shift schedules*/
+    public function getShiftSchedules()
+    {
+        return DB::table('shift_schedules')->get();
     }
 }

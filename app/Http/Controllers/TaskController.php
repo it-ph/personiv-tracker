@@ -33,6 +33,13 @@ class TaskController extends Controller
         return $task->dashboard();
     }
 
+    public function dashboard2()
+    {
+        $task = new Task;
+
+        return $task->dashboard();
+    }
+
     /**
      * Resume a pause record of task.
      *
@@ -87,7 +94,7 @@ class TaskController extends Controller
         // Check if the user owns the task
         $this->authorize('update', $task);
 
-        DB::transaction(function() use($request, $task){        
+        DB::transaction(function() use($request, $task){
             if($request->has('id'))
             {
                 $pause = Pause::findOrFail($request->id);
@@ -121,7 +128,7 @@ class TaskController extends Controller
 
         if($request->first)
         {
-            return $this->model->first();        
+            return $this->model->first();
         }
 
         if($request->paginate)
@@ -141,6 +148,7 @@ class TaskController extends Controller
     {
         //
     }
+
 
     /**
      * Show the form for creating a new resource.
@@ -235,5 +243,11 @@ class TaskController extends Controller
         // $this->authorize('delete', $task);
 
         // $task->delete();
+    }
+
+    /*Returns all tasks*/
+    public function getTasks()
+    {
+      return DB::table('tasks')->get();
     }
 }
