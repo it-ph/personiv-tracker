@@ -1,6 +1,7 @@
 employee
 	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', 'User', function(MaterialDesign, toolbarService, Task, taskFormService, User){
 		var vm = this;
+		var busy = false;
 
 		vm.toolbar = toolbarService;
 		vm.task = Task;
@@ -25,6 +26,11 @@ employee
 		}
 
 		vm.pause = function(){
+			if(busy)
+			{
+				return serverBusy();
+			}
+			busy = true;
 			vm.task.pause()
 				.then(function(response){
 					vm.paused = true;
@@ -32,23 +38,32 @@ employee
 					vm.setCurrent(response.data);
 
 					MaterialDesign.notify('Paused');
+					busy = false;
 				}, function(){
+					busy = false;
 					MaterialDesign.error();
 				})
 		}
 
 		vm.resume = function(){
+			if(busy)
+			{
+				return serverBusy();
+			}
+			busy = true;
 			vm.task.resume()
 				.then(function(response){
 					vm.paused = false;
 
 					vm.setCurrent(response.data);
-					
+
 					MaterialDesign.notify('Resumed');
+					busy = false;
 				}, function(){
+					busy = false;
 					MaterialDesign.error();
 				})
-		}		
+		}
 
 		// submit current task as finished
 		vm.finish = function(){
@@ -60,7 +75,7 @@ employee
 			}
 
 			MaterialDesign.confirm(dialog)
-				.then(function(){			
+				.then(function(){
 					MaterialDesign.preloader();
 
 					vm.task.finish()
@@ -84,7 +99,7 @@ employee
 		vm.edit = function(data){
 			var dialog = {
 				templateUrl: '/app/employee/templates/dialogs/edit-task-dialog.template.html',
-				controller: 'editTaskDialogController as vm', 
+				controller: 'editTaskDialogController as vm',
 			}
 
 			taskFormService.set(data);
@@ -122,7 +137,7 @@ employee
 		// fetch the current task to be pinned at top
 		vm.currentTask = function(){
 			var query = {
-				relationships: ['account'],
+				relationships: ['account', 'experience.position'],
 				relationshipsWithConstraints: [
 					{
 						relationship: 'pauses',
@@ -158,7 +173,7 @@ employee
 		}
 
 		vm.task.query = {
-			relationships: ['account'],
+			relationships: ['account', 'experience.position'],
 			whereNotNull: ['ended_at'],
 			where: [
 				{
@@ -181,7 +196,7 @@ employee
 			vm.task.enlist(vm.task.query)
 				.then(function(response){
 					vm.nextPage = 2;
-					
+
 					vm.pagination = response.data
 
 					vm.task.data = response.data.data;
@@ -221,10 +236,10 @@ employee
 									vm.task.pushItem(item);
 									vm.task.setToolbarItems(item);
 								});
-								
+
 								// Enables again the pagination call for next call.
 								vm.busy = false;
-								vm.isLoading = false;	
+								vm.isLoading = false;
 							}, function(){
 								vm.loadNextPage();
 							});
@@ -248,4 +263,13 @@ employee
 		}
 
 		vm.task.init();
+
+		function serverBusy() {
+			var alert = {
+				title: 'Server Busy',
+				message: 'Your request is being processed.',
+			}
+
+			MaterialDesign.alert(alert);
+		}
 	}]);

@@ -103,6 +103,11 @@
 						<md-icon class="mdi mdi-account-multiple grey"></md-icon>
 						<md-tooltip>Manage Accounts</md-tooltip>
 					</md-button>
+					<!-- Manage Projects -->
+					<md-button class="md-icon-button" ng-if="!mainVm.user.isRankAndFile()" ui-sref="main.manage-projects">
+						<md-icon class="mdi mdi-apps grey"></md-icon>
+						<md-tooltip>Manage Projects</md-tooltip>
+					</md-button>
 			</div>
 			<!-- Account -->
             <!-- <input id="upload" type="file" nv-file-select uploader="mainVm.user.photoUploader" style="display: none;" ng-if="mainVm.user.showUploader"> -->
@@ -110,43 +115,43 @@
 				<md-button flex aria-label="User" ng-click="$mdOpenMenu($event)">
 					<div layout="row" flex layout-align="center center">
 						<img ng-if="mainVm.user.user.avatar_path" ng-src="/user/avatar/{{mainVm.user.user.id}}?={{mainVm.user.currentTime}}" class="avatar-icon" alt="avatar">
-			            <img ng-if="mainVm.user.user && !mainVm.user.user.avatar_path" src="/img/2Color-Favicon_512x512-1.png" class="avatar-icon" alt="">
-			            <span flex="5"></span>
-			            <span class="secondary-text">{{mainVm.user.user.name}}</span>
-			            <span flex></span>
+            <img ng-if="mainVm.user.user && !mainVm.user.user.avatar_path" src="/img/2Color-Favicon_512x512-1.png" class="avatar-icon" alt="">
+            <span flex="5"></span>
+            <span class="secondary-text">{{mainVm.user.user.name}}</span>
+            <span flex></span>
 					</div>
 				</md-button>
 				<md-menu-content width="4">
 					<md-subheader>Account</md-subheader>
-					<!-- <md-menu-item>
-						<md-button flex ng-click="mainVm.clickUpload()">
-			                <div layout="row" flex>
-			                    <md-icon class="mdi mdi-camera grey"></md-icon>
-			                    <span flex="5"></span>
-			                    <span class="secondary-text">Update Photo</span>
-			                    <span flex></span>
-			                </div>
-			            </md-button>
-					</md-menu-item> -->
+					<md-menu-item ng-if="mainVm.user.isRankAndFile()">
+						<md-button flex ng-click="mainVm.setPositions()">
+							<div layout="row" flex>
+									<md-icon class="mdi mdi-account-box grey"></md-icon>
+									<span flex="5"></span>
+									<span class="secondary-text">Positions</span>
+									<span flex></span>
+							</div>
+						</md-button>
+					</md-menu-item>
 					<md-menu-item>
 						<md-button flex ng-click="mainVm.user.changePassword()">
-			                <div layout="row" flex>
-			                    <md-icon class="mdi mdi-key-change grey"></md-icon>
-			                    <span flex="5"></span>
-			                    <span class="secondary-text">Change Password</span>
-			                    <span flex></span>
-			                </div>
-			            </md-button>
+                <div layout="row" flex>
+                    <md-icon class="mdi mdi-key-change grey"></md-icon>
+                    <span flex="5"></span>
+                    <span class="secondary-text">Change Password</span>
+                    <span flex></span>
+                </div>
+            </md-button>
 					</md-menu-item>
 					<md-menu-item>
 						<md-button flex ng-click="mainVm.logout()">
-			                <div layout="row" flex>
-			                    <md-icon class="mdi mdi-logout grey"></md-icon>
-			                    <span flex="5"></span>
-			                    <span class="secondary-text">Logout</span>
-			                    <span flex></span>
-			                </div>
-			            </md-button>
+                <div layout="row" flex>
+                    <md-icon class="mdi mdi-logout grey"></md-icon>
+                    <span flex="5"></span>
+                    <span class="secondary-text">Logout</span>
+                    <span flex></span>
+                </div>
+            </md-button>
 					</md-menu-item>
 				</md-menu-content>
 			</md-menu>

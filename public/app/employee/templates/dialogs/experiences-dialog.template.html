@@ -1,0 +1,42 @@
+<md-dialog aria-label="{{vm.label}}" flex flex-gt-sm="50" flex-gt-lg="40" ng-cloak>
+    <form name="vm.form">
+        <md-toolbar >
+            <div class="md-toolbar-tools">
+                <h2 class="white-text">{{vm.label}}</h2>
+                <span flex></span>
+                <md-button class="md-icon-button" ng-click="vm.cancel()">
+                    <md-icon class="mdi mdi-close mdi-24px" aria-label="Close dialog"></md-icon>
+                </md-button>
+            </div>
+        </md-toolbar>
+        <md-dialog-content flex layout-padding layout-wrap>
+            <md-subheader class="red-text" ng-if="vm.error">Oops! Something went wrong! An error occured. Please try again.</md-subheader>
+            <md-subheader class="md-no-sticky red-text" ng-if="vm.showErrors && !vm.user.experiences.length">User must have at least one experience</md-subheader>
+      			<div layout="column" ng-repeat="account in vm.accounts" flex>
+      				<md-switch class="md-primary" ng-model="account.selected" ng-disabled="account.locked">{{account.name}}</md-switch>
+      				<div flex ng-repeat="position in account.positions" ng-if="account.selected">
+      					<md-checkbox class="md-primary" ng-model="position.selected" ng-disabled="position.locked">{{position.name}}</md-checkbox>
+      					<div layout="row" flex ng-if="position.selected">
+      						<!-- Date Started -->
+      						<md-input-container class="md-block" flex>
+      							<label>Date Started</label>
+      							<md-datepicker name="DateStarted{{$index}}" ng-model="position.date_started" required></md-datepicker>
+      							<div ng-messages="vm.form['DateStarted' + $index].$error">
+      								<div ng-message="valid">The entered value is not a date.</div>
+      								<div ng-message="required">Date started is required.</div>
+      								<div ng-message="maxdate">Date cannot be later than today</div>
+      							</div>
+      						</md-input-container>
+      					</div>
+      				</div>
+      				<md-divider></md-divider>
+      			</div>
+        </md-dialog-content>
+    </form>
+    <div layout="row" layout-align="end center">
+        <md-button ng-if="!vm.busy" class="md-primary" aria-label="Submit" ng-click="vm.submit()">
+            Submit
+        </md-button>
+        <md-progress-circular ng-if="vm.busy" md-mode="indeterminate" class="md-primary" md-diameter="60"></md-progress-circular>
+    </div>
+</md-dialog>

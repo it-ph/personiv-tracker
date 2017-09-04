@@ -44,6 +44,10 @@ shared
 			return roles.length ? true : false;
 		}
 
+		factory.isRankAndFile = function(){
+			return factory.user.roles.length ? false : true;
+		}
+
 		factory.store = function()
 		{
 			return $http.post('/user', factory.new);

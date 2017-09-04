@@ -1,5 +1,5 @@
 employee
-	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', 'User', 'Account',  function(MaterialDesign, taskFormService, formService, User, Account){
+	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', 'User', 'Account', 'Experience',  function(MaterialDesign, taskFormService, formService, User, Account, Experience){
 		var vm = this;
 
 		vm.task = taskFormService;
@@ -11,8 +11,38 @@ employee
 		// determines the user if he can use batch tasks
 		vm.setAccount = function(){
 			vm.task.new.account_id = vm.task.new.account.id;
-
 			vm.batchable = vm.task.new.account.batchable;
+			vm.task.new.experience_id = null;
+			fetchExperiences();
+		}
+
+		function fetchExperiences(){
+			var query = {
+				where: [
+					{
+						column: 'user_id',
+						condition: '=',
+						value: vm.user.user.id
+					},
+					{
+						column: 'account_id',
+						condition: '=',
+						value: vm.task.new.account_id
+					},
+				],
+				relationships: ['position'],
+			}
+
+			Experience.enlist(query)
+				.then(function(response) {
+					vm.experiences = response.data;
+				})
+				.catch(function(){
+					Helper.failed()
+						.then(function(){
+							fetchExperiences();
+						});
+				})
 		}
 
 		// fetch the accounts associated with the user

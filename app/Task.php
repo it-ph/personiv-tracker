@@ -26,7 +26,7 @@ class Task extends Model
      *
      * @var array
      */
-    protected $guarded = ['ended_at'];  
+    protected $guarded = ['ended_at'];
 
     /**
      * The attributes that should be cast to native types.
@@ -42,7 +42,7 @@ class Task extends Model
      */
     public function user()
     {
-    	return $this->belongsTo('App\Task');
+    	return $this->belongsTo('App\User');
     }
 
     /**
@@ -51,6 +51,14 @@ class Task extends Model
     public function account()
     {
         return $this->belongsTo('App\Account');
+    }
+
+    /**
+     * Get the experience record associated with the task.
+     */
+    public function experience()
+    {
+        return $this->belongsTo('App\Experience');
     }
 
     /**
@@ -68,6 +76,7 @@ class Task extends Model
     {
         $this->title = $request->title;
         $this->account_id = $request->account_id;
+        $this->experience_id = $request->experience_id;
         $this->revision = $request->revision ? $request->revision : false;
         $this->number_of_photos = $request->number_of_photos;
     }
@@ -155,9 +164,12 @@ class Task extends Model
 
         Excel::create($department . ' report from ' . Carbon::parse($date_start)->toFormattedDateString() . ' to ' . Carbon::parse($date_end)->toFormattedDateString() .' Shift: ' . Carbon::parse($time_start)->toTimeString() . ' to ' . Carbon::parse($time_end)->toTimeString(), function($excel) use($reports){
             $reports->each(function($account, $key) use($excel){
+              if(count($account->reportDates))
+              {
                 $excel->sheet($this->formatSheet($account->name), function($sheet) use($account){
-                    $sheet->loadView('excel.report')->with('account', $account);
+                  $sheet->loadView('excel.report')->with('account', $account);
                 });
+              }
             });
         })->download('xls');
     }

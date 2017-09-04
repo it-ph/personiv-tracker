@@ -6,7 +6,7 @@
     </md-card-title>
 	<md-card-content>
 		<form name="vm.form" novalidate>
-			<div layout="row" flex>					
+			<div layout="row" flex>
 				<!-- Title -->
 				<md-input-container class="md-block" flex>
 					<label>Title</label>
@@ -16,15 +16,25 @@
 					</div>
 				</md-input-container>
 			</div>
-			<div layout="row" flex ng-if="vm.account.data.length">					
+			<div layout="row" flex ng-if="vm.account.data.length">
 				<!-- Project/Account -->
 				<md-input-container class="md-block" flex>
 					<label>Project</label>
-					<md-select name="Account" ng-model="vm.task.new.account" ng-disabled="vm.busy" ng-required="vm.account.data.length" ng-change="vm.setAccount()">
-						<md-option ng-repeat="account in vm.account.data | orderBy: 'name'" ng-value="{{account}}">{{ account.name }}</md-option>					
+					<md-select name="Account" ng-model="vm.task.new.account" ng-disabled="vm.busy" required ng-change="vm.setAccount()">
+						<md-option ng-repeat="account in vm.account.data | orderBy: 'name'" ng-value="{{account}}">{{ account.name }}</md-option>
 					</md-select>
 					<div ng-messages="vm.form.Account.$error">
 						<div ng-message="required">Project is required.</div>
+					</div>
+				</md-input-container>
+				<!-- Position -->
+				<md-input-container class="md-block" flex>
+					<label>Position</label>
+					<md-select name="Position" ng-model="vm.task.new.experience_id" ng-disabled="vm.busy" required>
+						<md-option ng-repeat="experience in vm.experiences | orderBy: 'name'" value="{{experience.id}}">{{ experience.position.name }}</md-option>
+					</md-select>
+					<div ng-messages="vm.form.Position.$error">
+						<div ng-message="required">Position is required.</div>
 					</div>
 				</md-input-container>
 			</div>

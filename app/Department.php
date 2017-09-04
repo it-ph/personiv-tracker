@@ -21,12 +21,4 @@ class Department extends Model
     {
     	return $this->hasMany('App\Account');
     }
-
-    /**
-     * Get the position records associated with the department.
-     */
-    public function positions()
-    {
-    	return $this->belongsToMany('App\Position', 'department_positions');
-    }
 }

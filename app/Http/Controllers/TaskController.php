@@ -87,7 +87,7 @@ class TaskController extends Controller
         // Check if the user owns the task
         $this->authorize('update', $task);
 
-        DB::transaction(function() use($request, $task){        
+        DB::transaction(function() use($request, $task){
             if($request->has('id'))
             {
                 $pause = Pause::findOrFail($request->id);
@@ -121,7 +121,7 @@ class TaskController extends Controller
 
         if($request->first)
         {
-            return $this->model->first();        
+            return $this->model->first();
         }
 
         if($request->paginate)
@@ -162,6 +162,8 @@ class TaskController extends Controller
     {
         $this->validate($request, [
             'title' => 'required',
+            'account_id' => 'required',
+            'experience_id' => 'required',
         ]);
 
         $task = new Task;
@@ -172,10 +174,7 @@ class TaskController extends Controller
 
         $task->save();
 
-        if($task->account_id)
-        {
-            $task->load('account', 'pauses');
-        }
+        $task->load('account', 'experience.position', 'pauses');
 
         return $task;
     }
@@ -216,6 +215,8 @@ class TaskController extends Controller
 
         $this->validate($request, [
             'title' => 'required',
+            'account_id' => 'required',
+            'experience_id' => 'required',
         ]);
 
         $task->populate($request);

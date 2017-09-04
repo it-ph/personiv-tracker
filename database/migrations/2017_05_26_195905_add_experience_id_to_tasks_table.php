@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDepartmentPositionsTable extends Migration
+class AddExperienceIdToTasksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateDepartmentPositionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('department_positions', function (Blueprint $table) {
-            $table->increments('id');
-            $table->integer('department_id')->unsigned();
-            $table->integer('position_id')->unsigned();
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->integer('experience_id')->unsigned();
         });
     }
 
@@ -27,6 +25,8 @@ class CreateDepartmentPositionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('department_positions');
+        Schema::table('tasks', function (Blueprint $table) {
+            $table->dropColumn('experience_id');
+        });
     }
 }

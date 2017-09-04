@@ -42,23 +42,27 @@
       					</div>
               </md-input-container>
             </div>
-            <md-subheader class="md-no-sticky">Experiences</md-subheader>
-            <md-subheader class="md-no-sticky red-text" ng-if="vm.showErrors && !vm.hasExperience">Check at least one experience</md-subheader>
-            <div layout="column" ng-repeat="experience in vm.edit.experiences" flex>
-      				<md-checkbox class="md-primary" ng-model="experience.selected" ng-change="vm.checkExperiences()">{{experience.position.name}} {{experience.name}}</md-checkbox>
-      				<div layout="row" flex ng-if="experience.selected">
-      					<!-- Date Started -->
-      					<md-input-container class="md-block" flex>
-      						<label>Date Started</label>
-      						<md-datepicker name="DateStarted{{$index}}" ng-model="experience.date_started" required></md-datepicker>
-      						<div ng-messages="vm.form['DateStarted' + $index].$error">
-      							<div ng-message="valid">The entered value is not a date.</div>
-      							<div ng-message="required">Date started is required.</div>
-      							<div ng-message="maxdate">Date cannot be later than today</div>
-      						</div>
-      					</md-input-container>
+            <md-subheader class="md-no-sticky">Accounts</md-subheader>
+      			<md-subheader class="md-no-sticky red-text" ng-if="vm.showErrors && !vm.edit.experiences.length">User must have at least one experience</md-subheader>
+      			<div layout="column" ng-repeat="account in vm.accounts" flex>
+      				<md-switch class="md-primary" ng-model="account.selected">{{account.name}}</md-switch>
+      				<div flex ng-repeat="position in account.positions" ng-if="account.selected">
+      					<md-checkbox class="md-primary" ng-model="position.selected">{{position.name}}</md-checkbox>
+      					<div layout="row" flex ng-if="position.selected">
+      						<!-- Date Started -->
+      						<md-input-container class="md-block" flex>
+      							<label>Date Started</label>
+      							<md-datepicker name="DateStarted{{$index}}" ng-model="position.date_started" required></md-datepicker>
+      							<div ng-messages="vm.form['DateStarted' + $index].$error">
+      								<div ng-message="valid">The entered value is not a date.</div>
+      								<div ng-message="required">Date started is required.</div>
+      								<div ng-message="maxdate">Date cannot be later than today</div>
+      							</div>
+      						</md-input-container>
+      					</div>
       				</div>
-      			</div
+      				<md-divider></md-divider>
+      			</div>
         </md-dialog-content>
     </form>
     <div layout="row" layout-align="end center">

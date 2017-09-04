@@ -10,6 +10,8 @@ class User extends Authenticatable
 {
     use Notifiable, Softdeletes;
 
+    protected static $whiteListExperience = [];
+
     /**
      * The attributes that should be mutated to dates.
      *
@@ -113,9 +115,9 @@ class User extends Authenticatable
       $this->name = request()->name;
       $this->employee_number = request()->employee_number;
       $this->email = request()->email;
-      $this->password = request()->has('password') ? bcrypt(request()->password) : bcrypt('!welcome10');
-      $this->department_id = request()->user()->department_id;
-      $this->immediate_supervisor_id = request()->user()->id;
+      $this->password = $this->id ? $this->password : bcrypt('!welcome10');
+      $this->department_id = $this->id ? $this->department_id : request()->user()->department_id;
+      $this->immediate_supervisor_id = $this->id ? $this->immediate_supervisor_id : request()->user()->id;
     }
 
     public function checkDuplicate()
@@ -141,14 +143,21 @@ class User extends Authenticatable
       $experiences = [];
 
       for ($i=0; $i < count(request()->experiences); $i++) {
-        if(request()->input("experiences.{$i}.selected"))
-        {
-          $experience = new Experience;
-          $experience->validateRequest($i);
-          $experience->prepare($i);
+        $hasRecord = request()->has("experiences.{$i}.id") ? true : false;
 
+        $experience = $hasRecord ? Experience::find(request()->input("experiences.{$i}.id")) : new Experience;
+        $experience->validateRequest($i);
+        $experience->prepare($i);
+
+        if(! $hasRecord) {
           array_push($experiences, $experience);
         }
+        else {
+          $experience->user_id = $this->id;
+          $experience->save();
+        }
+
+        array_push(static::$whiteListExperience, $experience->id);
       }
 
       return $experiences;
@@ -156,6 +165,6 @@ class User extends Authenticatable
 
     public function deleteExperiences()
     {
-      Experience::where('user_id', $this->id)->delete();
+      Experience::whereNotIn('id', static::$whiteListExperience)->where('user_id', $this->id)->doesntHave('tasks')->delete();
     }
 }

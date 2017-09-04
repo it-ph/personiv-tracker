@@ -38,7 +38,7 @@ shared
 			})
 	}]);
 shared
-	.factory('Account', ['$http', 'MaterialDesign', function($http, MaterialDesign){
+	.factory('Account', ['$http', function($http){
 		var factory = {}
 
 		factory.data = [];
@@ -47,8 +47,25 @@ shared
 			return $http.post('/account/enlist', query);
 		}
 
+		factory.show = function(id) {
+			return $http.get('/account/' + id);
+		}
+
+		factory.store = function(data){
+			return $http.post('/account', data);
+		}
+
+		factory.update = function(data){
+			return $http.put('/account/' + data.id, data);
+		}
+
+		factory.delete = function(id){
+			return $http.delete('/account/' + id);
+		}
+
 		return factory;
 	}]);
+
 shared
 	.factory('Chart', function() {
 		var factory = {}
@@ -110,14 +127,14 @@ shared
 		    }
 		}
 
-		factory.config = function(data){
-			factory.data.title.text = data.name;
-			factory.data.subtitle.text = data.range;
+		factory.config = function(account, position){
+			factory.data.title.text = account.name + ' - ' + position.name;
+			factory.data.subtitle.text = account.range;
 
-			factory.data.xAxis.categories = data.categories;
+			factory.data.xAxis.categories = position.names;
 
-			factory.data.series[0].data = data.new;
-			factory.data.series[1].data = data.revisions;
+			factory.data.series[0].data = position.new;
+			factory.data.series[1].data = position.revisions;
 			// factory.data.series[2].data = data.hours_spent;
 
 			return factory.data;
@@ -125,6 +142,28 @@ shared
 
 		return factory;
 	})
+
+angular
+  .module('shared')
+  .factory('dataService', dataService);
+
+  function dataService() {
+      var service = {
+        set: set,
+        get: get,
+      }
+
+      return service;
+
+      function set(key, value) {
+        service[key] = value;
+      }
+
+      function get(key) {
+        return service[key];
+      }
+  }
+
 shared
 	.factory('Department', ['$http', function($http){
 		var factory = {
@@ -401,6 +440,9 @@ shared
       set: set,
       get: get,
       enlist: enlist,
+      store: store,
+      update: update,
+      detach: detach,
     }
 
     return factory;
@@ -421,6 +463,25 @@ shared
 
     function enlist(query) {
       return $http.post('/position/enlist', query);
+    }
+
+    function store(position) {
+      return $http.post('/position', position);
+    }
+
+    function update(position) {
+      return $http.put('/position/' + position.id, position);
+    }
+
+    function destroy(id) {
+      return $http.delete('/position/' + id);
+    }
+
+    function detach(positionId, accountId) {
+      return $http.post('/position/detach/' + positionId, {
+        position_id: positionId,
+        account_id: accountId,
+      });
     }
   }
 
@@ -681,6 +742,10 @@ shared
 			return roles.length ? true : false;
 		}
 
+		factory.isRankAndFile = function(){
+			return factory.user.roles.length ? false : true;
+		}
+
 		factory.store = function()
 		{
 			return $http.post('/user', factory.new);
@@ -853,71 +918,78 @@ shared
 		}
 	}]);
 shared
-	.controller('mainViewController', ['User', 'MaterialDesign', function(User, MaterialDesign){
+	.controller('mainViewController', ['User', 'Experience', 'MaterialDesign', function(User, Experience, MaterialDesign){
 		var vm = this;
 
 		vm.user = User;
+		vm.logout = logout;
+		vm.forceChangePassword = forceChangePassword;
+		vm.setPositions = setPositions;
+
+		function setPositions() {
+			var dialog = {
+				controller: 'experiencesDialogController as vm',
+				templateUrl: '/app/employee/templates/dialogs/experiences-dialog.template.html'
+		 	}
+
+			MaterialDesign.customDialog(dialog)
+		}
 
 		/*
 		 * Ends the session of the authenticated user.
 		 */
-		vm.logout = function(){
-			vm.user.logout()
-				.then(function(){
-					window.location.href = '/';
-				});
-		}
+		 function logout() {
+			 MaterialDesign.reject();
+			 return vm.user.logout()
+ 				.then(function(){
+ 					window.location.href = '/';
+ 				});
+		 }
 
-  		/**
-		 * Opens the upload form of avatar
-  		*/
-		vm.clickUpload = function(){
-		    angular.element('#upload').trigger('click');
-		};
+		 function forceChangePassword() {
+			 var dialog = {
+ 				title: 'Change Password',
+ 				message: 'Please change your default password.',
+ 				ok: 'Got it!',
+ 			}
 
-		/**
-		 * Mark notification as read
-		*/
-		vm.markAsRead = function(data){
-			vm.user.markAsRead()
-				.then(function(){
-					vm.user.removeNotification(data);
-				}, function(){
-					MaterialDesign.error();
-				});
-		}
-		/**
-		 * Mark all unread notifications as read
-		*/
-		vm.markAllAsRead = function(){
-			vm.user.markAllAsRead()
-				.then(function(){
-					vm.user.clearNotifications();
-				}, function(){
-					MaterialDesign.error();
-				});
-		}
+ 			return MaterialDesign.confirm(dialog)
+		 }
 
-		vm.forceChangePassword = function(){
-			var dialog = {
-				title: 'Change Password',
-				message: 'Please change your default password.',
-				ok: 'Got it!',
-			}
+		 function forceSetPosition() {
+			 if(!User.isRankAndFile())
+			 {
+				 return MaterialDesign.reject();
+			 }
+			 var query = {
+				 where: [
+					 {
+						 column: 'user_id',
+						 condition: '=',
+						 value: vm.user.user.id
+					 }
+				 ]
+			 }
 
-			MaterialDesign.confirm(dialog)
-				.then(function(){
-					vm.user.changePassword()
-						.then(function(){
-							console.log('done')
-							MaterialDesign.hide();
-						}, function(){
-							vm.forceChangePassword();
-						});
-				}, function(){
-					vm.logout();
-				});
-		}
+			 return Experience.enlist(query)
+			 	.then(function(response){
+					if(!response.data.length)
+					{
+						var dialog = {
+							title: 'Update Positions',
+							message: "Please set your position per project.",
+							ok: 'Update',
+						}
+
+						return MaterialDesign.confirm(dialog);
+					}
+					return MaterialDesign.reject();
+				})
+		 }
+
+		 function changePasswordDialog() {
+			 return vm.user.changePassword()
+		 }
 
 		/**
 		 * Initialize
@@ -927,9 +999,13 @@ shared
 				.then(function(response){
 					if(response.data)
 					{
-						vm.forceChangePassword();
+						return vm.forceChangePassword()
+							.then(changePasswordDialog)
+							.catch(logout);
 					}
 				})
-			// vm.user.photoUploaderInit();
+				.then(forceSetPosition)
+				.then(setPositions)
+				// .catch(logout);
 		}();
 	}]);

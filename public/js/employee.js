@@ -89,7 +89,7 @@ employee
 		return factory;
 	}]);
 employee
-	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', 'Account', 'User', '$filter', function(MaterialDesign, taskFormService, formService, Account, User, $filter){
+	.controller('editTaskDialogController', ['MaterialDesign', 'taskFormService', 'formService', 'Account', 'User', 'Experience', '$filter', function(MaterialDesign, taskFormService, formService, Account, User, Experience, $filter){
 		var vm = this;
 
 		vm.task = taskFormService;
@@ -99,7 +99,7 @@ employee
 		vm.department = vm.user.user.department.name;
 
 		// determines the user if he can use batch tasks
-		vm.setAccount = function(id){
+		vm.setAccount = function(id, reset){
 			var account = $filter('filter')(vm.account.data, {id:id})[0];
 
 			vm.batchable = account.batchable;
@@ -108,6 +108,38 @@ employee
 			{
 				vm.task.data.number_of_photos = null;
 			}
+
+			if(reset)
+			{
+				vm.task.data.experience_id = null;
+			}
+			fetchExperiences();
+		}
+
+		function fetchExperiences(){
+			var query = {
+				where: [
+					{
+						column: 'user_id',
+						condition: '=',
+						value: vm.user.user.id
+					},
+					{
+						column: 'account_id',
+						condition: '=',
+						value: vm.task.data.account_id
+					},
+				],
+				relationships: ['position'],
+			}
+
+			Experience.enlist(query)
+				.then(function(response) {
+					vm.experiences = response.data;
+				})
+				.catch(function(){
+					Helper.error();
+				})
 		}
 
 		// determines the user if he can use batch tasks
@@ -115,7 +147,7 @@ employee
 		{
 			vm.batch = true;
 		}
-		
+
 		// fetch the accounts associated with the user
 		vm.accounts = function(){
 			var query = {
@@ -158,7 +190,7 @@ employee
 						vm.busy = false;
 
 						MaterialDesign.notify('Changes saved.');
-						
+
 						MaterialDesign.hide();
 
 						vm.task.init();
@@ -172,13 +204,174 @@ employee
 		vm.init = function(){
 			vm.accounts()
 				.then(function(){
-					vm.setAccount(vm.task.data.account_id);
+					vm.setAccount(vm.task.data.account_id, false);
 				});
 		}();
 	}]);
+
+(function() {
+  'use strict';
+
+  angular
+    .module('app')
+    .controller('experiencesDialogController', experiencesDialogController)
+
+  experiencesDialogController.$inject = ['User', 'Account', 'Experience', 'MaterialDesign', 'formService', '$filter'];
+
+  function experiencesDialogController(User, Account, Experience, MaterialDesign, formService, $filter) {
+    var vm = this;
+
+    vm.label = "Positions"
+    vm.user = User.user;
+    vm.user.experiences = [];
+    vm.cancel = cancel;
+    vm.submit = submit;
+    init();
+
+    function init() {
+      return getPositions()
+        .then(setPositions)
+        .then(getExperiences)
+        .then(matchExperiences)
+        .catch(error);
+    }
+
+    function getPositions(){
+      var query = {
+        where: [
+          {
+            column: 'department_id',
+            condition: '=',
+            value: vm.user.department_id,
+          }
+        ],
+        relationships: ['positions'],
+      }
+
+      return Account.enlist(query);
+    }
+
+    function setPositions(response) {
+      vm.accounts = response.data;
+    }
+
+    function getExperiences() {
+      var query = {
+        where: [
+          {
+            column: 'user_id',
+            condition: '=',
+            value: vm.user.id,
+          },
+        ],
+        relationships: ['account.positions'],
+        relationshipCount: ['tasks'],
+      }
+
+      return Experience.enlist(query);
+    }
+
+    function matchExperiences(response) {
+      angular.forEach(response.data, function(experience){
+          var account = $filter('filter')(vm.accounts, {id: experience.account_id});
+          if(account)
+          {
+            var accountIndex = vm.accounts.indexOf(account[0]);
+            account[0].selected = true;
+            account[0].locked = experience.tasks_count ? true : false;
+            vm.accounts[accountIndex] = account[0];
+
+            var position = $filter('filter')(vm.accounts[accountIndex].positions, {id: experience.position_id});
+
+            if(position)
+            {
+              var positionIndex = vm.accounts[accountIndex].positions.indexOf(position[0]);
+
+              position[0].experience_id = experience.id;
+              position[0].date_started = new Date(experience.date_started);
+              position[0].selected = true;
+              position[0].locked = experience.tasks_count ? true : false;
+
+              vm.accounts[accountIndex].positions[positionIndex] = position[0];
+            }
+          }
+      });
+    }
+
+    function cancel() {
+      MaterialDesign.cancel();
+    }
+
+    function submit()
+    {
+      vm.showErrors = true;
+      // check every fields in the form for errors
+			var formHasError = formService.validate(vm.form);
+
+      setExperiences();
+      convertDatesToString();
+
+      if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.user.experiences.length)
+			{
+				return;
+			}
+			else{
+				vm.busy = true;
+				User.update(vm.user)
+					.then(function(){
+						vm.busy = false;
+						MaterialDesign.notify('Changes saved.');
+            MaterialDesign.hide();
+					})
+          .catch(error);
+			}
+
+      function setExperiences() {
+        angular.forEach(vm.accounts, function(account){
+          if(account.selected)
+          {
+            angular.forEach(account.positions, function(position){
+              if(position.selected)
+              {
+                var experience = {
+                  id: position.experience_id,
+                  account_id: account.id,
+                  position_id: position.id,
+                  date_started: position.date_started,
+                }
+                vm.user.experiences.push(experience);
+              }
+            });
+          }
+        });
+      }
+    }
+
+    function convertDatesToString(){
+      angular.forEach(vm.user.experiences, function(experience){
+        experience.date_started = experience.date_started.toDateString();
+      });
+    }
+
+    function revertDatesToObject(){
+      angular.forEach(vm.user.experiences, function(experience){
+        experience.date_started = new Date(experience.date_started);
+      });
+    }
+
+    function error() {
+      revertDatesToObject();
+      MaterialDesign.reject();
+      vm.busy = false;
+      vm.error = true;
+    }
+  }
+})();
+
 employee
 	.controller('homeContentContainerController', ['MaterialDesign', 'toolbarService', 'Task', 'taskFormService', 'User', function(MaterialDesign, toolbarService, Task, taskFormService, User){
 		var vm = this;
+		var busy = false;
 
 		vm.toolbar = toolbarService;
 		vm.task = Task;
@@ -203,6 +396,11 @@ employee
 		}
 
 		vm.pause = function(){
+			if(busy)
+			{
+				return serverBusy();
+			}
+			busy = true;
 			vm.task.pause()
 				.then(function(response){
 					vm.paused = true;
@@ -210,23 +408,32 @@ employee
 					vm.setCurrent(response.data);
 
 					MaterialDesign.notify('Paused');
+					busy = false;
 				}, function(){
+					busy = false;
 					MaterialDesign.error();
 				})
 		}
 
 		vm.resume = function(){
+			if(busy)
+			{
+				return serverBusy();
+			}
+			busy = true;
 			vm.task.resume()
 				.then(function(response){
 					vm.paused = false;
 
 					vm.setCurrent(response.data);
-					
+
 					MaterialDesign.notify('Resumed');
+					busy = false;
 				}, function(){
+					busy = false;
 					MaterialDesign.error();
 				})
-		}		
+		}
 
 		// submit current task as finished
 		vm.finish = function(){
@@ -238,7 +445,7 @@ employee
 			}
 
 			MaterialDesign.confirm(dialog)
-				.then(function(){			
+				.then(function(){
 					MaterialDesign.preloader();
 
 					vm.task.finish()
@@ -262,7 +469,7 @@ employee
 		vm.edit = function(data){
 			var dialog = {
 				templateUrl: '/app/employee/templates/dialogs/edit-task-dialog.template.html',
-				controller: 'editTaskDialogController as vm', 
+				controller: 'editTaskDialogController as vm',
 			}
 
 			taskFormService.set(data);
@@ -300,7 +507,7 @@ employee
 		// fetch the current task to be pinned at top
 		vm.currentTask = function(){
 			var query = {
-				relationships: ['account'],
+				relationships: ['account', 'experience.position'],
 				relationshipsWithConstraints: [
 					{
 						relationship: 'pauses',
@@ -336,7 +543,7 @@ employee
 		}
 
 		vm.task.query = {
-			relationships: ['account'],
+			relationships: ['account', 'experience.position'],
 			whereNotNull: ['ended_at'],
 			where: [
 				{
@@ -359,7 +566,7 @@ employee
 			vm.task.enlist(vm.task.query)
 				.then(function(response){
 					vm.nextPage = 2;
-					
+
 					vm.pagination = response.data
 
 					vm.task.data = response.data.data;
@@ -399,10 +606,10 @@ employee
 									vm.task.pushItem(item);
 									vm.task.setToolbarItems(item);
 								});
-								
+
 								// Enables again the pagination call for next call.
 								vm.busy = false;
-								vm.isLoading = false;	
+								vm.isLoading = false;
 							}, function(){
 								vm.loadNextPage();
 							});
@@ -426,9 +633,19 @@ employee
 		}
 
 		vm.task.init();
+
+		function serverBusy() {
+			var alert = {
+				title: 'Server Busy',
+				message: 'Your request is being processed.',
+			}
+
+			MaterialDesign.alert(alert);
+		}
 	}]);
+
 employee
-	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', 'User', 'Account',  function(MaterialDesign, taskFormService, formService, User, Account){
+	.controller('taskFormController', ['MaterialDesign', 'taskFormService', 'formService', 'User', 'Account', 'Experience',  function(MaterialDesign, taskFormService, formService, User, Account, Experience){
 		var vm = this;
 
 		vm.task = taskFormService;
@@ -440,8 +657,38 @@ employee
 		// determines the user if he can use batch tasks
 		vm.setAccount = function(){
 			vm.task.new.account_id = vm.task.new.account.id;
-
 			vm.batchable = vm.task.new.account.batchable;
+			vm.task.new.experience_id = null;
+			fetchExperiences();
+		}
+
+		function fetchExperiences(){
+			var query = {
+				where: [
+					{
+						column: 'user_id',
+						condition: '=',
+						value: vm.user.user.id
+					},
+					{
+						column: 'account_id',
+						condition: '=',
+						value: vm.task.new.account_id
+					},
+				],
+				relationships: ['position'],
+			}
+
+			Experience.enlist(query)
+				.then(function(response) {
+					vm.experiences = response.data;
+				})
+				.catch(function(){
+					Helper.failed()
+						.then(function(){
+							fetchExperiences();
+						});
+				})
 		}
 
 		// fetch the accounts associated with the user

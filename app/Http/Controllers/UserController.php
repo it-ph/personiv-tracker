@@ -187,9 +187,11 @@ class UserController extends Controller
         $user->prepare();
         $user->save();
 
-        $user->deleteExperiences();
         $experiences = $user->prepareExperiences();
-        $user->experiences()->saveMany($experiences);
+        $user->deleteExperiences();
+        if(count($experiences)) {
+          $user->experiences()->saveMany($experiences);
+        }
     }
 
     /**

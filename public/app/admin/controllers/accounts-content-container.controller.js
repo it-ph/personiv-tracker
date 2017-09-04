@@ -1,11 +1,12 @@
 admin
   .controller('accountsContentContainerController', accountsContentContainerController)
 
-accountsContentContainerController.$inject = ['MaterialDesign', 'User', 'fab', '$q'];
+accountsContentContainerController.$inject = ['MaterialDesign', 'toolbarService', 'User', 'fab', '$q'];
 
-function accountsContentContainerController(MaterialDesign, User, fab, $q) {
+function accountsContentContainerController(MaterialDesign, toolbarService, User, fab, $q) {
   var vm = this;
 
+  vm.toolbar = toolbarService;
   vm.user = User;
   vm.edit = edit;
   vm.view = view;
@@ -19,6 +20,17 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
   vm.fab.action = function() {
     vm.user.showForm = true;
     vm.fab.show = false;
+  }
+
+  init();
+
+  function init(){
+    vm.toolbar.clearItems();
+
+    angular.forEach(vm.user.user.subordinates, function(subordinate){
+      var item = {display: subordinate.name}
+      vm.toolbar.items.push(item);
+    });
   }
 
   function view(user) {
@@ -62,11 +74,14 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
       .then(deleteRequest)
       .then(spliceUser)
       .then(notifyChanges)
-      .catch(error);
 
     function deleteRequest(){
       MaterialDesign.preloader();
-      return vm.user.delete(user.id);
+      return vm.user.delete(user.id)
+        .catch(function() {
+          MaterialDesign.reject();
+          MaterialDesign.error();
+        });
     }
 
     function spliceUser(){
@@ -90,12 +105,15 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
 
     MaterialDesign.confirm(dialog)
       .then(function(){
-        return vm.user.resetPassword(user);
+        return vm.user.resetPassword(user)
+          .catch(function() {
+            MaterialDesign.reject();
+            MaterialDesign.error();
+          });
       })
       .then(function(){
         MaterialDesign.notify('Changes saved.');
       })
-      .catch(error);
   }
 
   function error(){

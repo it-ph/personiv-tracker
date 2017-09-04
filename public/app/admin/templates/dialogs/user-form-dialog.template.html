@@ -20,8 +20,9 @@
       </md-list>
       <md-subheader>Experiences</md-subheader>
       <md-list layout="row" layout-wrap>
-        <md-list-item class="md-2-line" ng-repeat="experience in vm.user.experiences" flex-xs="100" flex-sm="100" flex-gt-sm="40" flex-gt-md="30">
+        <md-list-item class="md-3-line" ng-repeat="experience in vm.user.experiences" flex-xs="100" flex-sm="100" flex-gt-sm="40" flex-gt-md="30">
           <div class="md-list-item-text">
+            <h3>{{experience.account.name}}</h3>
             <h3>{{experience.position.name}}</h3>
             <p>{{experience.date_started | date: 'MMM. dd, yyyy'}}</p>
           </div>

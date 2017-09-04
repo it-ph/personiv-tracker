@@ -25,7 +25,7 @@ class SupervisorRoleSeeder extends Seeder
 
         $users = User::whereDoesntHave('roles', function($query){
           $query->where('name', 'Department Head');
-        })->get();
+        })->has('roles')->get();
 
         $supervisor = Role::where('name', 'Supervisor')->first();
 

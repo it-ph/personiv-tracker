@@ -3,14 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Account;
+
+use App\Http\Requests\StoreAccount;
+use App\Http\Requests\UpdateAccount;
+use App\Http\Requests\DeleteAccount;
+
 use Illuminate\Http\Request;
 
 use App\Traits\Enlist;
-
-use Auth;;
-use Carbon\Carbon;
-use DB;
-use Gate;
 
 class AccountController extends Controller
 {
@@ -47,7 +47,7 @@ class AccountController extends Controller
      */
     public function index()
     {
-        
+      //
     }
 
     /**
@@ -66,9 +66,12 @@ class AccountController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreAccount $request)
     {
-        //
+      $account = new Account;
+      $account->checkDuplicate();
+      $account->prepare();
+      $account->save();
     }
 
     /**
@@ -79,7 +82,9 @@ class AccountController extends Controller
      */
     public function show(Account $account)
     {
-        //
+        $this->authorize($account);
+
+        return $account;
     }
 
     /**
@@ -100,9 +105,11 @@ class AccountController extends Controller
      * @param  \App\Account  $account
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Account $account)
+    public function update(UpdateAccount $request, Account $account)
     {
-        //
+      $account->checkDuplicate();
+      $account->prepare();
+      $account->save();
     }
 
     /**
@@ -111,8 +118,8 @@ class AccountController extends Controller
      * @param  \App\Account  $account
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Account $account)
+    public function destroy(DeleteAccount $request, Account $account)
     {
-        //
+      $account->delete();
     }
 }

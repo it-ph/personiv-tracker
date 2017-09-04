@@ -22,7 +22,7 @@ admin
 					}
 				},
 				resolve: {
-					authentication: ['MaterialDesign', 'User', '$state', function(MaterialDesign, User, $state){
+					authentication: ['User', '$state', function(User, $state){
 						return User.get()
 							.then(function(data){
 								User.set('user', data.data);
@@ -51,17 +51,70 @@ admin
 						controller: 'userFormController as vm'
 					}
 				},
+			})
+			.state('main.manage-projects', {
+				url: 'projects',
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'projectsContentContainerController as vm',
+					},
+					'toolbar@main.manage-projects': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'projectsToolbarController as vm',
+					},
+					'content@main.manage-projects':{
+						templateUrl: '/app/admin/templates/content/projects-content.template.html',
+					},
+					'form@main.manage-projects': {
+						templateUrl: '/app/admin/templates/content/project-form.template.html',
+						controller: 'projectFormController as vm'
+					}
+				},
+			})
+			.state('main.manage-positions', {
+				url: 'project/{accountId}/positions',
+				params: {accountId: null},
+				resolve: {
+					authorize: ['Account', 'dataService', '$state', '$stateParams', function(Account, dataService, $state, $stateParams){
+						return Account.show($stateParams.accountId)
+							.then(function(response) {
+								dataService.set('account', response.data);
+							})
+							.catch(function(){
+								return $state.go('page-not-found');
+							});
+					}],
+				},
+				views: {
+					'content-container': {
+						templateUrl: '/app/shared/views/content-container.view.html',
+						controller: 'positionsContentContainerController as vm',
+					},
+					'toolbar@main.manage-positions': {
+						templateUrl: '/app/shared/templates/toolbar.template.html',
+						controller: 'positionsToolbarController as vm',
+					},
+					'content@main.manage-positions':{
+						templateUrl: '/app/admin/templates/content/positions-content.template.html',
+					},
+					'form@main.manage-positions': {
+						templateUrl: '/app/admin/templates/content/position-form.template.html',
+						controller: 'positionFormController as vm'
+					}
+				},
 			});
 	}]);
 
 admin
   .controller('accountsContentContainerController', accountsContentContainerController)
 
-accountsContentContainerController.$inject = ['MaterialDesign', 'User', 'fab', '$q'];
+accountsContentContainerController.$inject = ['MaterialDesign', 'toolbarService', 'User', 'fab', '$q'];
 
-function accountsContentContainerController(MaterialDesign, User, fab, $q) {
+function accountsContentContainerController(MaterialDesign, toolbarService, User, fab, $q) {
   var vm = this;
 
+  vm.toolbar = toolbarService;
   vm.user = User;
   vm.edit = edit;
   vm.view = view;
@@ -75,6 +128,17 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
   vm.fab.action = function() {
     vm.user.showForm = true;
     vm.fab.show = false;
+  }
+
+  init();
+
+  function init(){
+    vm.toolbar.clearItems();
+
+    angular.forEach(vm.user.user.subordinates, function(subordinate){
+      var item = {display: subordinate.name}
+      vm.toolbar.items.push(item);
+    });
   }
 
   function view(user) {
@@ -118,11 +182,14 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
       .then(deleteRequest)
       .then(spliceUser)
       .then(notifyChanges)
-      .catch(error);
 
     function deleteRequest(){
       MaterialDesign.preloader();
-      return vm.user.delete(user.id);
+      return vm.user.delete(user.id)
+        .catch(function() {
+          MaterialDesign.reject();
+          MaterialDesign.error();
+        });
     }
 
     function spliceUser(){
@@ -146,12 +213,15 @@ function accountsContentContainerController(MaterialDesign, User, fab, $q) {
 
     MaterialDesign.confirm(dialog)
       .then(function(){
-        return vm.user.resetPassword(user);
+        return vm.user.resetPassword(user)
+          .catch(function() {
+            MaterialDesign.reject();
+            MaterialDesign.error();
+          });
       })
       .then(function(){
         MaterialDesign.notify('Changes saved.');
       })
-      .catch(error);
   }
 
   function error(){
@@ -194,6 +264,7 @@ admin
 
 		function setToolbarItem(item)
 		{
+			vm.toolbar.clearItems();
 			var entry = {}
 
 			entry.display = item.name;
@@ -350,12 +421,241 @@ admin
 
 		vm.init();
 	}]);
+(function(){
+  angular
+    .module('app')
+    .controller('editPositionDialogController', editPositionDialogController);
+
+    editPositionDialogController.inject = ['MaterialDesign', 'User', 'Account', 'Position', 'dataService', 'formService'];
+
+    function editPositionDialogController(MaterialDesign, User, Account, Position, dataService, formService) {
+      var vm = this;
+
+      vm.account = dataService.get('account');
+      vm.user = User.user;
+
+      vm.cancel = MaterialDesign.cancel;
+      vm.checkDuplicate = checkDuplicate;
+      vm.label = dataService.get('position').name;
+      vm.submit = submit;
+
+      init();
+
+      function error() {
+        MaterialDesign.error();
+      }
+
+      function checkDuplicate() {
+        vm.duplicate = false;
+
+        var request = {
+          whereHas: [
+            {
+              relationship: 'positions',
+              where: [
+                  {
+                    column: 'name',
+                    condition: '=',
+                    value: vm.position.name
+                  },
+              ]
+            },
+          ],
+          where: [
+            {
+              column: 'id',
+              condition: '=',
+              value: vm.account.id
+            },
+          ],
+          first: true
+        }
+
+        Account.enlist(request)
+          .then(duplicateResponse)
+
+          function duplicateResponse(response) {
+            if(response.data)
+            {
+              vm.duplicate = true;
+            }
+          }
+      }
+
+      function init() {
+        var query = {
+          where: [
+            {
+              column: 'id',
+              condition: '=',
+              value: dataService.get('position').id,
+            }
+          ],
+          first: true,
+        }
+
+        return Position.enlist(query)
+          .then(function(response){
+            vm.position = response.data;
+            vm.position.account_id = vm.account.id;
+            console.log(vm.position);
+            return vm.position;
+          });
+      }
+
+      function submit() {
+        var formhasError = formService.validate(vm.form);
+
+        if(formhasError || vm.duplicate || vm.busy)
+        {
+          return;
+        }
+
+        vm.busy = true;
+
+        Position.update(vm.position)
+          .then(hideForm)
+          .catch(showErrorMessage)
+
+        function hideForm() {
+          vm.busy = false;
+          MaterialDesign.hide();
+          MaterialDesign.notify('Changes saved.');
+        }
+
+        function showErrorMessage() {
+          vm.error = true;
+          vm.busy = false;
+        }
+      }
+    }
+})();
+
+(function(){
+  angular
+    .module('app')
+    .controller('editProjectDialogController', editProjectDialogController);
+
+    editProjectDialogController.inject = ['MaterialDesign', 'User', 'Account', 'Department', 'dataService', 'formService'];
+
+    function editProjectDialogController(MaterialDesign, User, Account, Department, dataService, formService) {
+      var vm = this;
+
+      vm.user = User.user;
+      vm.cancel = MaterialDesign.cancel;
+      vm.checkDuplicate = checkDuplicate;
+      vm.label = dataService.get('account').name;
+      vm.submit = submit;
+
+      init();
+
+      function error() {
+        MaterialDesign.error();
+      }
+
+      function checkDuplicate() {
+        var query = {
+          where: [
+            {
+              column: 'name',
+              condition: '=',
+              value: vm.account.name
+            },
+          ],
+          whereNotIn: [
+            {
+              column: 'id',
+              values: [vm.account.id]
+            },
+          ],
+          first: true,
+        }
+
+        $department = {
+          column: 'department_id',
+          condition: '=',
+          value: vm.account.department_id ? vm.account.department_id : vm.user.department_id
+        }
+
+        request.where.push($department);
+
+        Account.enlist(query)
+          .then(duplicateResponse)
+          .catch(error);
+
+        function duplicateResponse(response) {
+          if(response.data)
+          {
+            vm.duplicate = true;
+          }
+        }
+      }
+
+      function init() {
+        getDepartments()
+          .then(getAccount)
+          .catch(error);
+
+        function getDepartments() {
+          return Department.index()
+            .then(function(response){
+              return vm.departments = response.data;
+            })
+        }
+
+        function getAccount() {
+          var query = {
+            relationships: ['positions'],
+            where: [
+              {
+                column: 'id',
+                condition: '=',
+                value: dataService.get('account').id,
+              }
+            ],
+            first: true,
+          }
+
+          return Account.enlist(query)
+            .then(function(response){
+              return vm.account = response.data;
+            });
+        }
+      }
+
+      function submit() {
+        var formhasError = formService.validate(vm.form);
+
+        if(formhasError || vm.duplicate || vm.busy)
+        {
+          return;
+        }
+
+        vm.busy = true;
+
+        Account.update(vm.account)
+          .then(hideForm)
+          .catch(showErrorMessage)
+
+        function hideForm() {
+          vm.busy = false;
+          MaterialDesign.hide();
+          MaterialDesign.notify('Changes saved.');
+        }
+
+        function showErrorMessage() {
+          vm.error = true;
+        }
+      }
+    }
+})();
+
 admin
   .controller('editUserFormDialogController', editUserFormDialogController)
 
-  userFormController.$inject = ['MaterialDesign', 'User', 'Position', 'Experience', 'formService', '$filter'];
+  userFormController.$inject = ['MaterialDesign', 'User', 'Account', 'Experience', 'formService', '$filter'];
 
-  function editUserFormDialogController(MaterialDesign, User, Position, Experience, formService, $filter) {
+  function editUserFormDialogController(MaterialDesign, User, Account, Experience, formService, $filter) {
     var vm = this;
 
     vm.label = 'Edit user';
@@ -366,7 +666,6 @@ admin
 
     vm.checkEmployeeNumber = checkEmployeeNumber;
     vm.checkEmail = checkEmail;
-    vm.checkExperiences = checkExperiences;
     vm.cancel = cancel;
     vm.submit = submit;
     init();
@@ -381,25 +680,21 @@ admin
 
     function getPositions(){
       var query = {
-        whereHas : [
+        where: [
           {
-            relationship: 'departments',
-            where: [
-              {
-                column: 'department_id',
-                condition: '=',
-                value: vm.user.user.department_id
-              },
-            ],
-          },
-        ]
+            column: 'department_id',
+            condition: '=',
+            value: vm.user.user.department_id,
+          }
+        ],
+        relationships: ['positions'],
       }
 
-      return Position.enlist(query)
+      return Account.enlist(query);
     }
 
     function setPositions(response) {
-      vm.positions = response.data;
+      vm.accounts = response.data;
     }
 
     function getExperiences() {
@@ -411,25 +706,32 @@ admin
             value: vm.edit.id,
           },
         ],
-        relationships: ['position'],
+        relationships: ['account.positions'],
       }
 
       return Experience.enlist(query);
     }
 
     function matchExperiences(response) {
-      angular.copy(vm.positions, vm.edit.experiences);
-
       angular.forEach(response.data, function(experience){
-          experience.date_started = new Date(experience.date_started);
-          experience.selected = true;
+          var account = $filter('filter')(vm.accounts, {id: experience.account_id});
 
-          var position = $filter('filter')(vm.positions, {id: experience.position_id});
-
-          if(position)
+          if(account)
           {
-            var index = vm.positions.indexOf(position[0]);
-            vm.edit.experiences[index] = experience;
+            var accountIndex = vm.accounts.indexOf(account[0]);
+            account[0].selected = true;
+            vm.accounts[accountIndex] = account[0];
+
+            var position = $filter('filter')(vm.accounts[accountIndex].positions, {id: experience.position_id});
+
+            if(position)
+            {
+              var positionIndex = vm.accounts[accountIndex].positions.indexOf(position[0]);
+              position[0].experience_id = experience.id;
+              position[0].date_started = new Date(experience.date_started);
+              position[0].selected = true;
+              vm.accounts[accountIndex].positions[positionIndex] = position[0];
+            }
           }
       });
     }
@@ -484,16 +786,6 @@ admin
         });
     }
 
-    function checkExperiences() {
-      vm.hasExperience = false;
-      angular.forEach(vm.edit.experiences, function(experience){
-        if(experience.selected)
-        {
-          vm.hasExperience = true;
-        }
-      });
-    }
-
     function cancel() {
       MaterialDesign.cancel();
     }
@@ -504,15 +796,15 @@ admin
       // check every fields in the form for errors
 			var formHasError = formService.validate(vm.form);
 
-			if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.hasExperience)
+      setExperiences();
+      convertDatesToString();
+
+      if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.edit.experiences.length)
 			{
 				return;
 			}
 			else{
 				vm.busy = true;
-
-        convertDatesToString();
-
 				vm.user.update(vm.edit)
 					.then(function(){
 						vm.busy = false;
@@ -521,27 +813,42 @@ admin
 					})
           .catch(error);
 			}
+
+      function setExperiences() {
+        angular.forEach(vm.accounts, function(account){
+          if(account.selected)
+          {
+            angular.forEach(account.positions, function(position){
+              if(position.selected)
+              {
+                var experience = {
+                  id: position.experience_id,
+                  account_id: account.id,
+                  position_id: position.id,
+                  date_started: position.date_started,
+                }
+                vm.edit.experiences.push(experience);
+              }
+            });
+          }
+        });
+      }
     }
 
     function convertDatesToString(){
       angular.forEach(vm.edit.experiences, function(experience){
-        if(experience.selected)
-        {
-          experience.date_started = experience.date_started.toDateString();
-        }
+        experience.date_started = experience.date_started.toDateString();
       });
     }
 
     function revertDatesToObject(){
       angular.forEach(vm.edit.experiences, function(experience){
-        if(experience.selected)
-        {
-          experience.date_started = new Date(experience.date_started);
-        }
+        experience.date_started = new Date(experience.date_started);
       });
     }
 
     function error() {
+      revertDatesToObject();
       MaterialDesign.reject();
       vm.busy = false;
       vm.error = true;
@@ -654,7 +961,7 @@ admin
             value: User.view.id,
           }
         ],
-        relationships: ['experiences.position'],
+        relationships: ['experiences.account', 'experiences.position'],
         first: true,
       }
 
@@ -671,6 +978,518 @@ admin
         });
     }
   }
+
+admin
+  .controller('positionFormController', positionFormController)
+
+  positionFormController.$inject = ['MaterialDesign', 'User', 'Account', 'Position', 'formService', 'dataService', 'fab'];
+
+  function positionFormController(MaterialDesign, User, Account, Position, formService, dataService, fab) {
+    var vm = this;
+
+    vm.account = dataService.get('account');
+    vm.user = User.user;
+    vm.position = {}
+    vm.position.account_id = vm.account.id;
+    vm.form = {}
+    vm.fab = fab;
+
+    vm.checkDuplicate = checkDuplicate;
+    vm.focusOnForm = focusOnForm;
+    vm.hideForm = hideForm;
+    vm.submit = submit;
+
+    function hideForm() {
+      Position.showForm = false;
+      vm.fab.show = true;
+    }
+
+    function focusOnForm() {
+      angular.element(document).find('#newPosition').addClass('md-input-focused');
+      angular.element(document).find('#newPosition > input').focus();
+    }
+
+    function checkDuplicate() {
+      vm.duplicate = false;
+
+      var request = {
+        whereHas: [
+          {
+            relationship: 'positions',
+            where: [
+                {
+                  column: 'name',
+                  condition: '=',
+                  value: vm.position.name
+                },
+            ]
+          },
+        ],
+        where: [
+          {
+            column: 'id',
+            condition: '=',
+            value: vm.account.id
+          },
+        ],
+        first: true
+      }
+
+      Account.enlist(request)
+        .then(duplicateResponse)
+
+        function duplicateResponse(response) {
+          if(response.data)
+          {
+            vm.duplicate = true;
+          }
+        }
+    }
+
+    function submit() {
+      // check every fields in the form for errors
+			var formHasError = formService.validate(vm.form);
+
+			if(formHasError || vm.duplicate || vm.busy) {
+				return;
+			}
+
+			vm.busy = true;
+
+			Position.store(vm.position)
+        .then(getPositions)
+        .then(hideForm)
+        .then(notify)
+        .catch(error);
+
+      function notify() {
+        vm.busy = false;
+        MaterialDesign.notify('Project created.');
+      }
+
+      function getPositions() {
+        var query = {
+          relationshipCountWithConstraints: [
+            {
+              relationship: 'experiences',
+              where: [
+                {
+                  column: 'account_id',
+                  condition: '=',
+                  value: vm.account.id
+                },
+              ]
+            }
+          ],
+          whereHas: [
+            {
+              relationship: 'accounts',
+              where: [
+                {
+                  column: 'account_id',
+                  condition: '=',
+                  value: vm.account.id
+                },
+              ]
+            },
+          ],
+        }
+
+        return Position.enlist(query)
+          .then(function(response) {
+            return Position.data = response.data;
+          });
+      }
+    }
+
+    function error() {
+      vm.busy = false;
+      MaterialDesign.error();
+    }
+  }
+
+(function() {
+  angular
+    .module('app')
+    .controller('positionsContentContainerController', positionsContentContainerController)
+
+    positionsContentContainerController.$inject = ['User', 'Position', 'MaterialDesign', 'dataService', 'toolbarService', 'fab',];
+
+    function positionsContentContainerController(User, Position, MaterialDesign, dataService, toolbarService, fab) {
+      var vm = this;
+
+      vm.toolbar = toolbarService;
+      vm.account = dataService.get('account');
+      vm.position = Position;
+      vm.user = User.user;
+      vm.view = view;
+      vm.edit = edit;
+      vm.remove = remove;
+
+      vm.fab = fab;
+      vm.fab.icon = 'mdi-plus';
+      vm.fab.label = 'Position';
+      vm.fab.show = true;
+      vm.fab.action = showForm;
+
+      init();
+
+      function error() {
+        MaterialDesign.error();
+      }
+
+      function showForm() {
+        vm.position.showForm = true;
+        vm.fab.show = false;
+      }
+
+      function init() {
+        vm.showList = false;
+
+        return getPositions()
+          .then(collectPositions, error)
+          .then(setAutoComplete)
+          .then(showList)
+
+          function getPositions() {
+            var query = {
+              relationshipCountWithConstraints: [
+                {
+                  relationship: 'experiences',
+                  where: [
+                    {
+                      column: 'account_id',
+                      condition: '=',
+                      value: vm.account.id
+                    },
+                  ]
+                }
+              ],
+              whereHas: [
+                {
+                  relationship: 'accounts',
+                  where: [
+                    {
+                      column: 'account_id',
+                      condition: '=',
+                      value: vm.account.id
+                    },
+                  ]
+                },
+              ],
+            }
+
+            return Position.enlist(query);
+          }
+
+          function collectPositions(response) {
+            vm.position.data = response.data;
+          }
+
+          function setAutoComplete() {
+            vm.toolbar.clearItems();
+
+            angular.forEach(vm.position.data, function(position){
+              var item = {display: position.name}
+              vm.toolbar.items.push(item);
+            });
+          }
+
+          function showList() {
+            vm.showList = true;
+          }
+      }
+
+      function view(position) {
+        // $state.go('manage-positions', {accountId: account.id});
+      }
+
+      function edit(position) {
+        dataService.set('position', position);
+
+        var dialog = {
+          controller: 'editPositionDialogController as vm',
+          templateUrl: '/app/admin/templates/dialogs/edit-position-dialog.template.html',
+        }
+
+        MaterialDesign.customDialog(dialog)
+          .then(init);
+      }
+
+      function remove(position) {
+        var dialog = {
+          title: 'Delete position',
+          message: 'Are you sure you want to delete this position?',
+          ok: 'Delete',
+          cancel: 'Cancel',
+        }
+
+        MaterialDesign.confirm(dialog)
+          .then(deleteRequest)
+          .then(applyChanges);
+
+        function deleteRequest() {
+          return Position.detach(position.id, vm.account.id)
+            .catch(function() {
+              MaterialDesign.reject();
+              MaterialDesign.error();
+            });
+        }
+
+        function applyChanges() {
+          MaterialDesign.notify('Position deleted.');
+          init();
+        }
+      }
+    }
+})();
+
+admin
+  .controller('projectFormController', projectFormController)
+
+  projectFormController.$inject = ['MaterialDesign', 'User', 'Account', 'Department', 'formService', 'fab', '$filter'];
+
+  function projectFormController(MaterialDesign, User, Account, Department, formService, fab, $filter) {
+    var vm = this;
+
+    vm.user = User.user;
+    vm.account = {}
+    vm.account.batchable = false;
+    vm.form = {}
+    vm.fab = fab;
+
+    vm.checkDuplicate = checkDuplicate;
+    vm.focusOnForm = focusOnForm;
+    vm.hideForm = hideForm;
+    vm.submit = submit;
+
+    init();
+
+    function init() {
+      Department.index()
+        .then(function(response) {
+          vm.departments = response.data;
+        })
+        .catch(MaterialDesign.error);
+    }
+
+    function hideForm() {
+      Account.showForm = false;
+      vm.fab.show = true;
+    }
+
+    function focusOnForm() {
+      angular.element(document).find('#newAccount').addClass('md-input-focused');
+      angular.element(document).find('#newAccount > input').focus();
+    }
+
+    function checkDuplicate() {
+      vm.duplicate = false;
+
+      var request = {
+        where: [
+          {
+            column: 'name',
+            condition: '=',
+            value: vm.account.name
+          },
+        ],
+        first: true
+      }
+
+      $department = {
+        column: 'department_id',
+        condition: '=',
+        value: vm.account.department_id ? vm.account.department_id : vm.user.department_id
+      }
+
+      request.where.push($department);
+
+      Account.enlist(request)
+        .then(duplicateResponse)
+
+        function duplicateResponse(response) {
+          if(response.data)
+          {
+            vm.duplicate = true;
+          }
+        }
+    }
+
+    function submit() {
+      // check every fields in the form for errors
+			var formHasError = formService.validate(vm.form);
+
+			if(formHasError || vm.duplicate || vm.busy) {
+				return;
+			}
+
+			vm.busy = true;
+
+			Account.store(vm.account)
+        .then(getAccounts)
+        .then(hideForm)
+        .then(notify)
+        .catch(error);
+
+      function notify() {
+        vm.busy = false;
+        MaterialDesign.notify('Project created.');
+      }
+
+      function getAccounts() {
+        var query = {
+          relationships: ['positions'],
+          relationshipCount: ['tasks'],
+        }
+
+        if(! vm.user.super_user)
+        {
+          query.where = [
+            {
+              column: 'department_id',
+              condition: '=',
+              value: vm.user.department_id,
+            },
+          ]
+        }
+
+        return Account.enlist(query)
+          .then(function(response) {
+            return Account.data = response.data;
+          });
+      }
+    }
+
+    function error() {
+      vm.busy = false;
+      MaterialDesign.error();
+    }
+  }
+
+(function() {
+  angular
+    .module('app')
+    .controller('projectsContentContainerController', projectsContentContainerController)
+
+    projectsContentContainerController.$inject = ['User', 'Account', 'MaterialDesign', 'dataService', 'toolbarService', 'fab', '$state',];
+
+    function projectsContentContainerController(User, Account, MaterialDesign, dataService, toolbarService, fab, $state) {
+      var vm = this;
+
+      vm.toolbar = toolbarService;
+      vm.account = Account;
+      vm.user = User.user;
+      vm.view = view;
+      vm.edit = edit;
+      vm.remove = remove;
+
+      vm.fab = fab;
+      vm.fab.icon = 'mdi-plus';
+      vm.fab.label = 'Project';
+      vm.fab.show = true;
+      vm.fab.action = showForm;
+
+      init();
+
+      function error() {
+        MaterialDesign.error();
+      }
+
+      function showForm() {
+        vm.account.showForm = true;
+        vm.fab.show = false;
+      }
+
+      function init() {
+        vm.showList = false;
+
+        return getAccounts()
+          .then(collectAccounts, error)
+          .then(setAutoComplete)
+          .then(showList)
+
+          function getAccounts() {
+            var query = {
+              relationships: ['positions'],
+              relationshipCount: ['tasks'],
+            }
+
+            if(! vm.user.super_user)
+            {
+              query.where = [
+                {
+                  column: 'department_id',
+                  condition: '=',
+                  value: vm.user.department_id,
+                },
+              ]
+            }
+
+            return Account.enlist(query);
+          }
+
+          function collectAccounts(response) {
+            vm.account.data = response.data;
+          }
+
+          function setAutoComplete() {
+            vm.toolbar.clearItems();
+
+            angular.forEach(vm.account.data, function(account){
+              var item = {display: account.name}
+              vm.toolbar.items.push(item);
+            });
+          }
+
+          function showList() {
+            vm.showList = true;
+          }
+      }
+
+      function view(account) {
+        $state.go('main.manage-positions', {accountId: account.id});
+      }
+
+      function edit(account) {
+        dataService.set('account', account);
+
+        var dialog = {
+          controller: 'editProjectDialogController as vm',
+          templateUrl: '/app/admin/templates/dialogs/edit-project-dialog.template.html',
+        }
+
+        MaterialDesign.customDialog(dialog)
+          .then(init);
+      }
+
+      function remove(account) {
+        var dialog = {
+          title: 'Delete project',
+          message: 'Are you sure you want to delete this project?',
+          ok: 'Delete',
+          cancel: 'Cancel',
+        }
+
+        MaterialDesign.confirm(dialog)
+          .then(deleteRequest)
+          .then(applyChanges);
+
+        function deleteRequest() {
+          return Account.delete(account.id)
+            .catch(function() {
+              MaterialDesign.reject();
+              MaterialDesign.error();
+            });
+        }
+
+        function applyChanges() {
+          MaterialDesign.notify('Project deleted.');
+          init();
+        }
+      }
+    }
+})();
 
 admin
 	.controller('accountsToolbarController', ['MaterialDesign', 'toolbarService', 'User', '$state', function(MaterialDesign, toolbarService, User, $state){
@@ -729,11 +1548,67 @@ admin
 	}]);
 
 admin
+	.controller('positionsToolbarController', ['MaterialDesign', 'toolbarService', 'User', '$state', 'dataService', function(MaterialDesign, toolbarService, User, $state, dataService){
+		var vm = this;
+
+		vm.toolbar = toolbarService;
+		vm.toolbar.content = User;
+
+		vm.toolbar.parentState = dataService.get('account').name; //string
+		vm.toolbar.childState = 'Positions'; //string
+
+		vm.toolbar.hideSearchIcon = false; //bool - true if deeper search icon should be hidden
+		vm.toolbar.searchAll = false; // bool - true if a deeper search can be executed
+
+		vm.toolbar.options = false; //bool - true if a menu button is needed in the view
+		vm.toolbar.showInactive = false; //bool - true if user wants to view deleted records
+
+		vm.toolbar.state = $state.current.name;
+
+		// Sort options
+		vm.sort = [
+			{
+				'label': 'Recently added',
+				'type': 'created_at',
+				'sortReverse': false,
+			},
+		];
+	}]);
+
+admin
+	.controller('projectsToolbarController', ['MaterialDesign', 'toolbarService', 'User', '$state', function(MaterialDesign, toolbarService, User, $state){
+		var vm = this;
+
+		vm.toolbar = toolbarService;
+		vm.toolbar.content = User;
+
+		vm.toolbar.parentState = null; //string
+		vm.toolbar.childState = 'Projects'; //string
+
+		vm.toolbar.hideSearchIcon = false; //bool - true if deeper search icon should be hidden
+		vm.toolbar.searchAll = false; // bool - true if a deeper search can be executed
+
+		vm.toolbar.options = false; //bool - true if a menu button is needed in the view
+		vm.toolbar.showInactive = false; //bool - true if user wants to view deleted records
+
+		vm.toolbar.state = $state.current.name;
+
+		// Sort options
+		vm.sort = [
+			{
+				'label': 'Recently added',
+				'type': 'created_at',
+				'sortReverse': false,
+			},
+		];
+	}]);
+
+admin
   .controller('userFormController', userFormController)
 
-  userFormController.$inject = ['MaterialDesign', 'User', 'Position', 'formService', 'fab', '$filter'];
+  userFormController.$inject = ['MaterialDesign', 'User', 'Account', 'formService', 'fab', '$filter'];
 
-  function userFormController(MaterialDesign, User, Position, formService, fab, $filter) {
+  function userFormController(MaterialDesign, User, Account, formService, fab, $filter) {
     var vm = this;
 
     vm.user = User;
@@ -744,43 +1619,42 @@ admin
 
     vm.checkEmployeeNumber = checkEmployeeNumber;
     vm.checkEmail = checkEmail;
-    vm.checkExperiences = checkExperiences;
     vm.focusOnForm = focusOnForm;
     vm.cancel = hideForm;
     vm.submit = submit;
 
     init();
 
-    function init() {
-      return getPositions().then(function(positions){
-          angular.forEach(positions, function(item){
-              item.position_id = item.id;
-          });
-          angular.copy(positions, vm.user.new.experiences);
-      })
+    function hideForm() {
+      vm.user.showForm = false;
+      vm.user.new = {};
+      vm.fab.show = true;
     }
 
-    function getPositions(){
+    function focusOnForm() {
+      angular.element(document).find('#newUser').addClass('md-input-focused');
+      angular.element(document).find('#newUser > input').focus();
+    }
+
+    function init() {
+      return getAccounts().then(function(response) {
+        return vm.accounts = response.data;
+      });
+    }
+
+    function getAccounts() {
       var query = {
-        whereHas : [
+        where: [
           {
-            relationship: 'departments',
-            where: [
-              {
-                column: 'department_id',
-                condition: '=',
-                value: vm.user.user.department_id
-              }
-            ]
+            column: 'department_id',
+            condition: '=',
+            value: vm.user.user.department_id,
           }
-        ]
+        ],
+        relationships: ['positions'],
       }
 
-      return Position.enlist(query)
-        .then(function(response){
-          return vm.positions = response.data;
-        })
-        .catch(error);
+      return Account.enlist(query);
     }
 
     function checkEmployeeNumber() {
@@ -792,6 +1666,7 @@ admin
               value: vm.user.new.employee_number,
             },
           ],
+          withTrashed: true,
           first: true,
       }
 
@@ -810,6 +1685,7 @@ admin
               value: vm.user.new.email,
             },
           ],
+          withTrashed: true,
           first: true,
       }
 
@@ -819,36 +1695,19 @@ admin
         });
     }
 
-    function checkExperiences() {
-      vm.hasExperience = false;
-      angular.forEach(vm.user.new.experiences, function(experience){
-        if(experience.selected)
-        {
-          vm.hasExperience = true;
-        }
-      });
-    }
-
-    function focusOnForm()
-    {
-      angular.element(document).find('#newUser').addClass('md-input-focused');
-      angular.element(document).find('#newUser > input').focus();
-    }
-
-    function submit()
-    {
+    function submit() {
       vm.showErrors = true;
       // check every fields in the form for errors
 			var formHasError = formService.validate(vm.form);
 
-			if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.hasExperience)
-			{
+      setExperiences();
+      convertDatesToString();
+
+			if(formHasError || vm.duplicateEmail || vm.duplicateEmployeeNumber || !vm.user.new.experiences.length) {
 				return;
 			}
 			else{
 				vm.busy = true;
-
-        convertDatesToString();
 
 				vm.user.store()
           .then(notify)
@@ -856,6 +1715,31 @@ admin
           .then(hideForm)
           .catch(error);
 			}
+
+      function setExperiences() {
+        angular.forEach(vm.accounts, function(account){
+          if(account.selected)
+          {
+            angular.forEach(account.positions, function(position){
+              if(position.selected)
+              {
+                var experience = {
+                  account_id: account.id,
+                  position_id: position.id,
+                  date_started: position.date_started,
+                }
+                vm.user.new.experiences.push(experience);
+              }
+            });
+          }
+        });
+      }
+
+      function convertDatesToString(){
+        angular.forEach(vm.user.new.experiences, function(experience){
+          experience.date_started = experience.date_started.toDateString();
+        });
+      }
 
       function notify() {
         vm.busy = false;
@@ -870,33 +1754,15 @@ admin
       }
     }
 
-    function convertDatesToString(){
-      angular.forEach(vm.user.new.experiences, function(experience){
-        if(experience.selected)
-        {
-          experience.date_started = experience.date_started.toDateString();
-        }
-      });
-    }
-
-    function revertDatesToObject(){
-      angular.forEach(vm.user.new.experiences, function(experience){
-        if(experience.selected)
-        {
-          experience.date_started = new Date(experience.date_started);
-        }
-      });
-    }
-
-    function hideForm() {
-      vm.user.showForm = false;
-      vm.user.new = {};
-      vm.fab.show = true;
-    }
-
     function error() {
       vm.busy = false;
       revertDatesToObject();
       MaterialDesign.error();
+    }
+
+    function revertDatesToObject(){
+      angular.forEach(vm.user.new.experiences, function(experience){
+        experience.date_started = new Date(experience.date_started);
+      });
     }
   }

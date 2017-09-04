@@ -1,0 +1,35 @@
+<div layout="row" flex layout-align="center center">
+	<div layout="column" flex-md="50" flex-gt-md="30" flex>
+    <div ui-view="form" ng-if="vm.position.showForm"></div>
+		<div ng-if="!vm.position.showForm">
+			<p ng-if="!vm.position.data.length && vm.showList">Nothing to display.</p>
+			<md-list ng-if="vm.showList">
+				<md-list-item class="md-2-line" ng-repeat="position in vm.position.data | filter:vm.toolbar.searchText" ng-click="vm.view(position)">
+					<div class="md-list-item-text">
+						<h3>{{position.name}}</h3>
+					</div>
+					<md-menu ng-if="!position.experiences_count">
+						<md-button aria-label="Menu" class="md-icon-button" ng-click="$mdMenu.open($event)">
+							<md-icon class="mdi mdi-dots-vertical grey"></md-icon>
+						</md-button>
+						<md-menu-content width="4">
+							<!-- Edit -->
+							<md-menu-item>
+								<md-button aria-label="Edit" ng-click="vm.edit(position)" flex>
+									Edit
+								</md-button>
+							</md-menu-item>
+							<!-- Delete -->
+							<md-menu-item>
+								<md-button aria-label="Delete" ng-click="vm.remove(position)" flex>
+									Delete
+								</md-button>
+							</md-menu-item>
+						</md-menu-content>
+					</md-menu>
+				</md-list-item>
+			</md-list>
+		</div>
+		<md-progress-circular md-mode="indeterminate" value="60" ng-if="!vm.showList"></md-progress-circular>
+	</div>
+</div>
